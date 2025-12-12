@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.CreateRecipe"
+                          Shell.BackgroundColor="#F9EDEC"    
+            BackgroundColor="WhiteSmoke"
+             Shell.ForegroundColor="#2d2d2d" 
+
+             >
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- App Title -->
+            <Label Text="Kitchen Companion"
+               FontSize="25"
+               FontFamily="OpenSansRegular"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center" /> 
+        </Grid>
+    </Shell.TitleView> 
+    <Grid RowDefinitions="Auto,*,Auto"> 
+        <Grid Grid.Row="0" Padding="20">
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Add New Recipe" TextColor="Black"/>
+
+                <Entry x:Name="IngredientNameEntry"
+               Placeholder="Recipe Title"
+               FontSize="16"
+               TextColor="#2d2d2d"  /> 
+                <Entry x:Name="QuantityEntry"
+               Placeholder="Recipe Description"
+               FontSize="16"
+               TextColor="#2d2d2d" 
+               Keyboard="Numeric" />
+                <Picker Title="Select a Category"
+        x:Name="CategoryPicker2"
+        TitleColor="Black"  >
+                    <Picker.Items>
+                        <x:String>Dessert</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label Text="Select at least one ingredient" TextColor="Black" />
+
+                <!-- ⭐ LISTVIEW GOES HERE (before Add Recipe button) -->
+                <ListView ItemsSource="{Binding Items}"
+                      HasUnevenRows="True"
+                      SelectionMode="None"
+                      Margin="0,10,0,0">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="10"
+                                  ColumnDefinitions="Auto,*">
+
+                                    <!-- Emoji icon -->
+                                    <Label Text="🧄"
+                                           FontSize="22"
+                                           VerticalOptions="Center"
+                                           Margin="0,0,10,0" />
+
+                                    <!-- Clickable text -->
+                                    <Label Grid.Column="1"
+                                           Text="Go to ingredient select screen"
+                                           FontSize="16"
+                                           TextColor="Black"
+                                           VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnSelectExistingIngredientTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView> 
+                <Button BackgroundColor="#E57373" Text="Add Recipe" TextColor="Black" Clicked="CreateRecipeDB"></Button>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

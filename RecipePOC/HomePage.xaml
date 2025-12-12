@@ -1,0 +1,361 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.HomePage"
+             BackgroundColor="WhiteSmoke"
+             
+             Shell.BackgroundColor="#F9EDEC"
+             Shell.TitleColor="#000000"
+             Shell.ForegroundColor="#000000"
+             Shell.TabBarTitleColor="#000000"
+             Title="Best Recipe Tracker">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- App Title -->
+            <Label Text="Kitchen Companion"
+               FontSize="25"
+               FontFamily="OpenSansRegular"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center" />
+
+            <!-- 🔔 Notification Bell with Small Badge -->
+            <Grid Grid.Column="1"
+              HorizontalOptions="End"
+              VerticalOptions="Center"
+              Margin="0,0,8,6">
+                <!-- Bell Icon -->
+                <Label Text="🔔"
+                   FontSize="22"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBellTapped" />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <!-- Notification Badge (smaller and offset) -->
+                <Border
+                BackgroundColor="#E57373"
+                WidthRequest="12"
+                HeightRequest="12"
+                StrokeThickness="0" 
+
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="0,-2,-2,0" >
+                    
+                    <Label  
+                       FontSize="8"
+                        Text="{Binding NotifCount}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"
+                       FontAttributes="Bold" />
+                </Border>
+            </Grid>
+
+            <!-- 👤 Profile Emoji -->
+            <Border Grid.Column="2"
+                WidthRequest="40"
+                HeightRequest="40"
+                StrokeThickness="0"
+                HorizontalOptions="End"
+                Margin="0,0,0,6"
+                VerticalOptions="Center">
+                <Label Text="👤"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+            </Border>
+        </Grid>
+    </Shell.TitleView>
+
+
+
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+        <Grid RowDefinitions="Auto,*"
+      Padding="10,15,10,0"
+      ColumnSpacing="10">
+            <VerticalStackLayout Grid.Row="0"
+                         Spacing="6"
+                         VerticalOptions="Center">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Border StrokeShape="Ellipse"
+                    HeightRequest="30"
+                    WidthRequest="30"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+                        <Image Source="user_ico.png"
+                       Aspect="AspectFit"
+                       BackgroundColor="Transparent" />
+                    </Border>
+                    <Label Text="{Binding RealName}"
+                   FontAttributes="Bold"
+                                              FontFamily="OpenSansRegular"
+
+                   FontSize="18"
+                   TextColor="#2d2d2d"
+                   VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <Label Text="Nice to see you!"
+               FontSize="14"
+               TextColor="#7a7a7a"
+                                          FontFamily="OpenSansRegular"
+
+               Margin="0,0,0,5" />
+            </VerticalStackLayout>
+            <Grid Grid.Row="1"
+      ColumnDefinitions="*,*"
+      ColumnSpacing="10"
+      Margin="0,10,0,0">
+
+                <!-- Left rectangle -->
+                <Border Grid.Column="0"
+            HeightRequest="150"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="#FFF9F9"
+            HorizontalOptions="Fill"
+            VerticalOptions="Start">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRecipesTapped"/>
+                    </Border.GestureRecognizers>
+                    <Grid>
+                        <Label Text="🧊"
+                   FontSize="50"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+                        <Label Text="Global Ingredients"
+                   VerticalOptions="End"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10"
+                                                  FontFamily="OpenSansRegular"
+
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   TextColor="#333" />
+                    </Grid>
+                </Border>
+
+                <!-- Right rectangle -->
+                <Border Grid.Column="1"
+            HeightRequest="150"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="#FFF9F9"
+            HorizontalOptions="Fill"
+            VerticalOptions="Start">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnShoppingTapped"/>
+                    </Border.GestureRecognizers>
+                    <Grid>
+                        <Label Text="🛒"
+                   FontSize="50"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+                        <Label Text="Shopping List"
+                   VerticalOptions="End"
+                                                  FontFamily="OpenSansRegular"
+
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10"
+                   FontAttributes="Bold"
+                   FontSize="16"
+                   TextColor="#333" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <ListView x:Name="RecipesList"
+          Grid.Row="1"
+          Margin="10,10,10,10"
+          SeparatorVisibility="None"
+          HasUnevenRows="True"
+          ItemSelected="RecipesList_ItemSelected"
+          ItemsSource="{Binding Recipes}">
+            <ListView.Header>
+                <Label Text="My Favorite Recipes"
+               FontSize="22"
+               FontAttributes="Bold"
+               TextColor="#333"
+               Padding="10,5"
+               BackgroundColor="Transparent"/>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell> 
+                        <Frame HasShadow="False"
+                               CornerRadius="0"
+                       BackgroundColor="#FFF9F9"
+                       Margin="0,5"
+                       Padding="0">
+                            <Grid ColumnDefinitions="5,*"
+                          Padding="0"
+                          x:Name="RowGrid">
+
+                                <!-- Left bar -->
+                                <BoxView x:Name="LeftBar"
+                                 Grid.Column="0"
+                                 WidthRequest="5"
+                                 HorizontalOptions="Fill"
+                                 VerticalOptions="Fill" />
+
+                                <!-- Content card -->
+                                <Border Grid.Column="1"
+                                StrokeShape="RoundRectangle 12"
+                                Padding="10"
+                                Margin="5,5,10,5"
+                                BackgroundColor="#FFF9F9"
+                                StrokeThickness="0"
+                                >
+                                    <!-- Horizontal layout: image + text -->
+                                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+
+                                        <!-- 🖼️ Recipe image -->
+                                        <Image Source="food.jpg"  
+                                            WidthRequest="60"
+                                       HeightRequest="60"
+                                       Aspect="AspectFill"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center" 
+                                       BackgroundColor="#f0f0f0" />
+
+                                        <!-- 📜 Text content -->
+                                        <VerticalStackLayout Spacing="4"
+                                                     VerticalOptions="Center" >
+                                            <Label Text="{Binding Title}"
+                                           FontAttributes="Bold"
+                                           FontSize="18"
+                                                                      FontFamily="OpenSansRegular"
+
+                                           TextColor="#2d2d2d"
+                                           LineBreakMode="TailTruncation" />
+                                            <Label Text="{Binding Description}"
+                                           FontSize="14"
+                                           TextColor="#666"
+                                           LineBreakMode="WordWrap" />
+
+                                            <!-- 👤 Extra info -->
+                                            <HorizontalStackLayout Spacing="4"
+                                                           VerticalOptions="Center">
+                                                <Border StrokeShape="RoundRectangle 2"
+                                                HeightRequest="15"
+                                                WidthRequest="15"
+                                                BackgroundColor="Transparent"
+                                                Padding="0"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center">
+                                                    <Image Source="user_ico.png"
+                                                   Aspect="AspectFill"
+                                                   BackgroundColor="Transparent"/>
+                                                </Border>
+                                                <Label Text="{Binding UserName}"
+                                               FontSize="12"
+                                               TextColor="#999"
+                                               VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Border>
+ 
+                                <Grid.Triggers>
+                                    <DataTrigger TargetType="Grid"
+                                         Binding="{Binding Index}"
+                                         Value="0">
+                                        <Setter TargetName="LeftBar"
+                                        Property="BackgroundColor"
+                                        Value="#FF8DA1" />
+                                        <Setter Property="BackgroundColor"
+                                        Value="#f5f5f5" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Grid"
+                                         Binding="{Binding Index}"
+                                         Value="1">
+                                        <Setter TargetName="LeftBar"
+                                        Property="BackgroundColor"
+                                        Value="#FFE9F0" />
+                                        <Setter Property="BackgroundColor"
+                                        Value="#ffffff" />
+                                    </DataTrigger>
+                                </Grid.Triggers>
+                            </Grid>
+                        </Frame>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+           <!-- <ListView.Footer>
+                <StackLayout Padding="10"
+                     VerticalOptions="Start">
+                    <Button Text="Load More"
+                    BackgroundColor="Black"
+                    CornerRadius="10"
+                    TextColor="White"
+                    WidthRequest="150"
+                    HorizontalOptions="Center" />
+                </StackLayout>
+            </ListView.Footer>-->
+        </ListView>
+        <Border Grid.Row="2"
+        VerticalOptions="End"
+        BackgroundColor="#FFF9F9"
+        Padding="0">
+            <Grid Padding="0,10"
+          ColumnDefinitions="*,*,Auto,*,*"
+          VerticalOptions="Center">
+
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="Button">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="BorderWidth" Value="0" />
+                            <Setter Property="BackgroundColor" Value="#FFF9F9" />
+                            <Setter Property="FontSize" Value="32" />
+                            <Setter Property="HorizontalOptions" Value="Center" />
+                            <Setter Property="VerticalOptions" Value="Center" />
+                            <Setter Property="TextColor" Value="Black" />
+                        </Style>
+                    </ResourceDictionary>
+                </Grid.Resources>
+
+                <!-- 🏠 Home -->
+                <Button Grid.Column="0"
+                Text="🏠"
+                Clicked="HomePage_Navigate" />
+
+                <!-- 🔍 Search -->
+                <Button Grid.Column="1"
+                Text="📖"
+                FontSize="30"
+                Margin="0,-2,0,0"
+                Clicked="Search_Navigate" />
+                
+                <!-- 💬 AI Plugin -->
+                <Button Grid.Column="3"
+                Text="💬"
+                Margin="0,-1,0,0"
+                Clicked="AI_Plugin" />
+
+                <!-- 👤 Profile -->
+                <Button Grid.Column="4"
+                Text="👤"
+                Margin="0,-1,0,0"
+                Clicked="Profile_Navigate" />
+            </Grid>
+        </Border>
+
+        <ActivityIndicator x:Name="LoadingSpinner"
+                   IsRunning="True"
+                   IsVisible="True"
+                   Color="#E57373"
+                   WidthRequest="40"
+                   HeightRequest="40"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   ZIndex="100" />
+    </Grid>
+</ContentPage>

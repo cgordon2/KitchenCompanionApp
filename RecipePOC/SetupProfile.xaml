@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.SetupProfile"
+             Shell.BackgroundColor="#F9EDEC"  
+             BackgroundColor="WhiteSmoke"
+             Title="SetupProfile">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- App Title -->
+            <Label Text="Kitchen Companion"
+               FontSize="25"
+               FontFamily="OpenSansRegular"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center" /> 
+            <!-- 👤 Profile Emoji -->
+            <Border Grid.Column="2"
+                WidthRequest="40"
+                HeightRequest="40"
+                StrokeThickness="0"
+                HorizontalOptions="End"
+                Margin="0,0,0,6"
+                VerticalOptions="Center">
+                <Label Text="👤"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+            </Border>
+        </Grid>
+    </Shell.TitleView>
+    <VerticalStackLayout Padding="10" Margin="10">
+        <Label FontSize="18" TextColor="Black" Text="Update Profile"></Label>
+        <Entry x:Name="real_name" Placeholder="Real Name" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Entry x:Name="password" Placeholder="Password" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Entry x:Name="email" Placeholder="Email" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Picker x:Name="languagePicker"
+        Title="Select Language"
+                TextColor="White"
+        TitleColor="Black" BackgroundColor="#E57373"
+                HorizontalOptions="FillAndExpand"
+        Margin="10">
+            <Picker.Items>
+                <x:String>English</x:String>
+                <x:String>Spanish</x:String>
+                <x:String>French</x:String>
+                <x:String>German</x:String>
+                <x:String>Chinese</x:String>
+            </Picker.Items>
+        </Picker>
+        <Entry x:Name="zipCode"  Placeholder="Zipcode" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373" Margin="10"></Entry>
+        <Entry x:Name="bio_1" Placeholder="Fact #1" Margin="10" TextColor="White"    PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Entry x:Name="bio_2" Placeholder="Fact #2" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Entry x:Name="bio_3" Placeholder="Fact #3" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Button Text="Update" Margin="10"  TextColor="White"    BackgroundColor="Black" Clicked="UpdateProfile"></Button>
+    </VerticalStackLayout>
+</ContentPage>

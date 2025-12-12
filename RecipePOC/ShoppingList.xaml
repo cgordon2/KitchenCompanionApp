@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.ShoppingList"
+               xmlns:local="clr-namespace:RecipePOC.Services.Models"
+             Shell.BackgroundColor="#F9EDEC"    
+            BackgroundColor="WhiteSmoke"
+             Shell.ForegroundColor="#2d2d2d" 
+              >
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- Page title -->
+            <Label Text="Shopping List"
+               FontSize="25"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center"
+               HorizontalOptions="Start" />
+
+            <!-- Right-aligned Edit button -->
+            <Button Grid.Column="1"
+                Text="Edit"
+                FontSize="20"
+                TextColor="#E57373"      
+                BackgroundColor="Transparent"
+                FontAttributes="Bold"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                Padding="0"  />
+        </Grid>
+    </Shell.TitleView>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:BoolToArrowConverter x:Key="BoolToArrowConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
+    <VerticalStackLayout>
+        <Label Text="Pinned Items"
+           FontSize="28"
+           TextColor="#E57373"
+           FontAttributes="Bold" Padding="10"/>
+        <CollectionView ItemsSource="{Binding EmojiItems}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                         Span="4" />
+                <!-- 4 columns -->
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+
+                    <!-- each rectangle -->
+                    <Frame BackgroundColor="#E57373"
+                   CornerRadius="12"
+                   HeightRequest="80"
+                   Padding="0"
+                   Margin="8">
+                        <Label Text="{Binding Emoji}"
+                       FontSize="12"
+                               TextColor="White"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+                    </Frame>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label Text="Recently Used"
+           FontSize="28"
+           TextColor="#E57373"
+           FontAttributes="Bold" Padding="10"/>
+        <CollectionView ItemsSource="{Binding Items}" BackgroundColor="#F9EDEC" Margin="10" >
+            <CollectionView.ItemTemplate >
+                <DataTemplate >
+                    <Grid Padding="10" RowDefinitions="Auto,Auto"> 
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Title}"
+                           FontSize="20"
+                           VerticalOptions="Center" />
+
+                            <ImageButton Grid.Column="1"
+                                 Source="{Binding IsExpanded, Converter={StaticResource BoolToArrowConverter}}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="30"
+                                 HeightRequest="30"
+                                 Clicked="Arrow_Clicked" />
+                        </Grid> 
+                        <Frame Grid.Row="1"
+                       BackgroundColor="#f0f0f0"
+                       CornerRadius="12"
+                       Padding="12"
+                       IsVisible="{Binding IsExpanded}">
+                            <VerticalStackLayout>
+                                <Label Text="Details go here..." />
+                                <Label Text="More info inside the rectangle." />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Label Text="All Items in List"
+           FontSize="28"
+           TextColor="#E57373"
+           FontAttributes="Bold" Padding="10"/>
+        <CollectionView ItemsSource="{Binding Items}" BackgroundColor="#F9EDEC" Margin="10" >
+            <CollectionView.ItemTemplate >
+                <DataTemplate >
+                    <Grid Padding="10" RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Title}"
+                           FontSize="20"
+                           VerticalOptions="Center" />
+
+                            <ImageButton Grid.Column="1"
+                                 Source="{Binding IsExpanded, Converter={StaticResource BoolToArrowConverter}}"
+                                 BackgroundColor="Transparent"
+                                 WidthRequest="30"
+                                 HeightRequest="30"
+                                 Clicked="Arrow_Clicked" />
+                        </Grid>
+                        <Frame Grid.Row="1"
+                       BackgroundColor="#f0f0f0"
+                       CornerRadius="12"
+                       Padding="12"
+                       IsVisible="{Binding IsExpanded}">
+                            <VerticalStackLayout>
+                                <Label Text="Details go here..." />
+                                <Label Text="More info inside the rectangle." />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

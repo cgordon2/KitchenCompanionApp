@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.IngredientsListView"
+                          Shell.BackgroundColor="#F9EDEC"    
+            BackgroundColor="WhiteSmoke"
+             Shell.ForegroundColor="#2d2d2d" 
+             Title="IngredientsListView">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- Title -->
+            <Label Text="Ingredients"
+               FontSize="25"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center"
+               HorizontalOptions="Start" />
+
+            <!-- Add Button -->
+            <Button Grid.Column="2"
+                Text="Add"
+                FontSize="20"
+                TextColor="#E57373"
+                BackgroundColor="Transparent"
+                FontAttributes="Bold"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                    Clicked="Button_Clicked"
+                Padding="0" />
+        </Grid>
+    </Shell.TitleView>
+
+    <VerticalStackLayout>
+        <SearchBar x:Name="IngredientsSearchBar"
+                   Grid.Column="1"
+                   Placeholder="Search Ingredients..."
+                   TextColor="White"
+                   PlaceholderColor="White"
+                   Margin="10"
+                   BackgroundColor="#E57373" 
+                   SearchButtonPressed="OnSearchButtonPressed" 
+                   FontSize="16"
+                   VerticalOptions="Center"
+                   HeightRequest="36" />
+        <ListView x:Name="RecipeListView"
+          ItemsSource="{Binding Items}"
+          HasUnevenRows="True"
+                  BackgroundColor="White"
+          SeparatorVisibility="None">
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell> 
+                        <!--<Grid  
+                      ColumnDefinitions="80, *"> 
+                            <Frame Grid.Column="0"
+                           BackgroundColor="White"
+                           WidthRequest="70"
+                           Padding="0"
+                           CornerRadius="0"
+                           HasShadow="False"
+                           Margin="0"
+                           VerticalOptions="Fill"
+                           HorizontalOptions="Start"> 
+                                <Image Source="{Binding Photo}"
+                               Aspect="AspectFill"/>
+                            </Frame> 
+                            <StackLayout Grid.Column="1"
+                                 Spacing="4"
+                                 VerticalOptions="Center">
+
+                                <Label Text="{Binding Name}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="Black"/> 
+                                <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
+                           FontSize="16"
+                           TextColor="#f4c430"/>
+                                <Label Text="{Binding StoreName}"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                                <Label Text="{Binding CreatedBy}"
+                               FontSize="14"
+                               TextColor="Gray"/>
+
+                            </StackLayout>
+
+                        </Grid>-->
+                        <Grid  
+    ColumnDefinitions="35,80,*">
+
+                            <!-- checkbox -->
+                            <CheckBox Grid.Column="0"
+              VerticalOptions="Center"
+                                      IsVisible="{Binding IsCheckboxVisible}"
+                                      IsChecked="{Binding IsSelected}"
+              HorizontalOptions="Center"/>
+
+                            <!-- image -->
+                            <Frame Grid.Column="1"
+           BackgroundColor="White"
+           WidthRequest="80"
+           HeightRequest="80"
+           Padding="0"
+           CornerRadius="6"
+           HasShadow="False"
+           Margin="0"
+           VerticalOptions="Center"
+           HorizontalOptions="Start">
+                                <Image Source="{Binding Photo}"
+               Aspect="AspectFill" Margin="10" />
+                            </Frame>
+
+                            <!-- text -->
+                            <StackLayout Grid.Column="2"
+                 Spacing="4"
+                 VerticalOptions="Center" Padding="10">
+
+                                <Label Text="{Binding Name}"
+               FontSize="18"
+               FontAttributes="Bold"
+               TextColor="Black"/>
+
+                                <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
+               FontSize="16"
+               TextColor="#f4c430"/>
+
+                                <Label Text="{Binding StoreName}"
+               FontSize="14"
+               FontAttributes="Bold"
+               TextColor="Black"/>
+
+                                <Label Text="{Binding CreatedBy}"
+               FontSize="14"
+               TextColor="Gray"/>
+
+                            </StackLayout>
+
+                        </Grid>
+
+
+
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </VerticalStackLayout>
+</ContentPage>

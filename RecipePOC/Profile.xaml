@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.Profile"
+             Title="Kitchen Companion"
+             Shell.BackgroundColor="#F9EDEC"    
+             Shell.TitleColor="#000000"
+             xmlns:local="clr-namespace:RecipePOC"
+             Shell.ForegroundColor="#000000"
+             BackgroundColor="WhiteSmoke">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- Page title -->
+            <Label Text="Kitchen Companion"
+               FontSize="25"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center"
+               HorizontalOptions="Start" />
+
+            <!-- Right-aligned Edit button -->
+            <Button Grid.Column="1"
+                Text="Edit"
+                FontSize="20"
+                TextColor="#E57373"      
+                BackgroundColor="Transparent"
+                FontAttributes="Bold"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                    Clicked="EditButton_Clicked"
+                Padding="0"  /> 
+        </Grid>
+    </Shell.TitleView>
+
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Start"
+                                 Spacing="20">
+                <Border BackgroundColor="#F9EDEC"
+                        StrokeShape="RoundRectangle 20"
+                        StrokeThickness="0"
+                        Padding="20"
+                        WidthRequest="1000"
+                        MaximumWidthRequest="600"
+                        HorizontalOptions="Center">
+
+                    <VerticalStackLayout Spacing="15"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center">
+                        <Border WidthRequest="110"
+                                HeightRequest="110"
+                                StrokeThickness="0"
+                                BackgroundColor="#F9EDEC"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Padding="0">
+                            <Image Source="user_ico.png"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Margin="1"
+                                   WidthRequest="108"
+                                   HeightRequest="108">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="54,54" RadiusX="54" RadiusY="54" />
+                                </Image.Clip>
+                            </Image>
+                        </Border>
+
+                        <Label Text="{Binding realName}"
+                               FontAttributes="Bold"
+                               FontSize="22"
+                               HorizontalOptions="Center"
+                               TextColor="#000" />
+
+                        <Label Text="{Binding ProfileName}"
+                               FontSize="14"
+                               HorizontalOptions="Center"
+                               TextColor="#555" />
+
+                        <Label Text="{Binding combinedFacts}"
+                               FontSize="14"
+                               TextColor="#333"
+                               LineBreakMode="WordWrap"
+                               HorizontalTextAlignment="Center"
+                               Margin="0,4,0,0" />
+                        <HorizontalStackLayout Spacing="12"
+                       HorizontalOptions="Center"
+                       Margin="0,8,0,0">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="📍" FontSize="14" />
+                                <Label Text="{Binding location}"
+               FontSize="14"
+               TextColor="#555" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="📅" FontSize="14" />
+                                <Label Text="{Binding joinedDate}"
+               FontSize="14"
+               TextColor="#555" />
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+                        <BoxView HeightRequest="1"
+                                 BackgroundColor="#E0E0E0"
+                                 HorizontalOptions="Fill"
+                                 Margin="0,10,0,0"/> 
+                        <HorizontalStackLayout Spacing="20"
+                            HorizontalOptions="Center"
+                            Margin="0,10,0,0"> 
+                            <VerticalStackLayout HorizontalOptions="Center"
+                                        VerticalOptions="Center">
+                                <Label Text="{Binding totalRecipes}"
+                                       FontAttributes="Bold"
+                                       FontSize="14"
+                                       TextColor="#000"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+
+                            <!-- Divider -->
+                            <BoxView WidthRequest="1"
+             HeightRequest="20"
+             BackgroundColor="#E0E0E0"
+             VerticalOptions="Center"/>
+
+                            <!-- Followers -->
+                            <VerticalStackLayout HorizontalOptions="Center"
+                         VerticalOptions="Center">
+                                <Label Text="{Binding followerCount}"
+               FontAttributes="Bold"
+               FontSize="14"
+               TextColor="#000"
+               HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+
+                            <!-- Divider -->
+                            <BoxView WidthRequest="1"
+             HeightRequest="20"
+             BackgroundColor="#E0E0E0"
+             VerticalOptions="Center"/>
+
+                            <!-- Following -->
+                            <VerticalStackLayout HorizontalOptions="Center"
+                         VerticalOptions="Center">
+                                <Label Text="{Binding followingCount}"
+               FontAttributes="Bold"
+               FontSize="14"
+               TextColor="#000"
+               HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ⚙️ Settings Section -->
+                <Border BackgroundColor="#F9EDEC"
+                        StrokeShape="RoundRectangle 20"
+                        StrokeThickness="0"
+                        Padding="0"
+                        WidthRequest="1000"
+                        MaximumWidthRequest="600"
+                        HorizontalOptions="Center">
+                </Border> 
+                <Border BackgroundColor="#F9EDEC" 
+                StrokeThickness="0"
+                Padding="20,15"
+                HorizontalOptions="FillAndExpand">
+                    <Grid ColumnDefinitions="Auto,*"
+                  HorizontalOptions="FillAndExpand">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFollowersTapped" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="👥"
+                       FontSize="22"
+                       Margin="0,0,12,0" />
+
+                        <Label Grid.Column="1"
+                       Text="Followers"
+                       FontSize="16"
+                       TextColor="Black"
+                       FontAttributes="Bold"  />
+                    </Grid>
+                </Border>
+                <Border BackgroundColor="#F9EDEC" 
+                StrokeThickness="0"
+                Padding="20,15"
+                HorizontalOptions="FillAndExpand">
+                    <Grid ColumnDefinitions="Auto,*"
+                  HorizontalOptions="FillAndExpand">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFollowingTapped" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="👣"
+                       FontSize="22"
+                       Margin="0,0,12,0" />
+
+                        <Label Grid.Column="1"
+                       Text="Following"
+                       FontSize="16"
+                       TextColor="Black"
+                       FontAttributes="Bold" />
+                    </Grid>
+                </Border> 
+                <Border BackgroundColor="#F9EDEC" 
+                StrokeThickness="0"
+                Padding="20,15"
+                HorizontalOptions="FillAndExpand">
+                    <Grid ColumnDefinitions="Auto,*"
+                  HorizontalOptions="FillAndExpand">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLogoutTapped" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="🚪"
+                       FontSize="22"
+                       Margin="0,0,12,0" />
+
+                        <Label Grid.Column="1"
+                       Text="Logout"
+                       FontSize="16"
+                       TextColor="Black"
+                       FontAttributes="Bold" />
+                    </Grid>
+                </Border>
+                <!-- 🚪 Logout "Button" -->
+                <!--<Border BackgroundColor="#F9EDEC"
+                        StrokeShape="RoundRectangle 20"
+                        StrokeThickness="0"
+                        Padding="20,15"
+                        WidthRequest="1000"
+                        MaximumWidthRequest="600"
+                        HorizontalOptions="Center"> 
+                    <Grid ColumnDefinitions="Auto,*" HorizontalOptions="Center">
+                        
+                        <Label Text="🚪"
+                               FontSize="22"
+                               VerticalOptions="Center"
+                               Margin="0,0,12,0" />
+                        <Label Grid.Column="1"
+                               Text="Logout"
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               TextColor="Black"
+                               FontAttributes="Bold" />
+                    </Grid>
+                </Border>-->
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 🧭 Bottom Navigation Bar -->
+        <Border Grid.Row="1"
+                VerticalOptions="End"
+                BackgroundColor="#FFF9F9">
+            <Grid Padding="0,10,0,10"
+                  ColumnDefinitions="*,*,Auto,*,*">
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="Button">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="BorderWidth" Value="0" />
+                            <Setter Property="BackgroundColor" Value="Transparent" />
+                            <Setter Property="FontSize" Value="32" />
+                            <Setter Property="HorizontalOptions" Value="Center" />
+                        </Style>
+                    </ResourceDictionary>
+                </Grid.Resources>
+
+                <Button Grid.Column="0" Text="🏠" Clicked="Button_Clicked" />
+                <Button Grid.Column="1" Text="📖"  Clicked="Button_Clicked_1"/> 
+                <Button Grid.Column="3" Text="💬" Clicked="Button_Clicked_3"  />
+                <Button Grid.Column="4" Text="👤" Clicked="Button_Clicked_4"/>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
+

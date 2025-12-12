@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.CreateIngredient"
+             Title="CreateIngredient"
+                                       Shell.BackgroundColor="#F9EDEC"    
+             Shell.ForegroundColor="Black"
+            BackgroundColor="WhiteSmoke"
+             xmlns:local="clr-namespace:RecipePOC">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- Title -->
+            <Label Text="Add Ingredient"
+               FontSize="25"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center"
+               HorizontalOptions="Start" /> 
+        </Grid>
+    </Shell.TitleView>
+    <VerticalStackLayout>
+        <Grid ColumnDefinitions="80, *"
+      RowDefinitions="Auto"
+      Padding="10"
+      VerticalOptions="Center">
+ 
+            <Frame Grid.Column="0"
+           CornerRadius="0"
+           Padding="0"
+           WidthRequest="70"
+           HeightRequest="70"
+           HasShadow="False"
+           BackgroundColor="White">
+                <ImageButton Source="food.png"
+             WidthRequest="80"
+             HeightRequest="80"
+             BackgroundColor="Transparent"
+             Clicked="UploadImage_Clicked"/>
+            </Frame> 
+            <VerticalStackLayout Grid.Column="1"
+                         Spacing="4"
+                         VerticalOptions="Center"
+                         Padding="10,0,0,0"> 
+                <Entry x:Name="TitleEntry"
+           Text="Pizza Sauce"
+           FontAttributes="Bold"
+           FontSize="20"
+           TextColor="Black"
+           HorizontalOptions="Start"
+           WidthRequest="200"
+           BackgroundColor="Transparent"/>
+                <Label Text="by Cameron Gordon"
+           FontSize="14"
+           TextColor="#666"
+           HorizontalOptions="Start"
+           Margin="0,-4,0,4" />
+                <!-- 5 Grey Stars -->
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+
+        </Grid>
+        <Grid BackgroundColor="Transparent" Padding="0">
+
+            <!-- Define Grid Rows -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1" />
+                <!-- Top divider -->
+                <RowDefinition Height="Auto" />
+                <!-- Content -->
+                <RowDefinition Height="1" />
+                <!-- Bottom divider -->
+            </Grid.RowDefinitions>
+
+            <BoxView Grid.Row="0"
+             Grid.ColumnSpan="3"
+             HeightRequest="1"
+             BackgroundColor="#CCCCCC" />
+            <Grid Grid.Row="1"
+          ColumnDefinitions="*,*,*"
+          VerticalOptions="Center"    
+                BackgroundColor="Transparent"
+          Padding="0,10">
+                <Grid Grid.Column="0" Padding="1,0,0,0" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
+
+                        <Label Text="Prep"
+               FontSize="16"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               TextColor="Black"/>
+
+                        <Entry x:Name="PrepEntry"
+               Placeholder=""
+                                      Keyboard="Numeric"
+               FontSize="12"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               WidthRequest="80"
+               TextColor="Black"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <BoxView Grid.Column="1"
+                 WidthRequest="1"
+                 BackgroundColor="#CCCCCC"
+                 HorizontalOptions="Start"
+                 Margin="0,8" />
+                <Grid Grid.Column="1" Padding="1,0,0,0" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
+
+                        <Label Text="Cook"
+               FontSize="16"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               TextColor="Black"/>
+
+                        <Entry x:Name="CookEntry"
+               Placeholder=""
+                                      Keyboard="Numeric"
+               FontSize="12"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               WidthRequest="80"
+               TextColor="Black"/>
+                    </VerticalStackLayout>
+                </Grid>
+                <BoxView Grid.Column="2"
+                 WidthRequest="1"
+                 BackgroundColor="#CCCCCC"
+                 HorizontalOptions="Start"
+                 Margin="0,8" />
+                <Grid Grid.Column="2" Padding="1,0,0,0" VerticalOptions="Center">
+                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center" VerticalOptions="Center">
+
+                        <Label Text="Serves"
+               FontSize="16"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               TextColor="Black"/>
+                        <Entry x:Name="ServesEntry"
+               Placeholder=""
+                                      Keyboard="Numeric"
+               FontSize="12"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               WidthRequest="80"
+               TextColor="Black"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+            </Grid>
+            <BoxView Grid.Row="2"
+             Grid.ColumnSpan="3"
+             HeightRequest="1"
+             BackgroundColor="#CCCCCC" />
+
+        </Grid>
+        <VerticalStackLayout Grid.Row="1"
+                     Spacing="6"
+                     Padding="10,10"
+                     Margin="0,0,0,20"
+                     HorizontalOptions="Start">
+
+            <Entry x:Name="UnitNameEntry"
+              Placeholder="Unit name (e.g., tbsp, cup, grams)"
+              FontSize="14"
+              WidthRequest="250"
+              BackgroundColor="Transparent"
+              TextColor="Black"/>
+
+            <Entry x:Name="StoreNameEntry"
+              Placeholder="Store Name (e.g., Walmart, Target)"
+              FontSize="14"
+              WidthRequest="250"
+              BackgroundColor="Transparent"
+              TextColor="Black"/>
+
+            <Entry x:Name="StoreUrlEntry"
+              Placeholder="Store URL"
+              FontSize="14"
+              WidthRequest="250"
+              BackgroundColor="Transparent"
+              TextColor="Black"/>
+        </VerticalStackLayout>
+        <Entry Placeholder="Description" Margin="10"/>
+        <Button Text="Add Ingredient" BackgroundColor="#E57373" Margin="10" Clicked="AddIngredient"/>
+    </VerticalStackLayout>
+</ContentPage>

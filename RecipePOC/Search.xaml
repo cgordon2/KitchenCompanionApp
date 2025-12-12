@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RecipePOC.Search" 
+             Title="Search"
+                          Shell.BackgroundColor="#F9EDEC"    
+            BackgroundColor="WhiteSmoke"
+             xmlns:local="clr-namespace:RecipePOC">
+    <Shell.TitleView
+    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          Padding="12,0"
+          HeightRequest="56">
+
+            <!-- App Title -->
+            <Label Text="Kitchen Companion"
+               FontSize="25"
+               FontFamily="OpenSansRegular"
+               TextColor="#E57373"
+               FontAttributes="Bold"
+               VerticalOptions="Center" />
+
+            <!-- 🔔 Notification Bell with Small Badge -->
+            <Grid Grid.Column="1"
+              HorizontalOptions="End"
+              VerticalOptions="Center"
+              Margin="0,0,8,6">
+                <!-- Bell Icon -->
+                <Label Text="🔔"
+                   FontSize="22"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center">
+                    <Label.GestureRecognizers> 
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <!-- Notification Badge (smaller and offset) -->
+                <Border
+                BackgroundColor="#E57373"
+                WidthRequest="12"
+                HeightRequest="12"
+                StrokeThickness="0" 
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="0,-2,-2,0" >
+                    <Label  
+                       FontSize="8"
+                        Text="{Binding NotifCount}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"
+                       FontAttributes="Bold" />
+                </Border>
+            </Grid>
+
+            <!-- 👤 Profile Emoji -->
+            <Border Grid.Column="2"
+                WidthRequest="40"
+                HeightRequest="40"
+                StrokeThickness="0"
+                HorizontalOptions="End"
+                Margin="0,0,0,6"
+                VerticalOptions="Center">
+                <Label Text="👤"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+            </Border>
+        </Grid>
+    </Shell.TitleView>
+    <AbsoluteLayout>
+
+        <!-- Your normal page content -->
+        <Grid AbsoluteLayout.LayoutFlags="All"
+          AbsoluteLayout.LayoutBounds="0,0,1,1">
+            <Grid  
+          BackgroundColor="WhiteSmoke"
+          RowDefinitions="Auto,*"
+          ColumnDefinitions="Auto,*">
+                <VerticalStackLayout Grid.Row="0"
+     Grid.Column="1"
+     Spacing="5"
+     VerticalOptions="FillAndExpand"
+     HorizontalOptions="Fill">
+                    <VerticalStackLayout  Padding="5"
+                     Spacing="3"
+                     HorizontalOptions="Fill"
+                     WidthRequest="-1">
+
+                        <Grid Padding="8"
+          BackgroundColor="#E57373"
+          ColumnDefinitions="Auto,*"
+          HeightRequest="44"
+          VerticalOptions="Center"
+          HorizontalOptions="Fill"
+          > 
+          <SearchBar x:Name="RecipeSearchBar"
+                   Grid.Column="1"
+                   Placeholder="Search recipes..."
+                   TextColor="Black"
+                   PlaceholderColor="grey"
+                   BackgroundColor="#FFF9F9" 
+                   FontSize="16"
+                   VerticalOptions="Center"
+                   HeightRequest="36"
+                   SearchButtonPressed="OnSearchButtonPressed" />
+                        </Grid>
+                        <!--<HorizontalStackLayout Spacing="8" Padding="0,4,0,0" HorizontalOptions="Center">
+                            <Border StrokeShape="RoundRectangle 20" BackgroundColor="#F9EDEC" Padding="10,5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" TextColor="#E57373" />
+                                    <Label Text="All" FontSize="14" TextColor="#E57373" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <Border StrokeShape="RoundRectangle 20" BackgroundColor="#F9EDEC" Padding="10,5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" TextColor="#E57373" />
+                                    <Label Text="Your Recipes" FontSize="14" TextColor="#E57373" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <Border StrokeShape="RoundRectangle 20" BackgroundColor="#F9EDEC" Padding="10,5">
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" TextColor="#E57373" />
+                                    <Label Text="Recently Used" FontSize="14" TextColor="#E57373" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </HorizontalStackLayout>-->
+                        <HorizontalStackLayout Spacing="8" Padding="0,4,0,0" HorizontalOptions="Center">
+
+                            <!-- FILTER: All -->
+                            <Border x:Name="AllFilter"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="#F9EDEC"
+            Padding="10,5">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="All"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" />
+                                    <Label Text="All" FontSize="14"  TextColor="Black"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <!-- FILTER: Your Recipes -->
+                            <Border x:Name="YourRecipesFilter"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="#F9EDEC"
+            Padding="10,5">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Your Recipes"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" />
+                                    <Label Text="Your Recipes" FontSize="14"  TextColor="Black"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <!-- FILTER: Recently Used -->
+                            <Border x:Name="RecentlyFilter"
+            StrokeShape="RoundRectangle 20"
+            BackgroundColor="#F9EDEC"
+            Padding="10,5">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Recently Used"/>
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="❌" FontSize="14" />
+                                    <Label Text="Tagged Recipes" FontSize="14" TextColor="Black"/>
+                                </HorizontalStackLayout>
+                            </Border>
+
+                        </HorizontalStackLayout>
+
+                        <CollectionView x:Name="RecipesList"
+                BackgroundColor="WhiteSmoke"
+                Margin="10"
+                EmptyView="No Recipes"
+                VerticalOptions="FillAndExpand">
+                            <CollectionView.EmptyView>
+                                <Label Text="No Recipes Found"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="Black"
+                                       FontSize="16"
+                                       BackgroundColor="Transparent" />
+                            </CollectionView.EmptyView>
+                            <CollectionView.ItemsLayout>
+                                <LinearItemsLayout Orientation="Vertical"
+                           ItemSpacing="8" />
+                            </CollectionView.ItemsLayout>
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Border   
+                    BackgroundColor="#FFF9F9"
+                    Stroke="LightGray"
+                    StrokeThickness="1"
+                    Padding="0" 
+                    Margin="0">
+                                        <Grid ColumnDefinitions="120,*"
+                      RowDefinitions="Auto"
+                      HeightRequest="120">
+                                            <Image Source="food.jpg"
+       WidthRequest="120"
+       HeightRequest="120"
+       Aspect="AspectFill" />
+                                            <VerticalStackLayout Grid.Column="1"
+                                         Padding="10"
+                                         Spacing="4" >
+                                                <Label Text="{Binding Title}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="#222"
+                               LineBreakMode="TailTruncation"
+                               MaxLines="1" /> 
+                                                <Label Text="{Binding CreatedBy}"
+                               FontSize="12"
+                               TextColor="#888"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Start" />
+                                                <Label Text="{Binding CreatedOn}"
+                               FontSize="12"
+                               TextColor="#888"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Start" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+                <Border Grid.Row="2"
+        Grid.ColumnSpan="2"
+        VerticalOptions="End"
+        BackgroundColor="#FFF9F9"
+        Padding="0">
+                    <Grid Padding="0,10"
+          ColumnDefinitions="*,*,Auto,*,*"
+          VerticalOptions="Center">
+
+                        <Grid.Resources>
+                            <ResourceDictionary>
+                                <Style TargetType="Button">
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="BorderWidth" Value="0" />
+                                    <Setter Property="BackgroundColor" Value="Transparent" />
+                                    <Setter Property="FontSize" Value="32" />
+                                    <Setter Property="HorizontalOptions" Value="Center" />
+                                    <Setter Property="VerticalOptions" Value="Center" />
+                                    <Setter Property="TextColor" Value="Black" />
+                                </Style>
+                            </ResourceDictionary>
+                        </Grid.Resources>
+
+                        <Button Grid.Column="0" Text="🏠" Clicked="Button_Clicked"/>
+
+                        <Button Grid.Column="1"
+                Text="📖"
+                FontSize="34"
+                Margin="0,-2,0,0"
+                Clicked="Button_Clicked_1"/>
+
+                        <Button Grid.Column="3"
+                Text="💬"
+                Clicked="Button_Clicked_3"/>
+
+                        <Button Grid.Column="4"
+                Text="👤"
+                Clicked="Button_Clicked_4"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <!-- this one-->
+        </Grid>
+
+        <Frame AbsoluteLayout.LayoutFlags="PositionProportional"
+       AbsoluteLayout.LayoutBounds="0.98,0.90,70,70"
+       WidthRequest="70"
+       HeightRequest="70"
+       CornerRadius="35"
+       Padding="0"
+       BackgroundColor="Transparent"
+       HasShadow="False"
+       Shadow="{Shadow Brush='Black', Opacity=0.4, Radius=10, Offset='0,4'}">
+
+            <ImageButton Source="star_wars.png"
+                 BackgroundColor="Transparent"
+                 Aspect="AspectFit"
+                 WidthRequest="70"
+                 HeightRequest="70" Clicked="ImageButton_Clicked" />
+        </Frame>
+    </AbsoluteLayout>
+</ContentPage>

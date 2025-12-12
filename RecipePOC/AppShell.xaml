@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="RecipePOC.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:RecipePOC"
+    Shell.FlyoutBehavior="Disabled"
+    Title="RecipePOC">
+
+    <!-- One correct root home page -->
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:HomePage}"
+        Route="HomePage" />
+
+    <ShellContent Title="Notifications" 
+                  ContentTemplate="{DataTemplate local:Notifications}"
+                  Route="Notifications"/>
+
+    <ShellContent Title="Search" 
+                  Route="Search" 
+                  ContentTemplate="{DataTemplate local:Search}" />
+
+    <ShellContent Title="Profile" 
+                  ContentTemplate="{DataTemplate local:Profile}"
+                  Route="Profile" />
+
+    <ShellContent Title="AI"
+                  ContentTemplate="{DataTemplate local:AIAssistantShopping}"
+                  Route="AIAssistant" />
+
+</Shell>
+<!--<Shell
+    x:Class="RecipePOC.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:RecipePOC"
+    Shell.FlyoutBehavior="Disabled"
+    Title="RecipePOC">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+    <ShellContent Title="Home"
+                  ContentTemplate="{DataTemplate local:HomePage}"
+                  Route="HomePage"/>
+    <ShellContent Title="Notifications" 
+                  ContentTemplate="{DataTemplate local:Notifications}"
+                  Route="Notifications"/> 
+    <ShellContent Title="Search" 
+                  Route="Search" 
+                  ContentTemplate="{DataTemplate local:Search}"
+                  />
+    <ShellContent Title="Profile" 
+                  ContentTemplate="{DataTemplate local:Profile}"
+                  Route="Profile" />
+    <ShellContent Title="Ingredients" 
+                  ContentTemplate="{DataTemplate local:IngredientDetail}"
+                  Route="IngredientDetail" />
+    <ShellContent Title="Search" 
+                  ContentTemplate="{DataTemplate local:AIAssistantShopping}"
+                  Route="AIAssistant" />
+</Shell>
+-->
+
