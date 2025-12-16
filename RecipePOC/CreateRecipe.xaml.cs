@@ -1,6 +1,9 @@
+using RecipePOC.DTOs;
+using RecipePOC.Services;
 using RecipePOC.Services.Models;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -9,9 +12,10 @@ namespace RecipePOC;
 public partial class CreateRecipe : ContentPage
 {
     public ObservableCollection<TodoItem> Items { get; set; }
-    private IRecipeService _recipeService; 
+    private IRecipeService _recipeService;
+    private IHttpClientFactory _httpClientFactory; 
 
-    public CreateRecipe(IRecipeService recipeService)
+    public CreateRecipe(IRecipeService recipeService, IHttpClientFactory httpClientFactory)
     {
         InitializeComponent();
 
@@ -21,6 +25,7 @@ public partial class CreateRecipe : ContentPage
         };
 
         _recipeService = recipeService;
+        _httpClientFactory = httpClientFactory;
 
         BindingContext = this; // important!
     }
@@ -29,7 +34,7 @@ public partial class CreateRecipe : ContentPage
     {
         var username = await SecureStorage.GetAsync("user_name"); 
 
-        await Navigation.PushAsync(new IngredientsListView(_recipeService, username, true)); 
+        await Navigation.PushAsync(new IngredientsListView(_recipeService, username, true, _httpClientFactory)); 
     }
 
     private async void CreateRecipeDB(object sender, EventArgs e)
@@ -51,6 +56,21 @@ public partial class CreateRecipe : ContentPage
         {
             var selectedItems = JsonSerializer.Deserialize<List<IngredientItem>>(serializedIngredients); 
         }
+
+        var recipeDto = new RecipeDto();
+
+        recipeDto.RecipeName = recipeTitle; 
+        recipeDto.Description = recipeDescription;
+        recipeDto.ChefName = realName;
+        recipeDto.ChefEmail = email; 
+        recipeDto.Category = "Seafood";
+        recipeDto.Favorite = "Yes";
+
+        await APIClient.CreateRecipe(_httpClientFactory, recipeDto); 
+
+        var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
+        await _recipeService.ResetRecipes(allRecipes); 
+
     }
 }
 public class TodoItem

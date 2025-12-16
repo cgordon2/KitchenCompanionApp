@@ -1,3 +1,4 @@
+using RecipePOC.Services;
 using RecipePOC.Services.Models;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
@@ -11,18 +12,20 @@ namespace RecipePOC;
 public partial class IngredientsListView : ContentPage
 {
     private IRecipeService _recipeService;
+    private IHttpClientFactory _httpClientFactory;
     private string _username = string.Empty;
     private bool _displayCheckbox = false; 
     private bool _IsVisible { get; set; } 
     public ObservableCollection<IngredientItem> Items { get; set; } 
 
-    public IngredientsListView(IRecipeService recipeService, string username, bool displayCheckbox)
+    public IngredientsListView(IRecipeService recipeService, string username, bool displayCheckbox, IHttpClientFactory httpClientFactory)
 	{
 		InitializeComponent();
 
         _recipeService = recipeService;
         _username = username; 
         _displayCheckbox = displayCheckbox;
+        _httpClientFactory = httpClientFactory;
 
         BindingContext = this; 
     } 
@@ -61,6 +64,13 @@ public partial class IngredientsListView : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        if (PageHelpers.HasInternet())
+        {
+            var ingredientsFresh = await _recipeService.GetIngredientsFresh();
+
+            await _recipeService.ResetIngredients(ingredientsFresh);
+        }
 
         ResetPaging(); 
 
@@ -143,7 +153,7 @@ public partial class IngredientsListView : ContentPage
         { 
             var email = await SecureStorage.GetAsync("email"); 
 
-            await Navigation.PushAsync(new CreateIngredient(_recipeService, email)); 
+            await Navigation.PushAsync(new CreateIngredient(_recipeService, email, _httpClientFactory)); 
         }
     }
 

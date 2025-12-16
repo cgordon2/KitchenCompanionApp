@@ -13,6 +13,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 {
     private readonly IAuthService _authService; 
     private readonly IRecipeService _recipeService;
+    private IHttpClientFactory _httpClientFactory; 
     private readonly INotificationService _notificationsService; 
 
     private int _notifCount; 
@@ -55,7 +56,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     int pageSize = 10; 
     ObservableCollection<Recipe> Recipes = new();
 
-    public HomePage(IAuthService authService, IRecipeService recipeService, INotificationService notifService)
+    public HomePage(IAuthService authService, IRecipeService recipeService, INotificationService notifService, IHttpClientFactory httpClientFactory)
 	{
 		InitializeComponent();
         LoadingSpinner.IsVisible = false;
@@ -65,6 +66,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         _authService = authService; 
         _recipeService = recipeService;
         _notificationsService = notifService;
+        _httpClientFactory = httpClientFactory;
 
         Shell.SetBackButtonBehavior(this, new BackButtonBehavior
         {
@@ -83,7 +85,10 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
     private async Task OnAppearingAsync()
     {
-       
+        page = 0;
+        Recipes.Clear();
+        RecipesList.ItemsSource = null;
+
         var userName = await SecureStorage.GetAsync("user_name");
         var chefGuid = await SecureStorage.GetAsync("chef_guid");
 
@@ -108,7 +113,18 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         try
         {
             await Task.Delay(1500); // simulate real load
-            await LoadNextPage();
+
+            if (PageHelpers.HasInternet())
+            {
+                var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
+                await _recipeService.ResetRecipes(allRecipes); 
+
+                await LoadNextPage(); 
+            }
+            else
+            {
+                await LoadNextPage();
+            }
         }
         catch (Exception ex)
         {
@@ -180,7 +196,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     private async void OnRecipesTapped(object sender, TappedEventArgs e)
     { 
         var email = await SecureStorage.GetAsync("email"); 
-        await Navigation.PushAsync(new IngredientsListView(_recipeService, email, false), false); 
+        await Navigation.PushAsync(new IngredientsListView(_recipeService, email, false, _httpClientFactory), false); 
     }
 
     private async void OnShoppingTapped(object sender, TappedEventArgs e)

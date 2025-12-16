@@ -23,6 +23,52 @@ namespace RecipePOC.Services.Recipes
             _httpClientFactory = httpClientFactory;
         }
 
+        public async Task ResetRecipes(List<RecipeDto> recipeDtos)
+        {
+            recipeDtos ??= new List<RecipeDto>();
+
+            var entities = recipeDtos.Select(dto => new DB.Models.Recipe
+            { 
+                RecipeName = dto.RecipeName, 
+                Description = dto.Description,
+                ChefName = dto.ChefName,
+                ChefEmail = dto.ChefEmail,
+                Category = dto.Category,
+                Favorite = dto.Favorite,
+            }).ToList();
+
+            await _connection.RunInTransactionAsync(tran =>
+            { 
+                tran.Execute("DELETE FROM Recipe"); 
+                tran.InsertAll(entities);
+            });
+        }
+
+        public async Task<List<IngredientDto>> GetIngredientsFresh()
+        {
+            var ingredients = await APIClient.GetIngredients(_httpClientFactory); 
+
+            return ingredients; 
+        }
+
+        public async Task ResetIngredients(List<IngredientDto> ingredientDtos)
+        {
+            ingredientDtos ??= new List<IngredientDto>();
+
+            var entities = ingredientDtos.Select(dto => new DB.Models.Ingredient
+            { 
+                IngredientName = dto.IngredientName, 
+                IngredientGUID = dto.IngredientGUID, 
+                CreatedBy = dto.CreatedBy, 
+            }).ToList();
+
+            await _connection.RunInTransactionAsync(tran =>
+            {
+                tran.Execute("DELETE FROM Ingredient");
+                tran.InsertAll(entities);
+            });
+        }
+
         public async Task<List<DB.Models.Ingredient>> SearchIngredients(string query, int page, int size)
         { 
             return await _connection.Table<DB.Models.Ingredient>()
@@ -63,7 +109,7 @@ namespace RecipePOC.Services.Recipes
 
                 if (favs)
                 {
-                    return await query.Where(r => r.ChefEmail == username).Where(r => r.Favorite == "YES").Skip(page * size).Take(size).ToListAsync(); 
+                    return await query.Where(r => r.ChefEmail == username).Where(r => r.Favorite == "Yes").Skip(page * size).Take(size).ToListAsync(); 
                 }
             }
 

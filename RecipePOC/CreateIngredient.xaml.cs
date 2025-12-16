@@ -1,20 +1,24 @@
 using RecipePOC.DTOs;
+using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace RecipePOC;
 
 public partial class CreateIngredient : ContentPage
 {
 	private IRecipeService _recipeService;
+    private IHttpClientFactory _httpClientFactory;
 	private string _username = string.Empty; 
 
-	public CreateIngredient(IRecipeService recipeService, string username)
+	public CreateIngredient(IRecipeService recipeService, string username, IHttpClientFactory httpClientFactory)
 	{
 		InitializeComponent();
 
 		_recipeService = recipeService;
 		_username = username;
+        _httpClientFactory = httpClientFactory;
 	}
 
     protected override async void OnAppearing()
@@ -47,7 +51,7 @@ public partial class CreateIngredient : ContentPage
 
     // recipe ingredients = linked ingredient and recipe
 
-    private void AddIngredient(object sender, EventArgs e)
+    private async void AddIngredient(object sender, EventArgs e)
     {
         var title = TitleEntry.Text;
         var prepTime = PrepEntry.Text;
@@ -70,6 +74,12 @@ public partial class CreateIngredient : ContentPage
         dto.CookTime = cookTime;
         dto.Serves = serves; 
 
-        _recipeService.AddIngredient(dto); 
+        await _recipeService.AddIngredient(dto);
+
+        await APIClient.CreateIngredient(_httpClientFactory, dto);
+
+        var ingredientsFresh = await _recipeService.GetIngredientsFresh();
+
+        await _recipeService.ResetIngredients(ingredientsFresh); 
     }
 }

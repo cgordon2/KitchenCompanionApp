@@ -22,27 +22,50 @@ namespace RecipePOC.Services
             return content; 
         }
 
-        public static async Task<string?> GetAllRecipes(IHttpClientFactory _httpClientFactory)
+        public static async Task<List<RecipeDto>> GetAllRecipes(IHttpClientFactory _httpClientFactory)
         {
             var content = await GetRoute(_httpClientFactory, "api/recipes/list");
 
-            return content; 
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<RecipeDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<RecipeDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<RecipeDto>();
         }
 
         /**
          * Ingredients
          * **/
 
-        public static async Task<string?> GetIngredients(IHttpClientFactory _httpClientFactory)
+        public static async Task<List<IngredientDto>> GetIngredients(IHttpClientFactory _httpClientFactory)
         {
             var content = await GetRoute(_httpClientFactory, "api/recipes/ingredients");
 
-            return content;
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<IngredientDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<IngredientDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<IngredientDto>();
+        }
+
+        public static async Task<string?> CreateIngredient(IHttpClientFactory _httpClientFactory, IngredientDto dto)
+        {
+            var content = await PostRoute<IngredientDto>(_httpClientFactory, "api/recipes/addingredient", dto);
+
+            return content; 
         }
 
         /**
          * Notifications
-         * **/ 
+         * **/
         public static async Task<string?> GetNotifications(IHttpClientFactory _httpClientFactory, string userId, bool isRead)
         {
             if (!isRead)
@@ -67,6 +90,15 @@ namespace RecipePOC.Services
             return didDelete; 
         }
 
+        public static async Task<string?> CreateRecipe(IHttpClientFactory _httpClientFactory, RecipeDto dto)
+        {
+            var test = await PostRoute<RecipeDto>(_httpClientFactory, "api/recipes/addrecipe", dto);
+
+            return test;
+        }
+
+
+
         public static async Task<string?> CreateNotification(IHttpClientFactory httpClientFactory, NotificationDTO notificationDTO)
         {
             var test = await PostRoute<NotificationDTO>(httpClientFactory, "api/notification/create", notificationDTO); 
@@ -80,7 +112,7 @@ namespace RecipePOC.Services
          * */ 
         public static async Task<string?> PostRoute<T>(IHttpClientFactory _httpClientFactory, string apiRoute, T model)
         {
-            var client = _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient(AppConstants.HttpClientName);
 
             // Serialize the model to JSON
             var json = JsonSerializer.Serialize(model);

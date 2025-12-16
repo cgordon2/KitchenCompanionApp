@@ -19,7 +19,12 @@ namespace RecipePOC.Services.Recipes
         Task<List<DB.Models.Recipe>> GetRecipes(bool all, bool yours, bool recent, bool favs, string username, int page, int size);
         Task<List<DB.Models.Recipe>> GetTaggedRecipes(string username); 
         Task<List<DB.Models.Recipe>> SearchRecipes(string query, bool all, bool yours, bool recent, string username);
-        Task<List<DB.Models.Ingredient>> GetIngredients(int page, int size); 
+        Task<List<DB.Models.Ingredient>> GetIngredients(int page, int size);
+
+        Task<List<IngredientDto>> GetIngredientsFresh(); 
+
+        Task ResetRecipes(List<RecipeDto> recipeDtos);
+        Task ResetIngredients(List<IngredientDto> ingredients); 
 
         // get favorites 
         // get recipes 
