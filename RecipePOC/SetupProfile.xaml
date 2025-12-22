@@ -36,8 +36,7 @@
     <VerticalStackLayout Padding="10" Margin="10">
         <Label FontSize="18" TextColor="Black" Text="Update Profile"></Label>
         <Entry x:Name="real_name" Placeholder="Real Name" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
-        <Entry x:Name="password" Placeholder="Password" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
-        <Entry x:Name="email" Placeholder="Email" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
+        <Entry x:Name="EmailAddressTxt" Placeholder="Email Address" Margin="10" TextColor="White"  PlaceholderColor="White" BackgroundColor="#E57373"></Entry>
         <Picker x:Name="languagePicker"
         Title="Select Language"
                 TextColor="White"

@@ -8,31 +8,25 @@
              xmlns:local="clr-namespace:RecipePOC"
              Shell.ForegroundColor="#000000"
              BackgroundColor="WhiteSmoke">
-    <Shell.TitleView
-    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
+    <Shell.TitleView>
         <Grid ColumnDefinitions="*,Auto"
-          Padding="12,0"
-          HeightRequest="56">
+              Padding="12,0"
+              HeightRequest="56">
 
-            <!-- Page title -->
             <Label Text="Kitchen Companion"
-               FontSize="25"
-               TextColor="#E57373"
-               FontAttributes="Bold"
-               VerticalOptions="Center"
-               HorizontalOptions="Start" />
+                   FontSize="25"
+                   TextColor="#E57373"
+                   FontAttributes="Bold"
+                   VerticalOptions="Center" />
 
-            <!-- Right-aligned Edit button -->
             <Button Grid.Column="1"
-                Text="Edit"
-                FontSize="20"
-                TextColor="#E57373"      
-                BackgroundColor="Transparent"
-                FontAttributes="Bold"
-                HorizontalOptions="End"
-                VerticalOptions="Center"
+                    Text="Edit"
+                    FontSize="20"
+                    TextColor="#E57373"
+                    BackgroundColor="Transparent"
+                    FontAttributes="Bold"
                     Clicked="EditButton_Clicked"
-                Padding="0"  /> 
+                    Padding="0" />
         </Grid>
     </Shell.TitleView>
 
@@ -74,7 +68,7 @@
                             </Image>
                         </Border>
 
-                        <Label Text="{Binding realName}"
+                        <Label Text="{Binding RealName}"
                                FontAttributes="Bold"
                                FontSize="22"
                                HorizontalOptions="Center"

@@ -1,5 +1,6 @@
 ﻿using RecipePOC.DB;
 using RecipePOC.Services;
+using RecipePOC.Services.Recipes;
 using SQLite;
 using System.ComponentModel;
 using System.Net.Http.Json;
@@ -10,8 +11,10 @@ namespace RecipePOC;
 public partial class Profile : ContentPage, INotifyPropertyChanged
 {
     private IAuthService _authService;
+    private IRecipeService _recipeService; 
     private SQLiteAsyncConnection _connection;
     public event PropertyChangedEventHandler PropertyChanged;
+    private IHttpClientFactory _theFactory; 
 
     private string _profileName;
     private string _combinedFacts;
@@ -23,7 +26,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
     private string _joinedDate;
     private string _location;
 
-    public string realName
+    public string RealName
     {
         get => _realName;
         set
@@ -31,7 +34,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
             if (_realName != value)
             {
                 _realName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(realName)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RealName)));
             }
         }
     }
@@ -160,13 +163,15 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
 		InitializeComponent();
 
         _authService = MauiProgram.Services.GetService<IAuthService>();
+        _recipeService = MauiProgram.Services.GetService<IRecipeService>();
         _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
+        _theFactory = MauiProgram.Services.GetRequiredService<IHttpClientFactory>();
 
         Shell.SetBackButtonBehavior(this, new BackButtonBehavior
         {
             IsEnabled = false,
             IsVisible = false
-        });
+        }); 
 
         BindingContext = this; 
     }
@@ -183,44 +188,61 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         var username = await SecureStorage.GetAsync("user_name"); 
         var user = await _authService.GetUser(_connection, username);
 
+        location = "Mason, OH";
+
+        RealName = user.real_name;
+
         ProfileName = "@"+user.UserName;
 
-        string[] facts = user.ShortBio.Split(","); 
-
-        if (facts.Length == 3)
+        if (user.ShortBio != null)
         {
-            var fact1 = facts[0];
-            var fact2 = facts[1];
-            var fact3 = facts[3];
+            string[] facts = user.ShortBio.Split(",");
 
-            combinedFacts = fact1 + " | " + fact2 + " | " + fact3; 
-        }
-        else if (facts.Length == 2)
-        {
-            var fact1 = facts[0];
-            var fact2 = facts[1];
+            if (facts.Length == 3)
+            {
+                var fact1 = facts[0];
+                var fact2 = facts[1];
+                var fact3 = facts[2];
 
-            combinedFacts = fact1 + " | " + fact2; 
-        }
-        else if (facts.Length == 1)
-        {
-            var fact1 = facts[0];
+                combinedFacts = fact1 + " | " + fact2 + " | " + fact3;
+            }
+            else if (facts.Length == 2)
+            {
+                var fact1 = facts[0];
+                var fact2 = facts[1];
 
-            combinedFacts = fact1; 
+                combinedFacts = fact1 + " | " + fact2;
+            }
+            else if (facts.Length == 1)
+            {
+                var fact1 = facts[0];
+
+                combinedFacts = fact1;
+            }
+            else if (facts.Length == 4)
+            {
+                var fact1 = facts[0];
+                var fact2 = facts[1];
+                var fact3 = facts[2];
+                var fact4 = facts[3];
+
+                combinedFacts = fact1 + " | " + fact2 + " | " + fact3 + " | " + fact4; 
+            }
         }
 
         followerCount = Convert.ToString(user.FollowersCount) + " Followers";
         followingCount = Convert.ToString(user.FollowingCount) + " Following";
         totalRecipes = Convert.ToString(user.TotalRecipes) + " Recipes";
 
-        DateTime dt = DateTime.Parse(user.Created); 
-        string formatted = $"Joined {dt:MMMM} {AddOrdinal(dt.Day)} {dt:yyyy}";
+        if (user.Created != null)
+        {
+            DateTime dt = DateTime.Parse(user.Created);
+            string formatted = $"Joined {dt:MMMM} {AddOrdinal(dt.Day)} {dt:yyyy}";
 
-        joinedDate = formatted;
+            joinedDate = formatted;
+        }
 
-        location = user.Location;
 
-        realName = user.real_name; 
     }
 
     public class SettingOption
@@ -266,8 +288,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
     }
 
     private async void EditButton_Clicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new SetupProfile());
+    { 
 
     }
 
@@ -293,8 +314,8 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         SecureStorage.Default.Remove("email");
         SecureStorage.Default.Remove("chef_guid");
         SecureStorage.Default.Remove("real_name");
-        SecureStorage.Default.Remove("selected_ingredients"); 
+        SecureStorage.Default.Remove("selected_ingredients");
 
-        await Navigation.PushAsync(new MainPage(_authService)); 
+        await Navigation.PushAsync(new MainPage(_authService, _recipeService, _theFactory, _connection));  
     }
 }

@@ -10,6 +10,7 @@ namespace RecipePOC;
 public partial class Search : ContentPage, INotifyPropertyChanged
 {
     public List<Recipe> AllRecipes { get; set; }
+    private IHttpClientFactory _httpClientFactory; 
     private IRecipeService _recipeService;
     private INotificationService _notificationsService;
     private int _notifCount; 
@@ -34,14 +35,19 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public Search(IRecipeService recipeService, INotificationService service)
+    /*public Search()
+    {
+        InitializeComponent(); 
+        BindingContext = this; 
+    }**/
+
+    public Search(IRecipeService recipeService, INotificationService service, IHttpClientFactory httpClientFactory)
 	{
 		InitializeComponent();
 
         _recipeService = recipeService;
         _notificationsService = service;
-
-        BindingContext = this; 
+        _httpClientFactory = httpClientFactory; 
 
         Shell.SetBackButtonBehavior(this, new BackButtonBehavior
         {
@@ -54,7 +60,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
 
         UpdateUIStyles_FromStartup();
 
- 
+        BindingContext = this;
     }
 
     public enum RecipeFilter
@@ -67,18 +73,17 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     bool _loading = false;
 
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
 
-
-
         /*if (currentFilter == RecipeFilter.All)
-            await LoadNextPage_All();
-        else if (currentFilter == RecipeFilter.Yours)
-            await LoadNextPage_Yours();
-        else if (currentFilter == RecipeFilter.Recent)
-            await LoadNextPage_Recent();**/
+             await LoadNextPage_All();
+         else if (currentFilter == RecipeFilter.Yours)
+             await LoadNextPage_Yours();
+         else if (currentFilter == RecipeFilter.Recent)
+             await LoadNextPage_Recent();
+        **/
 
         _ = OnAppearingAsync();
     }
@@ -104,7 +109,8 @@ public partial class Search : ContentPage, INotifyPropertyChanged
             else if (currentFilter == RecipeFilter.Yours)
                 await LoadNextPage_Yours();
             else if (currentFilter == RecipeFilter.Recent)
-                await LoadTaggedRecipes(); 
+                Console.WriteLine("awefaweawefwaef"); 
+                //await LoadTaggedRecipes(); 
         }
         finally
         {
@@ -275,24 +281,41 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     {
         var email = await SecureStorage.GetAsync("email");
 
+        if (currentFilter != RecipeFilter.Yours)
+            return;
+        if (isLoading || !hasMoreData)
+            return;
+
+        isLoading = true;
+
+        var dbResult = await _recipeService.GetTaggedRecipes(email);
+
+        var batch = ParseResponse(dbResult);
+
+        if (batch.Count < pageSize)
+            hasMoreData = false;
+
+        currentPage++;
+
+        RecipeBuffer.AddRange(batch);
+
+        RecipesList.ItemsSource = null;
+        RecipesList.ItemsSource = RecipeBuffer;
+
+        /// RecipesList.Footer = hasMoreData ? CreateLoadMoreFooter() : null;
+        /// 
+        RecipesList.Footer =
+     (RecipeBuffer.Count > 0 && hasMoreData)
+         ? CreateLoadMoreFooter()
+         : null;
+
+        isLoading = false;
+        /*var email = await SecureStorage.GetAsync("email");
+
         if (currentFilter != RecipeFilter.Recent)
             return;
 
-        var yourTaggedRecipes = await _recipeService.GetTaggedRecipes(email);
-
-        foreach (var recipe in yourTaggedRecipes)
-        {
-            var recipeDto = new Recipe();
-
-            recipeDto.Title = recipe.RecipeName;
-            recipeDto.CreatedBy = recipe.ChefName;
-            DateTime dt = DateTime.Parse(recipe.CreatedAt);
-            string dateOnly = dt.ToString("yyyy-MM-dd");
-
-            recipeDto.CreatedOn = dateOnly;
-
-            RecipeBuffer.Add(recipeDto); 
-        }
+        var yourTaggedRecipes = await _recipeService.GetTaggedRecipes(email); 
 
         if (RecipeBuffer.Count < pageSize)
             hasMoreData = false;
@@ -307,7 +330,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     (RecipeBuffer.Count > 0 && hasMoreData)
         ? CreateLoadMoreFooter()
         : null;
-        isLoading = false;
+        isLoading = false;**/
     }
 
 
@@ -431,8 +454,8 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         }
         else if (currentFilter == RecipeFilter.Recent)
         {
-            await LoadTaggedRecipes(); 
-        }
+           // await LoadTaggedRecipes(); 
+        } 
     }
 
     private void UpdateUIStyles(object sender, TappedEventArgs e)

@@ -1,23 +1,40 @@
 using RecipePOC.DB;
+using RecipePOC.DB.Models;
+using RecipePOC.DTOs;
 using RecipePOC.Services;
+using RecipePOC.Services.Recipes;
 using SQLite;
 using System.Net.Http.Json;
+using System.Numerics;
+using System.Security.Cryptography;
 
 namespace RecipePOC;
 
 public partial class SetupProfile : ContentPage
 {
-	private IAuthService _authService; 
+    private IRecipeService _recipeService;
+    private INotificationService _notificationService; 
+	private IAuthService _authService;
+    private UserDTO _requestUser;
+    private IHttpClientFactory theFactory; 
 
-	public SetupProfile()
+	public SetupProfile(UserDTO requestUser, IHttpClientFactory factory)
 	{
-		InitializeComponent();
-
         _authService = MauiProgram.Services.GetService<IAuthService>();
+
+        _requestUser = requestUser;
+        _recipeService = MauiProgram.Services.GetService<IRecipeService>();
+
+        _notificationService = MauiProgram.Services.GetService<INotificationService>(); 
 
         BindingContext = this;
 
+        theFactory = factory;
+
+        InitializeComponent();
+
         languagePicker.SelectedItem = "English";
+
     }
 
     public class ZipResponse
@@ -47,19 +64,20 @@ public partial class SetupProfile : ContentPage
         return result; 
     }
 
-    private async void UpdateProfile(object sender, EventArgs e)
+private async void UpdateProfile(object sender, EventArgs e)
     {
         if (_authService != null)
         {
-            var realName = real_name.Text;
-            var password_cs = password.Text;
+            var userName = await SecureStorage.GetAsync("user_name");
+
+            var realName = real_name.Text; 
             var bio1 = bio_1.Text;
             var bio2 = bio_2.Text; 
             var bio3 = bio_3.Text;
             var userLanguage =  languagePicker.SelectedItem;
             var temp = string.Empty;
             var zipcode = zipCode.Text;
-            var emailUser = email.Text; 
+            var email = EmailAddressTxt.Text; 
 
             if (userLanguage == null)
             {
@@ -81,13 +99,49 @@ public partial class SetupProfile : ContentPage
                 state = cityAndCountry.Places[0].State;
             }
 
-            if (state != "")
+            var shortBio = bio1; 
+
+            if (bio2 != null)
             {
-                country = country + " " + state; 
+                shortBio += "," + shortBio;
             }
 
+            if (bio3 != null)
+            {
+                shortBio += "," + shortBio; 
+            }
+
+            var userDto = new UserDTO();
+
+            userDto.UserName = userName;
+            userDto.IsSetup = true;
+            userDto.RealName = realName; 
+            userDto.ShortBio = shortBio;
+            userDto.Location = country;
+            userDto.Language = temp;
+
+            var foundUser = await APIClient.GetUser(theFactory, userName); 
+
+            if (!foundUser.IsSetup)
+            {
+                await SecureStorage.Default.SetAsync("email", email); 
+                userDto.Email = email;
+            }
+            else
+            {
+                // cant update
+            }
+
+                // first set it in here for securestorage :)
+                // can only set email once
+
             var _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
-            _authService.UpdateUserProfile(_connection, emailUser, "gordoncm", bio1 + "," + bio2 + "," + bio3, temp, country, false); 
+            await _authService.UpdateUserProfile(_connection, email, userName, shortBio, temp, country, false, realName);
+
+            await APIClient.CompleteProfile(theFactory, userDto);
+
+            await Navigation.PushAsync(new MainPage(_authService, _recipeService, theFactory, _connection)); 
+
         }
     }
 }

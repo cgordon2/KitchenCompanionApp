@@ -10,11 +10,10 @@ namespace RecipePOC.Services
         Task<DB.Models.User> GetUser(SQLiteAsyncConnection _connection, string username);
         Task<string> UpdateBearerToken(string Token, string username, SQLiteAsyncConnection _connection);
         Task<string> UpdateTotalRecipeCount(string username, SQLiteAsyncConnection _connection);
-        Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs);
+        Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs, string realName);
 
         Task<DB.Models.Social.Followers> GetFollowers(SQLiteAsyncConnection _connection, string usernameGuid);
-        Task<DB.Models.Social.Following> GetFollowing(SQLiteAsyncConnection _connection, string usernameGuid); 
-
+        Task<DB.Models.Social.Following> GetFollowing(SQLiteAsyncConnection _connection, string usernameGuid);
 
         /** authentication **/
         Task<bool> IsUserAuthenticated();

@@ -14,7 +14,8 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     private readonly IAuthService _authService; 
     private readonly IRecipeService _recipeService;
     private IHttpClientFactory _httpClientFactory; 
-    private readonly INotificationService _notificationsService; 
+    private readonly INotificationService _notificationsService;
+    private SQLiteAsyncConnection _connection;
 
     private int _notifCount; 
     private string _realName;
@@ -53,7 +54,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     }
 
     int page = 0;
-    int pageSize = 10; 
+    int pageSize = 3; 
     ObservableCollection<Recipe> Recipes = new();
 
     public HomePage(IAuthService authService, IRecipeService recipeService, INotificationService notifService, IHttpClientFactory httpClientFactory)
@@ -73,7 +74,9 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
             IsEnabled = false,
             IsVisible = false
         });
-    } 
+
+        _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
+    }
 
 
     protected override void OnAppearing()
@@ -91,18 +94,30 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
         var userName = await SecureStorage.GetAsync("user_name");
         var chefGuid = await SecureStorage.GetAsync("chef_guid");
-
+        
         RealName = "Hello, @"+userName+"!";  
 
         if (await SecureStorage.GetAsync("auth_token") == null)
         {
-            await Navigation.PushAsync(new MainPage(_authService)); 
+            await Navigation.PushAsync(new MainPage(_authService, _recipeService, _httpClientFactory, _connection)); 
+        }
+        else
+        {
+            var foundUser = await APIClient.GetUser(_httpClientFactory, userName);
+
+            if (foundUser != null)
+            {
+                if (!foundUser.IsSetup)
+                {
+                    await Navigation.PushAsync(new SetupProfile(foundUser, _httpClientFactory));
+                }
+            }
         }
 
         var notifs = await _notificationsService.GetNotifications(false, chefGuid);
+        NotifCount = notifs.Count;
 
-        NotifCount = notifs.Count; 
-
+        await RecipeDB.CreateAsync(); 
 
         // Show spinner
         MainThread.BeginInvokeOnMainThread(() =>

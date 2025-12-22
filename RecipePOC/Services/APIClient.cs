@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Windows.UI.Notifications;
 
 namespace RecipePOC.Services
 {
@@ -106,6 +107,40 @@ namespace RecipePOC.Services
             return test; 
         }
 
+        /** 
+         * Users 
+         * */ 
+        public static async Task<string?> CompleteProfile(IHttpClientFactory _httpClientFactory, UserDTO request)
+        {
+            var test = await PostRoute<UserDTO>(_httpClientFactory, "api/auth/completeprofile", request);
+
+            return test; 
+        }
+
+        public static async Task<string?> UpdateFollowingOrFollowers(IHttpClientFactory _httpClientFactory, UserDTO userDto, bool isFollowers)
+        {
+            if (isFollowers)
+            {
+                return null; 
+            }
+
+            return null; 
+        }
+
+        public static async Task<UserDTO> GetUser(IHttpClientFactory httpClientFactory, string user)
+        {
+            var content = await GetRoute(httpClientFactory, "api/Auth/GetUser", user, "userName");
+            if (string.IsNullOrWhiteSpace(content))
+                return new UserDTO(); // default empty list
+
+            return JsonSerializer.Deserialize<UserDTO>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new UserDTO();
+        }
+
         /**
          * 
          * Post Route 
@@ -153,7 +188,8 @@ namespace RecipePOC.Services
 
                 if (!string.IsNullOrEmpty(param_key))
                 {
-                    query[param_key] = param_key;
+                    query[param_key] = parameter_one;
+                    //query[param_key] = param_key;
                 }
 
                 uriBuilder.Query = query.ToString();

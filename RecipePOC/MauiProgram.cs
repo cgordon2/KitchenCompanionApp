@@ -22,21 +22,35 @@ namespace RecipePOC
                     fonts.AddFont("Quicksand-SemiBold.ttf", "OpenSansRegular");
                     fonts.AddFont("Quicksand-Regular.ttf", "OpenSansSemibold");
                 });
-
             builder.Services.AddCustomApiHttpClient();
 
             builder.Services.AddSingleton<IAuthService, AuthService>();
-            builder.Services.AddSingleton<IRecipeService, RecipeService>(); 
-
+            builder.Services.AddSingleton<IRecipeService, RecipeService>();
             builder.Services.AddSingleton<INotificationService, NotificationService>();
+
             builder.Services.AddTransient<AIAssistantShopping>();
 
-            builder.Services.AddSingleton<MainPage>();
+            // ❗ Pages
+            builder.Services.AddSingleton<MainPage>();      // Shell root ONLY
             builder.Services.AddTransient<HomePage>();
-            builder.Services.AddSingleton<IngredientDetail>();
-            builder.Services.AddSingleton<CreateRecipe>();
-            builder.Services.AddSingleton<Notifications>();
-            builder.Services.AddSingleton<Search>(); 
+            builder.Services.AddTransient<IngredientDetail>();
+            builder.Services.AddTransient<CreateRecipe>();
+            builder.Services.AddTransient<Notifications>();
+            builder.Services.AddTransient<Search>();
+            /* builder.Services.AddCustomApiHttpClient();
+
+             builder.Services.AddSingleton<IAuthService, AuthService>();
+             builder.Services.AddSingleton<IRecipeService, RecipeService>(); 
+
+             builder.Services.AddSingleton<INotificationService, NotificationService>();
+             builder.Services.AddTransient<AIAssistantShopping>();
+
+             builder.Services.AddSingleton<MainPage>();
+             builder.Services.AddTransient<HomePage>();
+             builder.Services.AddSingleton<IngredientDetail>();
+             builder.Services.AddSingleton<CreateRecipe>();
+             builder.Services.AddSingleton<Notifications>();
+             builder.Services.AddSingleton<Search>(); **/
 
 
 
@@ -45,7 +59,7 @@ namespace RecipePOC
 #endif
 
 #if WINDOWS
-    SwitchHandler.Mapper.AppendToMapping("NoText", (handler, view) =>
+            SwitchHandler.Mapper.AppendToMapping("NoText", (handler, view) =>
     {
         var toggle = handler.PlatformView;
         toggle.OnContent = null;

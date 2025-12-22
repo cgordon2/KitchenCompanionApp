@@ -23,6 +23,26 @@ namespace RecipePOC.Services.Recipes
             _httpClientFactory = httpClientFactory;
         }
 
+        public async Task InsertUser(UserDTO user)
+        {
+            var foundUser = await _connection.Table<User>().Where(r => r.UserName == user.UserName).FirstOrDefaultAsync(); 
+
+            if (foundUser == null)
+            {
+                var modelUser = new User();
+
+                modelUser.UserId = user.UserId; 
+                modelUser.UserName = user.UserName; 
+
+                if (user.Email != null && user.Email != string.Empty)
+                {
+                    modelUser.Email = user.Email;
+                }
+
+                await _connection.InsertAsync(modelUser);
+            }
+        }
+
         public async Task ResetRecipes(List<RecipeDto> recipeDtos)
         {
             recipeDtos ??= new List<RecipeDto>();

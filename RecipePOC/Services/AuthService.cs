@@ -20,7 +20,7 @@ namespace RecipePOC.Services
         public AuthService(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
-        }
+        } 
 
         public async Task<string> RegisterUser(SQLiteAsyncConnection _connection, LoginRequestDto userDTO)
         {
@@ -59,7 +59,7 @@ namespace RecipePOC.Services
             return "Update failure"; 
         }
 
-        public async Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs)
+        public async Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs, string realName)
         {
             var user = await _connection.Table<DB.Models.User>().Where(r => r.UserName == username).FirstOrDefaultAsync();
 
@@ -68,6 +68,10 @@ namespace RecipePOC.Services
                 user.ShortBio = bio;
                 user.Language = language;
                 user.DisplayNotifications = displayNotifs;
+                user.Email = email;
+                user.IsSetup = true;
+                user.real_name = realName; 
+
                 await _connection.UpdateAsync(user);
 
                 return "Update success";

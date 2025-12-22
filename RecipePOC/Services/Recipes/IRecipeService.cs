@@ -24,7 +24,9 @@ namespace RecipePOC.Services.Recipes
         Task<List<IngredientDto>> GetIngredientsFresh(); 
 
         Task ResetRecipes(List<RecipeDto> recipeDtos);
-        Task ResetIngredients(List<IngredientDto> ingredients); 
+        Task ResetIngredients(List<IngredientDto> ingredients);
+
+        Task InsertUser(UserDTO user); 
 
         // get favorites 
         // get recipes 

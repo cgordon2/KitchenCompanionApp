@@ -45,11 +45,12 @@
                    HorizontalOptions="Center"
                    TextColor="#A78585"/>
             <VerticalStackLayout Spacing="6">
-                <Label Text="Email"
+                <Label Text="Username"
                        FontSize="14"
                        FontFamily="OpenSansRegular"
                        TextColor="#6D4C4C"/>
-                <Entry Placeholder="Enter your email"
+                <Entry Placeholder="Enter your username"
+                       x:Name="UsernameTxt"
                        BackgroundColor="#FDF5F4"
                        TextColor="#333"
                        PlaceholderColor="Black"
