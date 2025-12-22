@@ -13,6 +13,10 @@ namespace RecipePOC.DTOs
 
         public string? IngredientName { get; set; } 
 
+        public int? Store_ID { get; set; } 
+
+        public int? Unit_ID { get; set;  }
+
         public string? UnitName { get; set; } 
 
         public string? StoreName { get; set; } 

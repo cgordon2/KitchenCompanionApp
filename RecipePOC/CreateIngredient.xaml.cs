@@ -64,6 +64,8 @@ public partial class CreateIngredient : ContentPage
         var dto = new IngredientDto();
 
         dto.IngredientName = title;
+        dto.Store_ID = 1;
+        dto.Unit_ID = 1; 
         dto.UnitName = unitName;  ;
         dto.StoreName = storeName; 
         dto.StoreUrl = storeUrl; 
@@ -72,7 +74,8 @@ public partial class CreateIngredient : ContentPage
         dto.Stars = "5";
         dto.PrepTime = prepTime;
         dto.CookTime = cookTime;
-        dto.Serves = serves; 
+        dto.Serves = serves;
+        dto.IngredientGUID = "waefwaefwaef"; 
 
         await _recipeService.AddIngredient(dto);
 
