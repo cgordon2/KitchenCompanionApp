@@ -188,9 +188,16 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         var username = await SecureStorage.GetAsync("user_name"); 
         var user = await _authService.GetUser(_connection, username);
 
-        location = "Mason, OH";
+        if (user.Location != null && user.Location != string.Empty)
+        {
+            location = user.Location; 
+        }
+        else
+        {
+            location = "N/A Location"; 
+        }
 
-        RealName = user.real_name;
+            RealName = user.real_name;
 
         ProfileName = "@"+user.UserName;
 
@@ -241,8 +248,6 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
 
             joinedDate = formatted;
         }
-
-
     }
 
     public class SettingOption
