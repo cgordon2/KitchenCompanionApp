@@ -39,7 +39,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         }
     }
 
-    public string location
+    public string Location
     {
         get => _location;
         set
@@ -47,7 +47,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
             if (_location != value)
             {
                 _location = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(location)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Location)));
             }
         }
     }
@@ -190,11 +190,11 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
 
         if (user.Location != null && user.Location != string.Empty)
         {
-            location = user.Location; 
+            Location = user.Location; 
         }
         else
         {
-            location = "N/A Location"; 
+            Location = "N/A Location"; 
         }
 
             RealName = user.real_name;

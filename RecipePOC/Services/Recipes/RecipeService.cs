@@ -32,7 +32,12 @@ namespace RecipePOC.Services.Recipes
                 var modelUser = new User();
 
                 modelUser.UserId = user.UserId; 
-                modelUser.UserName = user.UserName; 
+                modelUser.UserName = user.UserName;
+
+                DateTime dt = DateTime.Now;
+                string result = dt.ToString("MMMM, yyyy");
+
+                modelUser.Created = result; 
 
                 if (user.Email != null && user.Email != string.Empty)
                 {

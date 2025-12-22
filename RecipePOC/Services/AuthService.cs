@@ -70,7 +70,8 @@ namespace RecipePOC.Services
                 user.DisplayNotifications = displayNotifs;
                 user.Email = email;
                 user.IsSetup = true;
-                user.real_name = realName; 
+                user.real_name = realName;
+                user.Location = location; 
 
                 await _connection.UpdateAsync(user);
 

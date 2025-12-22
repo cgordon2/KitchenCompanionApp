@@ -90,7 +90,7 @@
                        Margin="0,8,0,0">
                             <HorizontalStackLayout Spacing="4">
                                 <Label Text="📍" FontSize="14" />
-                                <Label Text="{Binding location}"
+                                <Label Text="{Binding Location}"
                FontSize="14"
                TextColor="#555" />
                             </HorizontalStackLayout>
