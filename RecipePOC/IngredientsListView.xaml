@@ -55,54 +55,74 @@
 
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <ViewCell> 
-                        <!--<Grid  
-                      ColumnDefinitions="80, *"> 
-                            <Frame Grid.Column="0"
-                           BackgroundColor="White"
-                           WidthRequest="70"
-                           Padding="0"
-                           CornerRadius="0"
-                           HasShadow="False"
-                           Margin="0"
-                           VerticalOptions="Fill"
-                           HorizontalOptions="Start"> 
-                                <Image Source="{Binding Photo}"
-                               Aspect="AspectFill"/>
-                            </Frame> 
-                            <StackLayout Grid.Column="1"
-                                 Spacing="4"
-                                 VerticalOptions="Center">
+                    <ViewCell>
+                        <StackLayout Spacing="0">
 
-                                <Label Text="{Binding Name}"
-                               FontSize="18"
-                               FontAttributes="Bold"
-                               TextColor="Black"/> 
-                                <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
-                           FontSize="16"
-                           TextColor="#f4c430"/>
-                                <Label Text="{Binding StoreName}"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="Black"/>
-                                <Label Text="{Binding CreatedBy}"
-                               FontSize="14"
-                               TextColor="Gray"/>
+                            <!-- TOP CONTENT -->
+                            <Grid ColumnDefinitions="35,80,*"
+              Padding="0">
 
-                            </StackLayout>
+                                <!-- checkbox -->
+                                <CheckBox Grid.Column="0"
+                      VerticalOptions="Center"
+                      HorizontalOptions="Center"
+                      IsVisible="{Binding IsCheckboxVisible}"
+                      IsChecked="{Binding IsSelected}" />
 
-                        </Grid>-->
+                                <!-- image -->
+                                <Frame Grid.Column="1"
+                   BackgroundColor="White"
+                   WidthRequest="80"
+                   HeightRequest="80"
+                   Padding="0"
+                   CornerRadius="6"
+                   HasShadow="False"
+                   VerticalOptions="Center">
+                                    <Image Source="{Binding Photo}"
+                       Aspect="AspectFill"
+                       Margin="10" />
+                                </Frame>
+
+                                <!-- text -->
+                                <StackLayout Grid.Column="2"
+                         Spacing="4"
+                         VerticalOptions="Center"
+                         Padding="10">
+
+                                    <Label Text="{Binding Name}"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black"/>
+
+                                    <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
+                       FontSize="16"
+                       TextColor="#f4c430"/>
+
+                                    <Label Text="{Binding StoreName}"
+                       FontSize="14"
+                       FontAttributes="Bold"
+                       TextColor="Black"/>
+
+                                    <Label Text="{Binding CreatedBy}"
+                       FontSize="14"
+                       TextColor="Gray"/>
+                                </StackLayout>
+
+                            </Grid>
+
+                        </StackLayout>
+                    </ViewCell>
+
+                    <!--<ViewCell>  
                         <Grid  
     ColumnDefinitions="35,80,*">
-
-                            <!-- checkbox -->
+ 
                             <CheckBox Grid.Column="0"
               VerticalOptions="Center"
                                       IsVisible="{Binding IsCheckboxVisible}"
                                       IsChecked="{Binding IsSelected}"
               HorizontalOptions="Center"/>
-
-                            <!-- image -->
+ 
                             <Frame Grid.Column="1"
            BackgroundColor="White"
            WidthRequest="80"
@@ -116,8 +136,7 @@
                                 <Image Source="{Binding Photo}"
                Aspect="AspectFill" Margin="10" />
                             </Frame>
-
-                            <!-- text -->
+ 
                             <StackLayout Grid.Column="2"
                  Spacing="4"
                  VerticalOptions="Center" Padding="10">
@@ -141,12 +160,11 @@
                TextColor="Gray"/>
 
                             </StackLayout>
-
                         </Grid>
 
 
 
-                    </ViewCell>
+                    </ViewCell>-->
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

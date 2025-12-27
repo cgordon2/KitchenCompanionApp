@@ -7,138 +7,136 @@
             BackgroundColor="WhiteSmoke"
              Shell.ForegroundColor="#2d2d2d" 
               >
-    <Shell.TitleView
-    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
-        <Grid ColumnDefinitions="*,Auto"
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto,Auto"
+          ColumnSpacing="12"
           Padding="12,0"
           HeightRequest="56">
 
-            <!-- Page title -->
-            <Label Text="Shopping List"
-               FontSize="25"
-               TextColor="#E57373"
-               FontAttributes="Bold"
-               VerticalOptions="Center"
-               HorizontalOptions="Start" />
+            <!-- Title -->
+            <Label
+            Text="Shopping List"
+            FontSize="25"
+            TextColor="#E57373"
+            FontAttributes="Bold"
+            VerticalOptions="Center" />
 
-            <!-- Right-aligned Edit button -->
-            <Button Grid.Column="1"
-                Text="Edit"
-                FontSize="20"
-                TextColor="#E57373"      
-                BackgroundColor="Transparent"
-                FontAttributes="Bold"
-                HorizontalOptions="End"
-                VerticalOptions="Center"
-                Padding="0"  />
+            <!-- Done -->
+            <Button
+            Grid.Column="1"
+            Text="✔ Done"
+            FontSize="20"
+            TextColor="#E57373"
+            BackgroundColor="Transparent"
+            FontAttributes="Bold"
+            Padding="0"
+            VerticalOptions="Center" />
+
+            <!-- Delete -->
+            <Button
+            Grid.Column="2"
+            Text="🗑️ Delete"
+            FontSize="20"
+            TextColor="#E57373"
+            BackgroundColor="Transparent"
+            FontAttributes="Bold"
+            Padding="0"
+            VerticalOptions="Center" />
+
         </Grid>
     </Shell.TitleView>
+
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:BoolToArrowConverter x:Key="BoolToArrowConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    
-    <VerticalStackLayout>
-        <Label Text="Pinned Items"
-           FontSize="28"
-           TextColor="#E57373"
-           FontAttributes="Bold" Padding="10"/>
-        <CollectionView ItemsSource="{Binding EmojiItems}">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical"
-                         Span="4" />
-                <!-- 4 columns -->
-            </CollectionView.ItemsLayout>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
+    <VerticalStackLayout Margin="10">
+        <Grid ColumnDefinitions="*,48"
+      RowDefinitions="Auto,*">
 
-                    <!-- each rectangle -->
-                    <Frame BackgroundColor="#E57373"
-                   CornerRadius="12"
-                   HeightRequest="80"
-                   Padding="0"
-                   Margin="8">
-                        <Label Text="{Binding Emoji}"
-                       FontSize="12"
-                               TextColor="White"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center" />
-                    </Frame>
+            <!-- Row 0: Entry + Button -->
+            <Frame
+        Grid.Row="0"
+        Grid.Column="0"
+                                        CornerRadius="0"
 
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-        <Label Text="Recently Used"
-           FontSize="28"
-           TextColor="#E57373"
-           FontAttributes="Bold" Padding="10"/>
-        <CollectionView ItemsSource="{Binding Items}" BackgroundColor="#F9EDEC" Margin="10" >
-            <CollectionView.ItemTemplate >
-                <DataTemplate >
-                    <Grid Padding="10" RowDefinitions="Auto,Auto"> 
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="{Binding Title}"
-                           FontSize="20"
-                           VerticalOptions="Center" />
+        Margin="3"
+        BackgroundColor="White" 
+        Padding="10,0"
+        BorderColor="Transparent"
+        HasShadow="False"
+        VerticalOptions="Fill">
 
-                            <ImageButton Grid.Column="1"
-                                 Source="{Binding IsExpanded, Converter={StaticResource BoolToArrowConverter}}"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="30"
-                                 HeightRequest="30"
-                                 Clicked="Arrow_Clicked" />
-                        </Grid> 
-                        <Frame Grid.Row="1"
-                       BackgroundColor="#f0f0f0"
-                       CornerRadius="12"
-                       Padding="12"
-                       IsVisible="{Binding IsExpanded}">
-                            <VerticalStackLayout>
-                                <Label Text="Details go here..." />
-                                <Label Text="More info inside the rectangle." />
-                            </VerticalStackLayout>
-                        </Frame>
+                <Entry
+            Placeholder="What type of food or drink?"
+            FontSize="16"
+            TextColor="#2D2D2D"
+            PlaceholderColor="#999"
+            BackgroundColor="Transparent"
+            VerticalTextAlignment="Center" />
+            </Frame>
 
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-        <Label Text="All Items in List"
-           FontSize="28"
-           TextColor="#E57373"
-           FontAttributes="Bold" Padding="10"/>
-        <CollectionView ItemsSource="{Binding Items}" BackgroundColor="#F9EDEC" Margin="10" >
-            <CollectionView.ItemTemplate >
-                <DataTemplate >
-                    <Grid Padding="10" RowDefinitions="Auto,Auto">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="{Binding Title}"
-                           FontSize="20"
-                           VerticalOptions="Center" />
 
-                            <ImageButton Grid.Column="1"
-                                 Source="{Binding IsExpanded, Converter={StaticResource BoolToArrowConverter}}"
-                                 BackgroundColor="Transparent"
-                                 WidthRequest="30"
-                                 HeightRequest="30"
-                                 Clicked="Arrow_Clicked" />
-                        </Grid>
-                        <Frame Grid.Row="1"
-                       BackgroundColor="#f0f0f0"
-                       CornerRadius="12"
-                       Padding="12"
-                       IsVisible="{Binding IsExpanded}">
-                            <VerticalStackLayout>
-                                <Label Text="Details go here..." />
-                                <Label Text="More info inside the rectangle." />
-                            </VerticalStackLayout>
-                        </Frame>
+            <!-- Plus Button -->
+            <Frame
+        Grid.Row="0"
+        Grid.Column="1"
+        BackgroundColor="#4CAF50" 
+        Padding="0"
+        HasShadow="False"
+        BorderColor="Transparent"
+            CornerRadius="0"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
 
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                <Label
+            Text="+"
+            FontSize="26"
+            FontAttributes="Bold"
+            TextColor="White"
+            HorizontalTextAlignment="Center"
+            VerticalTextAlignment="Center" />
+            </Frame>
+
+            <!-- Row 1: List -->
+            <ListView
+        Grid.Row="1"
+        Grid.ColumnSpan="2"
+        x:Name="ShoppingListview"
+        ItemsSource="{Binding Items}"
+        SeparatorVisibility="Default"
+        HasUnevenRows="True"
+        BackgroundColor="WhiteSmoke">
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Padding="10" Spacing="10">
+                                <CheckBox
+                            VerticalOptions="Center"
+                            Color="#E57373"
+                            IsChecked="{Binding IsSelectedDone}" />
+
+                                <BoxView
+                            WidthRequest="5"
+                            VerticalOptions="FillAndExpand"
+                            Color="{Binding StripColor}" />
+
+                                <Label
+                            Text="{Binding Description}"
+                            FontSize="18"
+                            FontAttributes="Bold"
+                            TextColor="#2d2d2d"
+                            VerticalOptions="Center" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Grid>
     </VerticalStackLayout>
 </ContentPage>

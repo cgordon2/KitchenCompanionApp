@@ -22,5 +22,14 @@ namespace RecipePOC.DB.Models
         public string Favorite { get; set; } 
         public string  CreatedAt { get; set; } 
         public string RecipeGuid { get; set; } 
+
+        // new 
+        public string Photo { get; set; } 
+        public int Stars { get; set; } 
+
+        public int CookTime { get; set; } 
+
+        public int Serves { get; set; } 
+        public int Prep { get; set; } 
     }
 }

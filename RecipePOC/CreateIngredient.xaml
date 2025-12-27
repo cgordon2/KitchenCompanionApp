@@ -50,23 +50,55 @@
            Text="Pizza Sauce"
            FontAttributes="Bold"
            FontSize="20"
-           TextColor="Black"
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    
            HorizontalOptions="Start"
-           WidthRequest="200"
-           BackgroundColor="Transparent"/>
+           WidthRequest="200" />
                 <Label Text="by Cameron Gordon"
            FontSize="14"
            TextColor="#666"
            HorizontalOptions="Start"
-           Margin="0,-4,0,4" />
-                <!-- 5 Grey Stars -->
+           Margin="0,-4,0,4" /> 
+                <!--<HorizontalStackLayout Spacing="2">
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                </HorizontalStackLayout>-->
                 <HorizontalStackLayout Spacing="2">
-                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
-                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
-                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
-                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
-                    <Label Text="⭐" TextColor="#C0C0C0" FontSize="16"/>
+                    <Label Text="★" FontSize="16" TextColor="#C0C0C0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStarTapped" CommandParameter="1"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="★" FontSize="16" TextColor="#C0C0C0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStarTapped" CommandParameter="2"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="★" FontSize="16" TextColor="#C0C0C0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStarTapped" CommandParameter="3"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="★" FontSize="16" TextColor="#C0C0C0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStarTapped" CommandParameter="4"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="★" FontSize="16" TextColor="#C0C0C0">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnStarTapped" CommandParameter="5"/>
+                        </Label.GestureRecognizers>
+                    </Label>
                 </HorizontalStackLayout>
+
 
             </VerticalStackLayout>
 
@@ -87,7 +119,7 @@
              Grid.ColumnSpan="3"
              HeightRequest="1"
              BackgroundColor="#CCCCCC" />
-            <Grid Grid.Row="1"
+            <!--<Grid Grid.Row="1"
           ColumnDefinitions="*,*,*"
           VerticalOptions="Center"    
                 BackgroundColor="Transparent"
@@ -108,7 +140,9 @@
                HorizontalOptions="Center"
                VerticalOptions="Center"
                WidthRequest="80"
-               TextColor="Black"/>
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    />
                     </VerticalStackLayout>
                 </Grid>
                 <BoxView Grid.Column="1"
@@ -132,7 +166,9 @@
                HorizontalOptions="Center"
                VerticalOptions="Center"
                WidthRequest="80"
-               TextColor="Black"/>
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    />
                     </VerticalStackLayout>
                 </Grid>
                 <BoxView Grid.Column="2"
@@ -154,12 +190,14 @@
                FontSize="12"
                HorizontalOptions="Center"
                VerticalOptions="Center"
-               WidthRequest="80"
-               TextColor="Black"/>
+               WidthRequest="80" 
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"         />
                     </VerticalStackLayout>
                 </Grid>
 
-            </Grid>
+            </Grid>-->
             <BoxView Grid.Row="2"
              Grid.ColumnSpan="3"
              HeightRequest="1"
@@ -175,25 +213,27 @@
             <Entry x:Name="UnitNameEntry"
               Placeholder="Unit name (e.g., tbsp, cup, grams)"
               FontSize="14"
-              WidthRequest="250"
-              BackgroundColor="Transparent"
-              TextColor="Black"/>
+              WidthRequest="250" 
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    />
 
             <Entry x:Name="StoreNameEntry"
               Placeholder="Store Name (e.g., Walmart, Target)"
               FontSize="14"
-              WidthRequest="250"
-              BackgroundColor="Transparent"
-              TextColor="Black"/>
+              WidthRequest="250" 
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    />
 
             <Entry x:Name="StoreUrlEntry"
               Placeholder="Store URL"
               FontSize="14"
-              WidthRequest="250"
-              BackgroundColor="Transparent"
-              TextColor="Black"/>
-        </VerticalStackLayout>
-        <Entry Placeholder="Description" Margin="10"/>
+              WidthRequest="250" 
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    />
+        </VerticalStackLayout> 
         <Button Text="Add Ingredient" BackgroundColor="#E57373" Margin="10" Clicked="AddIngredient"/>
     </VerticalStackLayout>
 </ContentPage>

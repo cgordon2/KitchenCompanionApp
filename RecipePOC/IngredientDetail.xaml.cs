@@ -1,15 +1,52 @@
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace RecipePOC;
-
-public partial class IngredientDetail : ContentPage
+// https://chatgpt.com/share/694f0ef2-deb4-8009-9ad2-8a5fd6fc2bab
+public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 { 
     private Recipe _recipe;
-    private IRecipeService _recipeService;  
-    
+    private IRecipeService _recipeService;
+    private IHttpClientFactory _httpClientFactory;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
     public string RecipeName { get; set; } 
+    public string UserName { get; set; } 
     public string Description { get; set; } 
+
+    public string PrepTime { get; set; } 
+    public string Serves { get; set; } 
+
+    public string CookTime { get; set; } 
+
+    public int Stars { get; set; } 
+
+    public string Photo { get; set; } 
+
+    public int RecipeId { get; set; }
+
+    private string _ingredientsCount;
+    public string IngredientsCount
+    {
+        get => _ingredientsCount;
+        set
+        {
+            if (_ingredientsCount != value)
+            {
+                _ingredientsCount = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public class IngredientDetailObj
     {
@@ -20,21 +57,33 @@ public partial class IngredientDetail : ContentPage
         public string PrepTime { get; set; } 
         public string CookTime { get; set; } 
         public string Serves { get; set; } 
+        public string Photo { get; set; } 
     }
 
-	public IngredientDetail( Recipe recipe, IRecipeService service)
+	public IngredientDetail(RecipePOC.Recipe recipe, IRecipeService service, IHttpClientFactory theFactory)
 	{
 		InitializeComponent();
         _recipe = recipe;
         _recipeService = service;
+        _httpClientFactory = theFactory;
+
+        RecipeName = recipe.Title; 
+        Description = recipe.Description;
+        Photo = recipe.Photo;
+        CookTime = "Cook time " + recipe.CookTime + " mins"; 
+        Serves = "Serves " + recipe.Serves;
+        PrepTime = "Prep time "+recipe.Prep + " mins";
+        UserName = recipe.UserName;
+        Stars = recipe.Stars; 
+        
+        RecipeId = Convert.ToInt16(recipe.RecipeGUID); 
 
         Ingredients = new ObservableCollection<IngredientDetailObj>();
-
-        RecipeName = _recipe.Title;
-        Description = _recipe.Description;
-
+   
         BindingContext = this;
     }
+
+
 
     public ObservableCollection<IngredientDetailObj> Ingredients { get; set; }
 
@@ -47,9 +96,7 @@ public partial class IngredientDetail : ContentPage
 
     private async Task OnAppearingAsync()
     {
-        var result = await _recipeService.GetRecipeIngredients(1);
-
-
+        var result = await _recipeService.GetRecipeIngredients(RecipeId);
 
         foreach (var item in result)
         {
@@ -67,12 +114,53 @@ public partial class IngredientDetail : ContentPage
             ingredient.store = store;
             ingredient.storeUrl = storeUrl;
             ingredient.Stars = stars;
+            ingredient.Photo = item.Photo; 
 
             ingredient.PrepTime = "Prep Time: " + prepTime;
             ingredient.CookTime = "Cook Time: " + cookTime;
             ingredient.Serves = "Serves: " + serves; 
 
             Ingredients.Add(ingredient); 
+        }
+
+        IngredientList.ItemsSource = Ingredients;
+        IngredientsCount = "Ingredient(s): " + Ingredients.Count; 
+    }
+
+    private async void Button_Clicked(object sender, EventArgs e)
+    {
+        // prompt the user if this is not one of theirs
+        var username= _recipe.UserName;
+        var loggedInUser = await SecureStorage.GetAsync("user_name"); 
+
+        if (loggedInUser != username)
+        {
+            // would you like to make a copy? its not one of your recipes.
+        }
+        else
+        {
+            // also seriaized RI 
+            _recipe.RecipeGUID = Convert.ToString(RecipeId); 
+            var json = JsonSerializer.Serialize(_recipe);
+            await SecureStorage.SetAsync("selected_recipe", json);
+
+            await Navigation.PushAsync(new CreateRecipe(_recipeService, _httpClientFactory)); 
+        }
+    }
+
+    private async void DeleteButton_Clicked(object sender, EventArgs e)
+    {
+        var username = _recipe.UserName;
+        var loggedInUser = await SecureStorage.GetAsync("user_name");
+
+        if (loggedInUser == username)
+        {
+            // can delete
+        }
+        else
+        {
+            await DisplayAlert("Can't Delete", "You didn't create this recipe", "Cancel"); 
+             // popup 
         }
     }
 }

@@ -79,9 +79,9 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     }
 
 
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
-        base.OnAppearing();
+        base.OnAppearing();  
 
         _ = OnAppearingAsync();
     }
@@ -91,10 +91,11 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         page = 0;
         Recipes.Clear();
         RecipesList.ItemsSource = null;
-
+        SecureStorage.Default.Remove("selected_ingredients");
+         
         var userName = await SecureStorage.GetAsync("user_name");
         var chefGuid = await SecureStorage.GetAsync("chef_guid");
-        
+
         RealName = "Hello, @"+userName+"!";  
 
         if (await SecureStorage.GetAsync("auth_token") == null)
@@ -117,7 +118,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         var notifs = await _notificationsService.GetNotifications(false, chefGuid);
         NotifCount = notifs.Count;
 
-        await RecipeDB.CreateAsync(); 
+        //await RecipeDB.CreateAsync(); 
 
         // Show spinner
         MainThread.BeginInvokeOnMainThread(() =>
@@ -127,7 +128,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         });
         try
         {
-            await Task.Delay(1500); // simulate real load
+           // await Task.Delay(1500); // simulate real load
 
             if (PageHelpers.HasInternet())
             {
@@ -167,10 +168,15 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
             Recipes.Add(new Recipe
             {
                 Title = recipe.RecipeName,
-                Description = recipe.Description, 
+                Description = recipe.Description,
                 UserName = recipe.ChefName,
-                RecipeGUID = recipe.RecipeGuid
-            });
+                RecipeGUID = recipe.RecipeGuid,
+                Photo = recipe.Photo,
+                CookTime = recipe.CookTime,
+                Stars = recipe.Stars,
+                Serves = recipe.Serves,
+                Prep = recipe.Prep
+            }); 
         }
 
         for (int i = 0; i < Recipes.Count; i++)
@@ -216,7 +222,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
     private async void OnShoppingTapped(object sender, TappedEventArgs e)
     {
-        await Navigation.PushAsync(new ShoppingList(), false); 
+        await Navigation.PushAsync(new ShoppingList(_httpClientFactory, _recipeService), false); 
     }
 
     private async void HomePage_Navigate(object sender, EventArgs e)
@@ -260,9 +266,9 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
         var recipie = (Recipe)e.SelectedItem; 
 
-        await Navigation.PushAsync(new IngredientDetail(recipie, _recipeService));
+        await Navigation.PushAsync(new IngredientDetail(recipie, _recipeService, _httpClientFactory));
 
-        ((ListView)sender).SelectedItem = null; // ← important
+        ((ListView)sender).SelectedItem = null; 
     }
     private async void OnBellTapped(object sender, EventArgs e)
     {

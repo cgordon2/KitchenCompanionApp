@@ -91,8 +91,11 @@ public partial class IngredientsListView : ContentPage
             ingredientItem.UnitName = ingredient.UnitName;
             ingredientItem.CreatedBy = ingredient.CreatedBy;
             ingredientItem.Stars = Convert.ToInt16(ingredient.Stars);
-            ingredientItem.StoreName = "Store Name: " + ingredient.StoreName;
-            ingredientItem.IngredientGUID = ingredient.IngredientGUID; 
+            ingredientItem.StoreName = ingredient.StoreName;
+            ingredientItem.IngredientGUID = ingredient.IngredientGUID;
+            ingredientItem.PrepTime = "Prep: "+ingredient.PrepTime + "m"; 
+            ingredientItem.CookTime = "Cook: " + ingredient.CookTime + "m";
+            ingredientItem.Serves = "Serves: " + ingredient.Serves + "m"; 
 
             if (_displayCheckbox)
             {
@@ -182,7 +185,7 @@ public partial class IngredientsListView : ContentPage
                 Photo = ingredient.Photo,
                 CreatedBy = ingredient.CreatedBy,
                 IsCheckboxVisible = _displayCheckbox,
-                IngredientGUID = ingredient.IngredientGUID
+                IngredientGUID = ingredient.IngredientGUID, 
             });  
         }
 

@@ -23,6 +23,48 @@ namespace RecipePOC.Services.Recipes
             _httpClientFactory = httpClientFactory;
         }
 
+        public async Task<List<DB.Models.ShoppingList>> GetShoppingListFromDB(string username)
+        {
+            var favorites = await _connection.Table<DB.Models.ShoppingList>().Where(r => r.UserName == username).ToListAsync(); 
+
+            return favorites; 
+        }
+
+        public async Task<List<ShoppingListDTO>> GetShoppingListFresh(string username)
+        {
+            var shoppingList = await APIClient.GetShoppingList(_httpClientFactory, username);
+
+            return shoppingList; 
+        }
+
+        public async Task ResetShoppingList(List<ShoppingListDTO> dtos)
+        {
+            dtos ??= new List<ShoppingListDTO>();
+
+            var entities = dtos.Select(dto => new DB.Models.ShoppingList
+            { 
+               IsDone = dto.IsDone, 
+                ShoppingListGUID = dto.ShoppingListIdGuid, 
+                Text = dto.Text, 
+                UserName = dto.UserName
+            }).ToList();
+
+            await _connection.RunInTransactionAsync(tran =>
+            {
+                tran.Execute("DELETE FROM ShoppingList_V2");
+                tran.InsertAll(entities);
+            });
+        }
+
+        public async Task MarkShoppingListComplete(int shoppingListItemId)
+        {
+
+        }
+
+        public async Task DeleteShoppingListItem(int shoppingListItemId)
+        {
+        }
+
         public async Task InsertUser(UserDTO user)
         {
             var foundUser = await _connection.Table<User>().Where(r => r.UserName == user.UserName).FirstOrDefaultAsync(); 
@@ -53,19 +95,42 @@ namespace RecipePOC.Services.Recipes
             recipeDtos ??= new List<RecipeDto>();
 
             var entities = recipeDtos.Select(dto => new DB.Models.Recipe
-            { 
-                RecipeName = dto.RecipeName, 
+            {
+                RecipeName = dto.RecipeName,
                 Description = dto.Description,
                 ChefName = dto.ChefName,
                 ChefEmail = dto.ChefEmail,
                 Category = dto.Category,
                 Favorite = dto.Favorite,
+                RecipeGuid = Convert.ToString(dto.RecipeID), 
+                Photo = dto.Photo, 
+                Serves = dto.Serves,
+                CookTime = dto.CookTime,
+                Stars = dto.Stars,
+                Prep = dto.Prep
+               
             }).ToList();
+
+            var ingredients = recipeDtos
+               .Where(r => r.RecipeIngredients != null && r.RecipeIngredients.Count > 0)
+               .SelectMany(r => r.RecipeIngredients.Select(i => new RecipeIngredient
+               {
+                   RecipeId = Convert.ToInt32(r.RecipeID), // from parent
+                   IngredientId = i.IngredientId,          
+                   Quantity = i.Quantity, 
+                   StoreName = "WalMart", 
+                   StoreUrl = "https://walmart.com", 
+                   UnitName = "Cups", 
+                   UnitId = i.UnitId
+               }))
+               .ToList();
 
             await _connection.RunInTransactionAsync(tran =>
             { 
+                tran.Execute("DELETE FROM RecipeIngredient");
                 tran.Execute("DELETE FROM Recipe"); 
                 tran.InsertAll(entities);
+                tran.InsertAll(ingredients);
             });
         }
 
@@ -85,6 +150,13 @@ namespace RecipePOC.Services.Recipes
                 IngredientName = dto.IngredientName, 
                 IngredientGUID = dto.IngredientGUID, 
                 CreatedBy = dto.CreatedBy, 
+                Stars = dto.Stars, 
+                PrepTime = dto.Preptime, 
+                CookTime = dto.CookTime, 
+                Serves = dto.Serves, 
+                UnitName = dto.UnitName, 
+                StoreName = dto.StoreName, 
+                Photo = dto.Photo
             }).ToList();
 
             await _connection.RunInTransactionAsync(tran =>
@@ -208,6 +280,8 @@ namespace RecipePOC.Services.Recipes
             public int CookTime { get; set; } 
 
             public int Serves { get; set; } 
+
+            public string Photo { get; set; } 
         }
 
         /**
@@ -219,6 +293,7 @@ namespace RecipePOC.Services.Recipes
             var ingredients = await _connection.QueryAsync<RecipeIngredientFull>(@"SELECT 
                                                                                     ri.*,
                                                                                     i.IngredientName,
+                                                                                    i.Photo, 
                                                                                     r.RecipeName, 
 	                                                                                r.Description, 
 	                                                                                i.Stars, 
@@ -226,10 +301,9 @@ namespace RecipePOC.Services.Recipes
 	                                                                                i.CookTime, 
 	                                                                                i.Serves
                                                                                 FROM RecipeIngredient ri    
-                                                                                INNER JOIN Ingredient i ON ri.IngredientId = i.IngredientId  
-                                                                                INNER JOIN Recipe r ON ri.RecipeId = r.RecipeId
-                                                                                WHERE ri.RecipeId = ?", recipeId);
-
+                                                                                INNER JOIN Ingredient i ON ri.IngredientId = i.IngredientGUID  
+                                                                                INNER JOIN Recipe r ON ri.RecipeId = r.RecipeGUID
+                                                                                WHERE ri.RecipeID = ?", recipeId); // working 2008
             return ingredients;
         }
 
@@ -249,7 +323,7 @@ namespace RecipePOC.Services.Recipes
             ingredient.Photo = dto.Photo;
             ingredient.Stars = dto.Stars;
 
-            ingredient.PrepTime = dto.PrepTime; 
+            ingredient.PrepTime = dto.Preptime; 
             ingredient.CookTime = dto.CookTime;
             ingredient.Serves = dto.Serves;
 

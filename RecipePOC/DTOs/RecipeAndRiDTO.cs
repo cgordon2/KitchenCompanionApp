@@ -15,5 +15,11 @@ namespace RecipePOC.DTOs
         public int Quantity { get; set; } 
 
         public int UnitId {  get; set; }
+
+        public string ingredientName { get; set; } = string.Empty;
+        public string storeName { get; set; } = string.Empty;
+        public string storeUrl { get; set; } = string.Empty;
+
+        public string unitName { get; set; } = string.Empty; 
     }
 }

@@ -13,6 +13,36 @@ namespace RecipePOC.Services
 {
     public class APIClient
     {
+
+        /**
+         * Shopping List
+         * **/
+        public static async Task<List<ShoppingListDTO>> GetShoppingList(IHttpClientFactory _httpClientFactory, string username)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/recipes/shoppinglist", username, "username");
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<ShoppingListDTO>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<ShoppingListDTO>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<ShoppingListDTO>();
+        }
+
+        public static async Task<bool> MarkCompleteListItem(IHttpClientFactory _httpClientFactory, ShoppingListDTO dto)
+        {
+            await PostRoute<ShoppingListDTO>(_httpClientFactory, "api/recipes/MarkShoppingComplete", dto);
+            return true; 
+        }
+
+        public static async Task<bool> DeleteShoppingListITem(IHttpClientFactory _theFactory, ShoppingListDTO dto)
+        {
+            await PostRoute<ShoppingListDTO>(_theFactory, "api/recipes/DeleteShoppingListItem", dto);
+            return true; 
+        }
+
         /**
          * Recipes
          * **/

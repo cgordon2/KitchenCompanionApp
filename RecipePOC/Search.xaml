@@ -8,9 +8,9 @@
              xmlns:local="clr-namespace:RecipePOC">
     <Shell.TitleView
     Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
-        <Grid ColumnDefinitions="*,Auto,Auto"
-          Padding="12,0"
-          HeightRequest="56">
+        <Grid  ColumnDefinitions="*,Auto,Auto,Auto,Auto"
+      Padding="12,0"
+      HeightRequest="56">
 
             <!-- App Title -->
             <Label Text="Kitchen Companion"
@@ -51,9 +51,7 @@
                        TextColor="Black"
                        FontAttributes="Bold" />
                 </Border>
-            </Grid>
-
-            <!-- 👤 Profile Emoji -->
+            </Grid> 
             <Border Grid.Column="2"
                 WidthRequest="40"
                 HeightRequest="40"
@@ -62,6 +60,38 @@
                 Margin="0,0,0,6"
                 VerticalOptions="Center">
                 <Label Text="👤"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+            </Border>
+            <Border Grid.Column="3"
+                WidthRequest="40"
+                HeightRequest="40"
+                StrokeThickness="0"
+                HorizontalOptions="End"
+                Margin="0,0,0,6"
+                VerticalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="ImageButton_Clicked" />
+                </Border.GestureRecognizers>
+                <Label Text="➕"
+                   FontSize="22"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" /> 
+            </Border>
+            <Border Grid.Column="4"
+                WidthRequest="40"
+                HeightRequest="40"
+                StrokeThickness="0"
+                HorizontalOptions="End"
+                Margin="0,0,0,6"
+                VerticalOptions="Center">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSearchTapped" />
+                        </Border.GestureRecognizers>
+
+                        <Label Text="🔍"
                    FontSize="22"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
@@ -82,26 +112,7 @@
           Grid.RowSpan="2"
           RowDefinitions="Auto,Auto,*"
           Padding="5"
-          RowSpacing="3">
-
-                    <!-- Search -->
-                    <Grid Grid.Row="0"
-              Padding="8"
-              BackgroundColor="#E57373"
-              ColumnDefinitions="Auto,*"
-              HeightRequest="44"
-              HorizontalOptions="Fill">
-                        <SearchBar x:Name="RecipeSearchBar"
-                       Grid.Column="1"
-                       Placeholder="Search recipes..."
-                       TextColor="Black"
-                       PlaceholderColor="grey"
-                       BackgroundColor="#FFF9F9"
-                       FontSize="16"
-                       VerticalOptions="Center"
-                       HeightRequest="36"
-                       SearchButtonPressed="OnSearchButtonPressed" />
-                    </Grid>
+          RowSpacing="3"> 
 
                     <!-- Filters -->
                     <HorizontalStackLayout Grid.Row="1"
@@ -146,61 +157,121 @@
                                 <Label Text="Tagged Recipes" FontSize="14" TextColor="Black"/>
                             </HorizontalStackLayout>
                         </Border>
+                        <Border x:Name="UserFilter"
+                    StrokeShape="RoundRectangle 20"
+                    BackgroundColor="#F9EDEC"
+                    Padding="10,5">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Recently Used"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="5">
+                                <Label Text="❌" FontSize="14" />
+                                <Label Text="Users" FontSize="14" TextColor="Black"/>
+                            </HorizontalStackLayout>
+                        </Border>
                     </HorizontalStackLayout>
 
                     <!-- List (STAR ROW gives it a real viewport so it scrolls) -->
                     <CollectionView x:Name="RecipesList"
                         Grid.Row="2"
-                        Margin="10"
+ItemSizingStrategy="MeasureFirstItem"
+                        Margin="10" 
+ SelectionChanged="SearchList_OnItemChanged" 
+                                    SelectionMode="Single"
+
                         BackgroundColor="WhiteSmoke"
                         EmptyView="No Recipes"
                         VerticalOptions="FillAndExpand"
                         HorizontalOptions="FillAndExpand">
-                        <CollectionView.EmptyView>
+                        <!--<CollectionView.EmptyView>
                             <Label Text="No Recipes Found"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"
                        FontSize="16"
                        BackgroundColor="Transparent" />
-                        </CollectionView.EmptyView>
+                        </CollectionView.EmptyView>-->
 
                         <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" /> <!-- 6-->
                         </CollectionView.ItemsLayout>
 
                         <CollectionView.ItemTemplate>
                             <DataTemplate>
-                                <Border BackgroundColor="#FFF9F9"
-                            Stroke="LightGray"
-                            StrokeThickness="1"
-                            Padding="0"
-                            Margin="0">
-                                    <Grid ColumnDefinitions="120,*"
-                              HeightRequest="120">
-                                        <Image Source="food.jpg"
-                                   WidthRequest="120"
-                                   HeightRequest="120"
-                                   Aspect="AspectFill" />
-                                        <VerticalStackLayout Grid.Column="1"
-                                                 Padding="10"
-                                                 Spacing="4">
-                                            <Label Text="{Binding Title}"
-                                       FontSize="18"
-                                       FontAttributes="Bold"
-                                       TextColor="#222"
-                                       LineBreakMode="TailTruncation"
-                                       MaxLines="1" />
-                                            <Label Text="{Binding CreatedBy}"
-                                       FontSize="12"
-                                       TextColor="#888" />
-                                            <Label Text="{Binding CreatedOn}"
-                                       FontSize="12"
-                                       TextColor="#888" />
+                                <Border
+        BackgroundColor="#FFF9F9"
+        Stroke="Transparent"
+        StrokeThickness="0"
+        StrokeShape="RoundRectangle 5"
+        Padding="0"
+        Margin="0">
+<!-- 120 -->
+                                    <Grid ColumnDefinitions="5,80,*"
+        >
+
+                                        <!-- LEFT COLOR STRIP -->
+                                        <BoxView
+                                            x:Name="LeftBar"
+                                            Grid.Column="0"
+                                            WidthRequest="5"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="Fill">
+
+                                                                                    <BoxView.Triggers>
+
+                                                                                        <DataTrigger TargetType="BoxView"
+                                                             Binding="{Binding Index}"
+                                                             Value="0">
+                                                                                            <Setter Property="BackgroundColor" Value="#FF8DA1" />
+                                                                                        </DataTrigger>
+
+                                                                                        <DataTrigger TargetType="BoxView"
+                                                             Binding="{Binding Index}"
+                                                             Value="1">
+                                                    <Setter Property="BackgroundColor" Value="#FFE9F0" />
+                                                </DataTrigger>
+
+                                            </BoxView.Triggers>
+                                        </BoxView>
+                                        <!-- IMAGE -->
+                                        <Image
+                Grid.Column="1"
+                Source="{Binding Photo}"
+                WidthRequest="80" 
+                HeightRequest="80"
+                Aspect="AspectFill" />
+                                        <!-- 120 -->
+                                        <!-- TEXT -->
+                                        <VerticalStackLayout
+                Grid.Column="2"
+                Padding="10"
+                Spacing="4">
+<!-- 18 -->
+                                            <Label
+                    Text="{Binding Title}"
+                    FontSize="12" 
+                    FontAttributes="Bold"
+                    TextColor="#222"
+                    LineBreakMode="TailTruncation"
+                    MaxLines="1" />
+
+                                            <Label
+                    Text="{Binding CreatedBy}"
+                    FontSize="12"
+                    TextColor="#888" />
+
+                                            <Label
+                    Text="{Binding CreatedOn}"
+                    FontSize="12"
+                    TextColor="#888" />
                                         </VerticalStackLayout>
+
                                     </Grid>
+                                    
                                 </Border>
+                                
                             </DataTemplate>
+
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
@@ -234,205 +305,7 @@
                     </Grid>
                 </Border>
 
-            </Grid>
-
-            <!-- <Grid  
-          BackgroundColor="WhiteSmoke"
-          RowDefinitions="Auto,*"
-          ColumnDefinitions="Auto,*">
-
-                <VerticalStackLayout Grid.Row="0"
-     Grid.Column="1"
-     Spacing="5"
-     VerticalOptions="FillAndExpand"
-     HorizontalOptions="Fill">
-                    <VerticalStackLayout  Padding="5"
-                     Spacing="3"
-                     HorizontalOptions="Fill"
-                     WidthRequest="-1">
-
-                        <Grid Padding="8"
-          BackgroundColor="#E57373"
-          ColumnDefinitions="Auto,*"
-          HeightRequest="44"
-          VerticalOptions="Center"
-          HorizontalOptions="Fill"
-          >
-                            <SearchBar x:Name="RecipeSearchBar"
-                   Grid.Column="1"
-                   Placeholder="Search recipes..."
-                   TextColor="Black"
-                   PlaceholderColor="grey"
-                   BackgroundColor="#FFF9F9" 
-                   FontSize="16"
-                   VerticalOptions="Center"
-                   HeightRequest="36"
-                   SearchButtonPressed="OnSearchButtonPressed" />
-                        </Grid>
-                        <HorizontalStackLayout Spacing="8" Padding="0,4,0,0" HorizontalOptions="Center">
-
-                            <Border x:Name="AllFilter"
-            StrokeShape="RoundRectangle 20"
-            BackgroundColor="#F9EDEC"
-            Padding="10,5">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="All"/>
-                                </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label Text="❌" FontSize="14" />
-                                    <Label Text="All" FontSize="14"  TextColor="Black"/>
-                                </HorizontalStackLayout>
-                            </Border>
-                            <Border x:Name="YourRecipesFilter"
-            StrokeShape="RoundRectangle 20"
-            BackgroundColor="#F9EDEC"
-            Padding="10,5">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Your Recipes"/>
-                                </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label Text="❌" FontSize="14" />
-                                    <Label Text="Your Recipes" FontSize="14"  TextColor="Black"/>
-                                </HorizontalStackLayout>
-                            </Border>
-
-                            <Border x:Name="RecentlyFilter"
-            StrokeShape="RoundRectangle 20"
-            BackgroundColor="#F9EDEC"
-            Padding="10,5">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Recently Used"/>
-                                </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="5">
-                                    <Label Text="❌" FontSize="14" />
-                                    <Label Text="Tagged Recipes" FontSize="14" TextColor="Black"/>
-                                </HorizontalStackLayout>
-                            </Border>
-
-                        </HorizontalStackLayout>
-
-                        <Grid RowDefinitions="Auto,*">
-                            <CollectionView x:Name="RecipesList"
-                BackgroundColor="WhiteSmoke"
-                Margin="10"
-                EmptyView="No Recipes"
-                VerticalOptions="FillAndExpand">
-                                <CollectionView.EmptyView>
-                                    <Label Text="No Recipes Found"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       TextColor="Black"
-                                       FontSize="16"
-                                       BackgroundColor="Transparent" />
-                                </CollectionView.EmptyView>
-                                <CollectionView.ItemsLayout>
-                                    <LinearItemsLayout Orientation="Vertical"
-                           ItemSpacing="8" />
-                                </CollectionView.ItemsLayout>
-
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-
-                                        <Border   
-                    BackgroundColor="#FFF9F9"
-                    Stroke="LightGray"
-                    StrokeThickness="1"
-                    Padding="0" 
-                    Margin="0">
-                                            <Grid ColumnDefinitions="120,*"
-                      RowDefinitions="Auto"
-                      HeightRequest="120">
-                                                <Image Source="food.jpg"
-       WidthRequest="120"
-       HeightRequest="120"
-       Aspect="AspectFill" />
-                                                <VerticalStackLayout Grid.Column="1"
-                                         Padding="10"
-                                         Spacing="4" >
-                                                    <Label Text="{Binding Title}"
-                               FontSize="18"
-                               FontAttributes="Bold"
-                               TextColor="#222"
-                               LineBreakMode="TailTruncation"
-                               MaxLines="1" />
-                                                    <Label Text="{Binding CreatedBy}"
-                               FontSize="12"
-                               TextColor="#888"
-                               HorizontalOptions="Start"
-                               VerticalOptions="Start" />
-                                                    <Label Text="{Binding CreatedOn}"
-                               FontSize="12"
-                               TextColor="#888"
-                               HorizontalOptions="Start"
-                               VerticalOptions="Start" />
-                                                </VerticalStackLayout>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-                            </CollectionView>
-                        </Grid>
-
-                    </VerticalStackLayout>
-                </VerticalStackLayout>
-                <Border Grid.Row="2"
-        Grid.ColumnSpan="2"
-        VerticalOptions="End"
-        BackgroundColor="#FFF9F9"
-        Padding="0">
-                    <Grid Padding="0,10"
-          ColumnDefinitions="*,*,Auto,*,*"
-          VerticalOptions="Center">
-
-                        <Grid.Resources>
-                            <ResourceDictionary>
-                                <Style TargetType="Button">
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="BorderWidth" Value="0" />
-                                    <Setter Property="BackgroundColor" Value="Transparent" />
-                                    <Setter Property="FontSize" Value="32" />
-                                    <Setter Property="HorizontalOptions" Value="Center" />
-                                    <Setter Property="VerticalOptions" Value="Center" />
-                                    <Setter Property="TextColor" Value="Black" />
-                                </Style>
-                            </ResourceDictionary>
-                        </Grid.Resources>
-
-                        <Button Grid.Column="0" Text="🏠" Clicked="Button_Clicked"/>
-
-                        <Button Grid.Column="1"
-                Text="📖"
-                FontSize="34"
-                Margin="0,-2,0,0"
-                Clicked="Button_Clicked_1"/>
-
-                        <Button Grid.Column="3"
-                Text="💬"
-                Clicked="Button_Clicked_3"/>
-
-                        <Button Grid.Column="4"
-                Text="👤"
-                Clicked="Button_Clicked_4"/>
-                    </Grid>
-                </Border>
-            </Grid>-->
-        </Grid>
-
-        <Frame AbsoluteLayout.LayoutFlags="PositionProportional"
-       AbsoluteLayout.LayoutBounds="0.98,0.90,70,70"
-       WidthRequest="70"
-       HeightRequest="70"
-       CornerRadius="35"
-       Padding="0"
-       BackgroundColor="Transparent"
-       HasShadow="False"
-       Shadow="{Shadow Brush='Black', Opacity=0.4, Radius=10, Offset='0,4'}">
-
-            <ImageButton Source="star_wars.png"
-                 BackgroundColor="Transparent"
-                 Aspect="AspectFit"
-                 WidthRequest="70"
-                 HeightRequest="70" Clicked="ImageButton_Clicked" />
-        </Frame>
+            </Grid> 
+        </Grid> 
     </AbsoluteLayout>
 </ContentPage>

@@ -7,157 +7,148 @@
                           Shell.ForegroundColor="#2d2d2d" 
 
              Title="Kitchen Companion">
-    <Shell.TitleView
-    Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
-        <Grid ColumnDefinitions="*,Auto"
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto,Auto"
           Padding="12,0"
           HeightRequest="56">
 
             <!-- Page title -->
-            <Label Text="Kitchen Companion"
+            <Label Grid.Column="0"
+               Text="Kitchen Companion"
                FontSize="25"
                TextColor="#E57373"
                FontAttributes="Bold"
                VerticalOptions="Center"
                HorizontalOptions="Start" />
 
-            <!-- Right-aligned Edit button -->
+            <!-- Edit button -->
             <Button Grid.Column="1"
                 Text="Edit"
                 FontSize="20"
-                TextColor="#E57373"      
-                BackgroundColor="Transparent"
-                FontAttributes="Bold"
-                HorizontalOptions="End"
+                TextColor="#E57373"
+                BackgroundColor="Transparent" 
                 VerticalOptions="Center"
-                Padding="0"  />
+                Padding="0"
+                Clicked="Button_Clicked" />
+
+            <!-- Delete button -->
+            <Button Grid.Column="2"
+                Text="Delete"
+                FontSize="20"
+                TextColor="Red"
+                BackgroundColor="Transparent" 
+                VerticalOptions="Center" 
+        Padding="0"
+        Margin="12,0,0,0"
+                Clicked="DeleteButton_Clicked" />
+
         </Grid>
     </Shell.TitleView>
+
     <VerticalStackLayout>
-        <Border   
-        BackgroundColor="#E57373"
-        Padding="15"
-        Margin="10"
-        HorizontalOptions="Fill"
-        VerticalOptions="Start"> 
-            <Grid ColumnDefinitions="Auto,*"
-      Padding="0"
-      Margin="0">
+        <Grid RowDefinitions="260,Auto,*">
 
-                <!-- LARGE IMAGE ON THE LEFT -->
-                <Border Grid.Column="0"
-        WidthRequest="100" 
-        BackgroundColor="Transparent"
-        StrokeThickness="0" 
+            <!-- HEADER / HERO IMAGE -->
+            <Grid Grid.Row="0">
+
+                <Image
+            Source="{Binding Photo}"
+            Aspect="AspectFill"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill" />
+
+                <!-- Dark overlay -->
+                <BoxView VerticalOptions="End"
+             HeightRequest="90"
+             BackgroundColor="#80000000" />
+
+                <!-- TEXT OVERLAY -->
+                <VerticalStackLayout
+        VerticalOptions="End"
         HorizontalOptions="Start"
-        StrokeShape="RoundRectangle 8">
+        Margin="16,0,16,20"
+        Spacing="2">
 
-                    <Image Source="food.jpg"
-           Aspect="AspectFill" />
-                </Border>
-                <!-- YOUR EXISTING STACK -->
-                <VerticalStackLayout Grid.Column="1"
-                         Spacing="6"
-                         Padding="10,0,0,0"
-                         VerticalOptions="Center">
+                    <Label Text="{Binding RecipeName}"
+               TextColor="White"
+               FontSize="28"
+               FontAttributes="Bold" />
 
-                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                        <Image Source="food_icon.png"
-                   WidthRequest="20"
-                   HeightRequest="20"
-                   Aspect="AspectFit"/>
-                        <Label Text="{Binding RecipeName}"
-                   FontSize="16"
-                   FontAttributes="Bold"
-                   TextColor="White"/>
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center"> 
-                        <Label Text="{Binding Description}"
-                               FontSize="16"
-                               TextColor="White"/>
-                    </HorizontalStackLayout>
-                    <!-- <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                        <Image Source="calendar.png"
-                   WidthRequest="20"
-                   HeightRequest="20"/>
-                        <Label Text="Expires on 9/12/2026"
-                   FontSize="16"
-                   TextColor="White"/>
-                    </HorizontalStackLayout>
+                    <Label Text="{Binding UserName}"
+               TextColor="#DDDDDD"
+               FontSize="18" />
+                    <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
+                       FontSize="16"
+                       TextColor="#f4c430"/>
 
-                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                        <Image Source="supply.png"
-                   WidthRequest="20"
-                   HeightRequest="20"/>
-                        <Label Text="Quantity Remaining: 1/2"
-                   FontSize="14"
-                   TextColor="White"/>
-                    </HorizontalStackLayout>
-
-                    <ProgressBar Progress="0.5"
-                     HeightRequest="10"
-                     HorizontalOptions="Fill"
-                     ProgressColor="Black"
-                     BackgroundColor="WhiteSmoke"/>-->
                 </VerticalStackLayout>
-
             </Grid>
+            <VerticalStackLayout Grid.Row="1"
+                     Padding="16"
+                     Spacing="6">
+                <Label Text="Stats"
+           FontSize="18"
+           TextColor="Red" />
+                <Label Text="{Binding Serves}"
+           FontSize="15"
+           TextColor="Gray" />
 
+                <Label Text="{Binding PrepTime}"
+           FontSize="15"
+           TextColor="Gray" />
 
-        </Border>
-        <Label Text="Ingredients List" Padding="10"/>
-        <ListView x:Name="IngredientList"
-                  ItemsSource="{Binding Ingredients}"
-                  Margin="10"
-                  HasUnevenRows="True"
-                  BackgroundColor="White"
-                  SeparatorVisibility="Default">
+                <Label Text="{Binding CookTime}"
+           FontSize="15"
+           TextColor="Gray" />
+                <Label Text="Directions"
+           FontSize="18"
+           
+           TextColor="Red" />
+                <Label Text="{Binding Description}"
+           FontSize="15"
+           TextColor="Black" />
+                <Label Text="{Binding IngredientsCount}"
+           FontSize="18"
+           TextColor="Red" />
+            </VerticalStackLayout>
 
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <HorizontalStackLayout Padding="10" Spacing="10">
+            <!-- LIST VIEW -->
+            <ListView
+        Grid.Row="2"
+        x:Name="IngredientList"
+        ItemsSource="{Binding Ingredients}" 
+        HasUnevenRows="True"
+        BackgroundColor="White"
+        SeparatorVisibility="Default">
 
-                            <Image Source="bullet.png"
-           WidthRequest="12"
-           HeightRequest="12"/>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <HorizontalStackLayout Padding="10" Spacing="10">
 
-                            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                <Image Source="{Binding Photo}"
+                                       WidthRequest="56"
+                                       HeightRequest="56"
+                                       Aspect="AspectFill" />
 
-                                <Label Text="{Binding Name}"
-                                       FontSize="16"
-                                       TextColor="Black"/>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Name}"
+                                   FontSize="16"
+                                   TextColor="Black"/>
+                                    <Label Text="{Binding store}"
+                                   FontSize="14"
+                                   TextColor="Gray"/>
+                                    <Label Text="{Binding storeUrl}"
+                                   FontSize="14"
+                                   TextColor="Gray"/>
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-                                                        <Label Text="{Binding store}"
-                                       FontSize="14"
-                                       TextColor="Grey"/>
-
-                                                        <Label Text="{Binding storeUrl}"
-                                       FontSize="14"
-                                       TextColor="Grey"/>
-                                <Label Text="{Binding PrepTime}"
-                                       FontSize="14"
-                                       TextColor="Black"/>
-                                <Label Text="{Binding CookTime}"
-                                       FontSize="14"
-                                       TextColor="Black"/>
-                                <Label Text="{Binding Serves}"
-                                       FontSize="14"
-                                       TextColor="Black"/>
-                                <Label FontSize="16" TextColor="#f4c430">
-                                    <Label.Text>
-                                        <MultiBinding StringFormat="Creator rating: {0}">
-                                            <Binding Path="Stars" Converter="{StaticResource StarsToEmojiConverter}" />
-                                        </MultiBinding>
-                                    </Label.Text>
-                                </Label>
-                            </VerticalStackLayout>
-                        </HorizontalStackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-
-        </ListView>
+        </Grid>
 
     </VerticalStackLayout>
 </ContentPage>

@@ -12,6 +12,10 @@ public partial class CreateIngredient : ContentPage
     private IHttpClientFactory _httpClientFactory;
 	private string _username = string.Empty; 
 
+    /**
+     * Combine the ingredients for prep
+     * Make sure prep time / cook time can be n/a
+     * **/
 	public CreateIngredient(IRecipeService recipeService, string username, IHttpClientFactory httpClientFactory)
 	{
 		InitializeComponent();
@@ -53,10 +57,7 @@ public partial class CreateIngredient : ContentPage
 
     private async void AddIngredient(object sender, EventArgs e)
     {
-        var title = TitleEntry.Text;
-        var prepTime = PrepEntry.Text;
-        var cookTime = CookEntry.Text;
-        var serves = ServesEntry.Text;
+        var title = TitleEntry.Text; 
         var unitName = UnitNameEntry.Text;
         var storeName = StoreNameEntry.Text;
         var storeUrl = StoreUrlEntry.Text;
@@ -72,9 +73,9 @@ public partial class CreateIngredient : ContentPage
         dto.CreatedBy = _username; 
         dto.Photo = "food.png";
         dto.Stars = "5";
-        dto.PrepTime = prepTime;
-        dto.CookTime = cookTime;
-        dto.Serves = serves;
+        dto.Preptime = "0";
+        dto.CookTime = "0";
+        dto.Serves = "0";
         dto.IngredientGUID = "waefwaefwaef"; 
 
         await _recipeService.AddIngredient(dto);
@@ -84,5 +85,33 @@ public partial class CreateIngredient : ContentPage
         var ingredientsFresh = await _recipeService.GetIngredientsFresh();
 
         await _recipeService.ResetIngredients(ingredientsFresh); 
+    }
+
+    private readonly Color Grey = Color.FromArgb("#C0C0C0");
+    private readonly Color Yellow = Color.FromArgb("#FFD700"); // your yellow
+
+    private void OnStarTapped(object sender, EventArgs e)
+    {
+        if (sender is not Label tappedStar)
+            return;
+
+        int rating = int.Parse(tappedStar.GestureRecognizers
+            .OfType<TapGestureRecognizer>()
+            .First()
+            .CommandParameter
+            .ToString());
+
+        var parent = (HorizontalStackLayout)tappedStar.Parent;
+
+        for (int i = 0; i < parent.Children.Count; i++)
+        {
+            if (parent.Children[i] is Label star)
+            {
+                star.TextColor = (i < rating) ? Yellow : Grey;
+            }
+        }
+
+        // Optional: save rating
+        // SelectedRating = rating;
     }
 }

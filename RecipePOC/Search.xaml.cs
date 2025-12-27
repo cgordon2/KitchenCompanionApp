@@ -157,6 +157,8 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         currentPage++;
 
         RecipeBuffer.AddRange(batch);
+        for (int i = 0; i < RecipeBuffer.Count; i++)
+            RecipeBuffer[i].Index = i % 2;
 
         RecipesList.ItemsSource = null;
         RecipesList.ItemsSource = RecipeBuffer;
@@ -265,6 +267,9 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         currentPage++;
 
         RecipeBuffer.AddRange(batch);
+
+        for (int i = 0; i < RecipeBuffer.Count; i++)
+            RecipeBuffer[i].Index = i % 2;
 
         RecipesList.ItemsSource = null;
         RecipesList.ItemsSource = RecipeBuffer;
@@ -480,15 +485,25 @@ public partial class Search : ContentPage, INotifyPropertyChanged
 
     public class Recipe
     {
+        public string Photo { get; set; } = string.Empty; 
+        public int Stars { get; set; } 
+        public int CookTime { get; set; }
+        public string UserName { get; set; } 
+        public int Serves { get; set; } 
+        public int Prep { get; set; } 
         public string Title { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
 
         public string CreatedOn { get; set; }
+
+        public string RecipeGUID { get; set; } 
+
+        public int Index { get; set; } 
     }
 
     public async void OnSearchButtonPressed(object sender, EventArgs e)
     {
-        var keyword = RecipeSearchBar.Text?.ToLower() ?? "";
+       /* var keyword = RecipeSearchBar.Text?.ToLower() ?? "";
 
         if (currentFilter == RecipeFilter.All)
         {
@@ -506,7 +521,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         else if (currentFilter == RecipeFilter.Recent)
         {
             RecipesList.ItemsSource = new List<Recipe>(); 
-        }
+        }**/
     }
 
     private List<Recipe> ParseResponse(List<DB.Models.Recipe> recipes)
@@ -518,7 +533,14 @@ public partial class Search : ContentPage, INotifyPropertyChanged
             var recipe2 = new Recipe();
 
             recipe2.Title = recipe.RecipeName;
-            recipe2.CreatedBy = recipe.ChefName; 
+            recipe2.CreatedBy = recipe.ChefName;
+            recipe2.RecipeGUID = recipe.RecipeGuid;
+            recipe2.Photo = recipe.Photo; 
+            recipe2.Stars = recipe.Stars;
+            recipe2.CookTime = recipe.CookTime;
+            recipe2.Serves = recipe.Serves;
+            recipe2.Prep = recipe.Prep;
+            recipe2.UserName = recipe.ChefName; 
 
             filteredRecipes.Add(recipe2);
         }
@@ -580,5 +602,37 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     private async void ImageButton_Clicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(CreateRecipe));
+    }
+
+    private async void SearchList_OnItemChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection == null || e.CurrentSelection.Count == 0)
+            return;
+
+        var recipe = e.CurrentSelection.FirstOrDefault() as RecipePOC.Search.Recipe;
+
+        var test = new RecipePOC.Recipe
+        {
+            Title = recipe.Title,
+            UserName = recipe.CreatedBy, 
+            RecipeGUID = recipe.RecipeGUID,
+            Photo = recipe.Photo, 
+            Stars = recipe.Stars, 
+            Prep = recipe.Prep, 
+            CookTime = recipe.CookTime,
+            Serves = recipe.Serves
+        }; 
+
+        await Navigation.PushAsync(
+            new IngredientDetail(test, _recipeService, _httpClientFactory)
+        );
+
+        // Clear selection so it can be tapped again
+        ((CollectionView)sender).SelectedItem = null;
+    }
+
+    private async void OnSearchTapped(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new AdvancedSearch()); 
     }
 }

@@ -21,10 +21,18 @@ namespace RecipePOC.Services.Recipes
         Task<List<DB.Models.Recipe>> SearchRecipes(string query, bool all, bool yours, bool recent, string username);
         Task<List<DB.Models.Ingredient>> GetIngredients(int page, int size);
 
-        Task<List<IngredientDto>> GetIngredientsFresh(); 
+        Task<List<IngredientDto>> GetIngredientsFresh();
+        Task<List<ShoppingListDTO>> GetShoppingListFresh(string username);
+        Task<List<DB.Models.ShoppingList>> GetShoppingListFromDB(string username); 
 
         Task ResetRecipes(List<RecipeDto> recipeDtos);
         Task ResetIngredients(List<IngredientDto> ingredients);
+        Task ResetShoppingList(List<ShoppingListDTO> shoppingListDtos);
+
+
+        Task MarkShoppingListComplete(int shoppingListItemId);
+        Task DeleteShoppingListItem(int shoppingListItemId); 
+
 
         Task InsertUser(UserDTO user); 
 

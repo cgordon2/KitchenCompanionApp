@@ -28,7 +28,7 @@ namespace RecipePOC.DTOs
         public string? Photo { get; set; } 
         public string? Stars { get; set; } 
 
-        public string? PrepTime { get; set; } 
+        public string? Preptime { get; set; } 
 
         public string? CookTime { get; set; } 
 

@@ -1,24 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using SQLite;
+using System;
+using System.Collections.Generic; 
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RecipePOC.DB.Models
 {
-    [System.ComponentModel.DataAnnotations.Schema.Table("ShoppingList")]
+    [Table("ShoppingList_V2")]
     public class ShoppingList
-    {
-        public int ShoppingListId { get; set; }
-        public int ChefId { get; set; }
+    { 
+        public int ShoppingListId { get; set; } 
 
-        public string Item { get; set; }
+        public string ShoppingListGUID { get; set; } 
 
-        public string Store { get; set; }
-        public string RequestedBy { get; set; }
+        public string Text { get; set; } 
 
-        public DateTime DateCreated { get; set; }
+        public bool IsDone { get; set; } 
 
+        public string UserName { get; set; } 
     }
 }

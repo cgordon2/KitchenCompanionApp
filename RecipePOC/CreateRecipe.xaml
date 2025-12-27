@@ -21,65 +21,140 @@
                FontAttributes="Bold"
                VerticalOptions="Center" /> 
         </Grid>
-    </Shell.TitleView> 
-    <Grid RowDefinitions="Auto,*,Auto"> 
-        <Grid Grid.Row="0" Padding="20">
-            <VerticalStackLayout Spacing="15">
-                <Label Text="Add New Recipe" TextColor="Black"/>
+    </Shell.TitleView>
+    <Grid RowDefinitions="Auto,*,Auto">
+        <ScrollView Grid.Row="1">
+            <Grid Grid.Row="1" Padding="20">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Add New Recipe" TextColor="Black"/>
 
-                <Entry x:Name="IngredientNameEntry"
+                    <Label Text="Select Photo" TextColor="Black"></Label>
+                    <!-- IMAGE PICKER -->
+                    <Frame WidthRequest="70"
+                   HeightRequest="70"
+                   Padding="0"
+                   HasShadow="False"
+                   BackgroundColor="White"
+                   HorizontalOptions="Center">
+                        <ImageButton Source="food.png"
+                             WidthRequest="70"
+                             HeightRequest="70"
+                             BackgroundColor="Transparent"
+                             Aspect="AspectFill" />
+                    </Frame>
+                    <Entry x:Name="IngredientNameEntry"
                Placeholder="Recipe Title"
                FontSize="16"
-               TextColor="#2d2d2d"  /> 
-                <Entry x:Name="QuantityEntry"
-               Placeholder="Recipe Description"
-               FontSize="16"
-               TextColor="#2d2d2d" 
-               Keyboard="Numeric" />
-                <Picker Title="Select a Category"
+                       BackgroundColor="#E57373"
+                       PlaceholderColor="White"
+               TextColor="White"  />
+                    <Editor x:Name="QuantityEntry"
+        Placeholder="Recipe Directions"
+        FontSize="16"
+    HeightRequest="120"
+        AutoSize="TextChanges"
+        BackgroundColor="#E57373"
+        TextColor="White"
+        PlaceholderColor="White" />
+                    <Picker Title="Select a Category"
         x:Name="CategoryPicker2"
-        TitleColor="Black"  >
-                    <Picker.Items>
-                        <x:String>Dessert</x:String>
-                    </Picker.Items>
-                </Picker>
-                <Label Text="Select at least one ingredient" TextColor="Black" />
+        TitleColor="Black"
+                        BackgroundColor="#E57373">
+                        <Picker.Items >
+                            <x:String>Dessert</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <!-- PREP / COOK / SERVES -->
+                    <Grid ColumnDefinitions="*,*,*"
+      Padding="0,10">
 
-                <!-- ⭐ LISTVIEW GOES HERE (before Add Recipe button) -->
-                <ListView ItemsSource="{Binding Items}"
+                        <!-- Prep -->
+                        <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                            <Label Text="Prep" FontSize="16" TextColor="Black" />
+                            <Entry x:Name="PrepEntry"
+               Keyboard="Numeric"
+               WidthRequest="80"
+               BackgroundColor="#E57373"
+               TextColor="White" />
+                        </VerticalStackLayout>
+
+                        <!-- Divider -->
+                        <BoxView Grid.Column="1"
+             WidthRequest="1"
+             BackgroundColor="#CCCCCC"
+             Margin="0,8" />
+
+                        <!-- Cook -->
+                        <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                            <Label Text="Cook" FontSize="16" TextColor="Black" />
+                            <Entry x:Name="CookEntry"
+               Keyboard="Numeric"
+               WidthRequest="80"
+               BackgroundColor="#E57373"
+               TextColor="White" />
+                        </VerticalStackLayout>
+
+                        <!-- Divider -->
+                        <BoxView Grid.Column="2"
+             WidthRequest="1"
+             BackgroundColor="#CCCCCC"
+             Margin="0,8" />
+
+                        <!-- Serves -->
+                        <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                            <Label Text="Serves" FontSize="16" TextColor="Black" />
+                            <Entry x:Name="ServesEntry"
+               Keyboard="Numeric"
+               WidthRequest="80"
+               BackgroundColor="#E57373"
+               TextColor="White" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+                    <Button Text="🧄 Select at least one ingredient" Clicked="OnSelectExistingIngredientTapped"/>
+                    <Label Text="Selected Ingredients: " TextColor="Black" />
+                    <ListView ItemsSource="{Binding Items}"
                       HasUnevenRows="True"
-                      SelectionMode="None"
+x:Name="SelectedListview"
+                              SelectionMode="None"
                       Margin="0,10,0,0">
 
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ViewCell>
-                                <Grid Padding="10"
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid Padding="10"
                                   ColumnDefinitions="Auto,*">
-
-                                    <!-- Emoji icon -->
-                                    <Label Text="🧄"
+                                        <Label Text="{Binding Name}"
                                            FontSize="22"
+                                               TextColor="Black" 
                                            VerticalOptions="Center"
-                                           Margin="0,0,10,0" />
+                                           Margin="0,0,10,0" />   
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
 
-                                    <!-- Clickable text -->
-                                    <Label Grid.Column="1"
-                                           Text="Go to ingredient select screen"
-                                           FontSize="16"
-                                           TextColor="Black"
-                                           VerticalOptions="Center">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnSelectExistingIngredientTapped" />
-                                        </Label.GestureRecognizers>
-                                    </Label>
-                                </Grid>
-                            </ViewCell>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView> 
-                <Button BackgroundColor="#E57373" Text="Add Recipe" TextColor="Black" Clicked="CreateRecipeDB"></Button>
-            </VerticalStackLayout>
-        </Grid>
+                    <Label Text="Select User Rating" TextColor="Black"></Label>
+                    <HorizontalStackLayout Spacing="2">
+                        <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
+                        </Label>
+
+                        <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
+                        </Label>
+
+                        <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
+                        </Label>
+
+                        <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
+                        </Label>
+
+                        <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
+                        </Label>
+                    </HorizontalStackLayout>
+                    <Button BackgroundColor="#E57373" Text="Add Recipe" TextColor="Black" Clicked="CreateRecipeDB"></Button>
+                </VerticalStackLayout>
+            </Grid>
+        </ScrollView>
     </Grid>
 </ContentPage>

@@ -16,36 +16,7 @@ namespace RecipePOC.DB
         public RecipeDB()
         {
             _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
-        }  
-
-        public async Task AddShoppingListItemAsync(string item, string store, string requestedBy)
-        {
-            var entry = new DB.Models.ShoppingList
-            {
-                Item = item,
-                Store = store, 
-                RequestedBy = requestedBy, 
-                DateCreated = DateTime.Now
-            };
-
-            await _connection.InsertAsync(entry);
-        }
-
-        public async Task<bool> DeleteShoppingListItem(int listId)
-        {
-            var item = await _connection.Table<DB.Models.ShoppingList>()
-                        .Where(s => s.ShoppingListId == listId)
-                        .FirstOrDefaultAsync();
-
-            if (item != null)
-            {
-                await _connection.DeleteAsync(item);
-
-                return true; 
-            }
-
-            return false; 
-        } 
+        }   
 
         public async Task<List<DB.Models.RecipeIngredient>> GetRecipeIngredients(int recipeId)
         {
@@ -53,13 +24,7 @@ namespace RecipePOC.DB
 
             return recipeIngredients; 
         }
-
-        public async Task<List<DB.Models.ShoppingList>> GetShoppingList(int chefId)
-        {
-            var shoppingList = await _connection.Table<Models.ShoppingList>().Where(r => r.ChefId == chefId).ToListAsync();
-
-            return shoppingList; 
-        }
+         
 
         public static async Task<RecipeDB> CreateUserFavorite()
         {
@@ -68,6 +33,36 @@ namespace RecipePOC.DB
             await instance._connection.CreateTableAsync<DB.Models.Social.Followers>();
             await instance._connection.CreateTableAsync<DB.Models.Social.Following>();
 
+
+            return instance; 
+        } 
+
+        public static async Task<RecipeDB> Prep()
+        {
+            var _db = new RecipeDB();
+
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN Prep INTEGER"); 
+
+            return _db;
+        }
+
+        public static async Task<RecipeDB> AddMore()
+        {
+            var _db = new RecipeDB();
+
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN Photo TEXT");
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN Stars INTEGER");
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN CookTime INTEGER");
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN Serves INTEGER");
+
+            return _db; 
+        }
+
+        public static async Task<RecipeDB> CreateShoppingListNew()
+        {
+            var instance = new RecipeDB();
+
+            await instance._connection.CreateTableAsync<DB.Models.ShoppingList>();
 
             return instance; 
         }

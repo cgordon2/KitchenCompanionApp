@@ -95,6 +95,9 @@
 	  <MauiXaml Update="AddIngredient.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="AdvancedSearch.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="AIAssistantShopping.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
