@@ -12,21 +12,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     public List<Recipe> AllRecipes { get; set; }
     private IHttpClientFactory _httpClientFactory; 
     private IRecipeService _recipeService;
-    private INotificationService _notificationsService;
-    private int _notifCount; 
-
-    public int NotifCount
-    {
-        get => _notifCount;
-        set
-        {
-            if (_notifCount != value)
-            {
-                _notifCount = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NotifCount)));
-            }
-        }
-    }
+    private INotificationService _notificationsService; 
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -55,11 +41,6 @@ public partial class Search : ContentPage, INotifyPropertyChanged
             IsVisible = false
         });
 
-        currentFilter = Enum.Parse<RecipeFilter>(
-                        Preferences.Get("LastFilter", "All"));
-
-        UpdateUIStyles_FromStartup();
-
         BindingContext = this;
     }
 
@@ -76,7 +57,10 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        currentFilter = Enum.Parse<RecipeFilter>(
+                Preferences.Get("LastFilter", "All"));
 
+        UpdateUIStyles_FromStartup();
         /*if (currentFilter == RecipeFilter.All)
              await LoadNextPage_All();
          else if (currentFilter == RecipeFilter.Yours)
@@ -96,9 +80,6 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         _loading = true;
 
         var chefGuid = await SecureStorage.GetAsync("chef_guid"); 
-        var notifs = await _notificationsService.GetNotifications(false, chefGuid);
-
-        NotifCount = notifs.Count; 
 
         ResetPaging();
 
@@ -109,8 +90,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
             else if (currentFilter == RecipeFilter.Yours)
                 await LoadNextPage_Yours();
             else if (currentFilter == RecipeFilter.Recent)
-                Console.WriteLine("awefaweawefwaef"); 
-                //await LoadTaggedRecipes(); 
+                await LoadTaggedRecipes(); 
         }
         finally
         {
@@ -286,17 +266,19 @@ public partial class Search : ContentPage, INotifyPropertyChanged
     {
         var email = await SecureStorage.GetAsync("email");
 
-        if (currentFilter != RecipeFilter.Yours)
+        if (currentFilter != RecipeFilter.Recent)
             return;
+
         if (isLoading || !hasMoreData)
             return;
 
         isLoading = true;
 
-        var dbResult = await _recipeService.GetTaggedRecipes(email);
+        var dbResult = await _recipeService.GetRecipes(false, false, true, false, email, currentPage, pageSize);
 
         var batch = ParseResponse(dbResult);
 
+        // If fewer than requested — no more data
         if (batch.Count < pageSize)
             hasMoreData = false;
 
@@ -304,16 +286,17 @@ public partial class Search : ContentPage, INotifyPropertyChanged
 
         RecipeBuffer.AddRange(batch);
 
+        for (int i = 0; i < RecipeBuffer.Count; i++)
+            RecipeBuffer[i].Index = i % 2;
+
         RecipesList.ItemsSource = null;
         RecipesList.ItemsSource = RecipeBuffer;
 
-        /// RecipesList.Footer = hasMoreData ? CreateLoadMoreFooter() : null;
-        /// 
+        //RecipesList.Footer = hasMoreData ? CreateLoadMoreFooter() : null;
         RecipesList.Footer =
-     (RecipeBuffer.Count > 0 && hasMoreData)
-         ? CreateLoadMoreFooter()
-         : null;
-
+    (RecipeBuffer.Count > 0 && hasMoreData)
+        ? CreateLoadMoreFooter()
+        : null;
         isLoading = false;
         /*var email = await SecureStorage.GetAsync("email");
 
@@ -459,7 +442,7 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         }
         else if (currentFilter == RecipeFilter.Recent)
         {
-           // await LoadTaggedRecipes(); 
+            await LoadTaggedRecipes(); 
         } 
     }
 
@@ -497,6 +480,8 @@ public partial class Search : ContentPage, INotifyPropertyChanged
         public string CreatedOn { get; set; }
 
         public string RecipeGUID { get; set; } 
+
+        public string Favorite { get; set; } 
 
         public int Index { get; set; } 
     }
@@ -540,7 +525,8 @@ public partial class Search : ContentPage, INotifyPropertyChanged
             recipe2.CookTime = recipe.CookTime;
             recipe2.Serves = recipe.Serves;
             recipe2.Prep = recipe.Prep;
-            recipe2.UserName = recipe.ChefName; 
+            recipe2.UserName = recipe.ChefName;
+            recipe2.Favorite = recipe.Favorite; 
 
             filteredRecipes.Add(recipe2);
         }
@@ -611,17 +597,36 @@ public partial class Search : ContentPage, INotifyPropertyChanged
 
         var recipe = e.CurrentSelection.FirstOrDefault() as RecipePOC.Search.Recipe;
 
-        var test = new RecipePOC.Recipe
+        var username = await SecureStorage.Default.GetAsync("user_name"); 
+
+        if (username == recipe.UserName)
         {
-            Title = recipe.Title,
-            UserName = recipe.CreatedBy, 
-            RecipeGUID = recipe.RecipeGUID,
-            Photo = recipe.Photo, 
-            Stars = recipe.Stars, 
-            Prep = recipe.Prep, 
-            CookTime = recipe.CookTime,
-            Serves = recipe.Serves
-        }; 
+            if (recipe.Favorite == "Yes")
+            {
+                recipe.Favorite = "Yes"; 
+            }
+            else
+            {
+                recipe.Favorite = "No"; 
+            }
+        }
+        else
+        {
+            recipe.Favorite = "No"; 
+        }
+
+            var test = new RecipePOC.Recipe
+            {
+                Title = recipe.Title,
+                UserName = recipe.CreatedBy,
+                RecipeGUID = recipe.RecipeGUID,
+                Photo = recipe.Photo,
+                Stars = recipe.Stars,
+                Prep = recipe.Prep,
+                CookTime = recipe.CookTime,
+                Serves = recipe.Serves,
+                Favorite = recipe.Favorite
+            }; 
 
         await Navigation.PushAsync(
             new IngredientDetail(test, _recipeService, _httpClientFactory)

@@ -27,8 +27,7 @@ namespace RecipePOC.Services.Recipes
 
         Task ResetRecipes(List<RecipeDto> recipeDtos);
         Task ResetIngredients(List<IngredientDto> ingredients);
-        Task ResetShoppingList(List<ShoppingListDTO> shoppingListDtos);
-
+        Task ResetShoppingList(List<ShoppingListDTO> shoppingListDtos); 
 
         Task MarkShoppingListComplete(int shoppingListItemId);
         Task DeleteShoppingListItem(int shoppingListItemId); 

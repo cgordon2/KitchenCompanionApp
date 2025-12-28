@@ -26,7 +26,6 @@ namespace RecipePOC
             _connection = connection;
         }
 
-
         static BigInteger RandomBigInt(int bytes)
         {
             var buffer = new byte[bytes];
@@ -70,7 +69,6 @@ namespace RecipePOC
                         {
                             await SecureStorage.Default.SetAsync("real_name", realName);
                         }
-
 
                         var dbUserLocal = await _authService.GetUser(_connection, foundUser.UserName);
 

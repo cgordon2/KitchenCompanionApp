@@ -4,6 +4,7 @@ using RecipePOC.DB.Models;
 using SQLite;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Threading.Tasks; 
 
@@ -36,6 +37,15 @@ namespace RecipePOC.DB
 
             return instance; 
         } 
+
+        public static async Task<RecipeDB> AddIsClone()
+        {
+            var _db = new RecipeDB();
+
+            await _db._connection.ExecuteAsync("ALTER TABLE Recipe ADD COLUMN IsCloned INTEGER DEFAULT 0;");
+
+            return _db;
+        }
 
         public static async Task<RecipeDB> Prep()
         {

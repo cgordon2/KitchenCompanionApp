@@ -45,12 +45,14 @@
                     <Entry x:Name="IngredientNameEntry"
                Placeholder="Recipe Title"
                FontSize="16"
+                           Text="{Binding RecipeName}"
                        BackgroundColor="#E57373"
                        PlaceholderColor="White"
                TextColor="White"  />
                     <Editor x:Name="QuantityEntry"
         Placeholder="Recipe Directions"
         FontSize="16"
+        Text="{Binding RecipeDirections}"
     HeightRequest="120"
         AutoSize="TextChanges"
         BackgroundColor="#E57373"
@@ -58,10 +60,18 @@
         PlaceholderColor="White" />
                     <Picker Title="Select a Category"
         x:Name="CategoryPicker2"
-        TitleColor="Black"
+        TitleColor="Black" 
+Loaded="CategoryPicker2_Loaded"
                         BackgroundColor="#E57373">
                         <Picker.Items >
+                            <x:String>Appetizer</x:String>
+                            <x:String>Beverage</x:String>
+                            <x:String>Breakfast</x:String>
+                            <x:String>Brunch</x:String>
                             <x:String>Dessert</x:String>
+                            <x:String>Main Dish</x:String>
+                            <x:String>Side Dish</x:String>
+                            <x:String>Snack</x:String>
                         </Picker.Items>
                     </Picker>
                     <!-- PREP / COOK / SERVES -->
@@ -74,6 +84,7 @@
                             <Entry x:Name="PrepEntry"
                Keyboard="Numeric"
                WidthRequest="80"
+                                   Text="{Binding Prep}"
                BackgroundColor="#E57373"
                TextColor="White" />
                         </VerticalStackLayout>
@@ -89,6 +100,7 @@
                             <Label Text="Cook" FontSize="16" TextColor="Black" />
                             <Entry x:Name="CookEntry"
                Keyboard="Numeric"
+                                   Text="{Binding CookTime}"
                WidthRequest="80"
                BackgroundColor="#E57373"
                TextColor="White" />
@@ -106,6 +118,7 @@
                             <Entry x:Name="ServesEntry"
                Keyboard="Numeric"
                WidthRequest="80"
+                                   Text="{Binding Serves}"
                BackgroundColor="#E57373"
                TextColor="White" />
                         </VerticalStackLayout>
@@ -123,12 +136,27 @@ x:Name="SelectedListview"
                             <DataTemplate>
                                 <ViewCell>
                                     <Grid Padding="10"
-                                  ColumnDefinitions="Auto,*">
-                                        <Label Text="{Binding Name}"
-                                           FontSize="22"
-                                               TextColor="Black" 
-                                           VerticalOptions="Center"
-                                           Margin="0,0,10,0" />   
+                      ColumnDefinitions="Auto,*"
+                      VerticalOptions="Center">
+
+                                        <!-- ➖ Minus Button -->
+                                        <Button Text="−"
+                            WidthRequest="32"
+                            HeightRequest="32"
+                            FontSize="20"
+                            CornerRadius="16"
+                            BackgroundColor="#E57373"
+                            TextColor="White"
+                            CommandParameter="{Binding .}"
+                            Clicked="RemoveItem_Clicked" />
+
+                                        <!-- 📄 Item Name -->
+                                        <Label Grid.Column="1"
+                           Text="{Binding Name}"
+                           FontSize="22"
+                           TextColor="Black"
+                           VerticalOptions="Center"
+                           Margin="10,0,0,0" />
                                     </Grid>
                                 </ViewCell>
                             </DataTemplate>
@@ -152,7 +180,7 @@ x:Name="SelectedListview"
                         <Label Text="★" FontSize="25" TextColor="#C0C0C0"> 
                         </Label>
                     </HorizontalStackLayout>
-                    <Button BackgroundColor="#E57373" Text="Add Recipe" TextColor="Black" Clicked="CreateRecipeDB"></Button>
+                    <Button BackgroundColor="#E57373" Text="{Binding AddBtn}" TextColor="Black" Clicked="CreateRecipeDB"></Button>
                 </VerticalStackLayout>
             </Grid>
         </ScrollView>

@@ -1,8 +1,10 @@
+using RecipePOC.DTOs;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace RecipePOC;
 // https://chatgpt.com/share/694f0ef2-deb4-8009-9ad2-8a5fd6fc2bab
@@ -10,16 +12,60 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 { 
     private Recipe _recipe;
     private IRecipeService _recipeService;
-    private IHttpClientFactory _httpClientFactory;
-
+    private IHttpClientFactory _httpClientFactory; 
     public event PropertyChangedEventHandler PropertyChanged;
+    public ICommand FavoriteCommand { get; }
+
+    public List<RecipeAndRiDTO> RIEditList = new List<RecipeAndRiDTO>();
 
     protected void OnPropertyChanged([CallerMemberName] string name = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
+    // ===== BACKING FIELDS =====
+    private bool _isOwner;
+    private bool _isFavorite;
+
+    // ===== PUBLIC PROPERTIES =====
+    public bool IsOwner
+    {
+        get => _isOwner;
+        set
+        {
+            _isOwner = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(FavoriteText));
+            OnPropertyChanged(nameof(ShowFavorite));
+        }
+    }
+
+    public bool IsFavorite
+    {
+        get => _isFavorite;
+        set
+        {
+            _isFavorite = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(FavoriteText));
+        }
+    }
+
+    public string FavoriteText
+    {
+        get
+        {
+            if (!IsOwner)
+                return "Clone";
+
+            return IsFavorite ? "Unfavorite" : "Favorite";
+        }
+    }
+
+    public bool ShowFavorite => true;
+
     public string RecipeName { get; set; } 
+    public string Favorite { get; set; } 
     public string UserName { get; set; } 
     public string Description { get; set; } 
 
@@ -67,8 +113,10 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         _recipeService = service;
         _httpClientFactory = theFactory;
 
+        Favorite = recipe.Favorite; 
         RecipeName = recipe.Title; 
-        Description = recipe.Description;
+        Description = recipe.Description; 
+
         Photo = recipe.Photo;
         CookTime = "Cook time " + recipe.CookTime + " mins"; 
         Serves = "Serves " + recipe.Serves;
@@ -79,11 +127,37 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         RecipeId = Convert.ToInt16(recipe.RecipeGUID); 
 
         Ingredients = new ObservableCollection<IngredientDetailObj>();
-   
+
+        FavoriteCommand = new Command(OnFavoriteClicked);
+
         BindingContext = this;
     }
 
+    private async void OnFavoriteClicked()
+    {
+        switch (FavoriteText)
+        {
+            case "Favorite":
+                await DisplayAlert("Favorite", "FAV clicked", "Ok"); 
+                break;
 
+            case "Unfavorite":
+                await DisplayAlert("remove", "FAV clicked", "Ok");
+                break;
+
+            case "Clone":
+                // also seriaized RI 
+                _recipe.RecipeGUID = Convert.ToString(RecipeId);
+                _recipe.RecipeIngredients = RIEditList;
+
+                var json = JsonSerializer.Serialize(_recipe);
+                await SecureStorage.SetAsync("selected_recipe", json);
+                await SecureStorage.SetAsync("should_clone_or_edit", "clone");
+
+                await Navigation.PushAsync(new CreateRecipe(_recipeService, _httpClientFactory)); 
+                break;
+        }
+    }
 
     public ObservableCollection<IngredientDetailObj> Ingredients { get; set; }
 
@@ -96,7 +170,21 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 
     private async Task OnAppearingAsync()
     {
-        var result = await _recipeService.GetRecipeIngredients(RecipeId);
+        var username = await SecureStorage.Default.GetAsync("user_name");
+        IsFavorite = string.Equals(Favorite, "Yes", StringComparison.OrdinalIgnoreCase);
+
+        Ingredients.Clear(); 
+
+        if (string.IsNullOrEmpty(username))
+            return;
+
+        // Owner comes from your recipe data
+        IsOwner = username == UserName;
+
+        // Favorite comes from your recipe data
+        IsFavorite = Favorite == "Yes";
+
+        var result = await _recipeService.GetRecipeIngredients(RecipeId); 
 
         foreach (var item in result)
         {
@@ -108,7 +196,18 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
             var cookTime = item.CookTime;
             var serves = item.Serves; 
 
-            var ingredient = new IngredientDetailObj(); 
+            var ingredient = new IngredientDetailObj();
+            var recipeRI = new RecipeAndRiDTO();
+
+            recipeRI.RecipeId = RecipeId; 
+            recipeRI.ingredientName = item.IngredientName;
+            recipeRI.Quantity = item.Quantity; 
+            recipeRI.IngredientId = item.IngredientId;
+            recipeRI.storeName = item.StoreName; 
+            recipeRI.storeUrl = storeUrl;
+            recipeRI.unitName = item.UnitName;
+
+            RIEditList.Add(recipeRI);
 
             ingredient.Name = name;
             ingredient.store = store;
@@ -135,19 +234,21 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 
         if (loggedInUser != username)
         {
-            // would you like to make a copy? its not one of your recipes.
+            // done in tagging
         }
         else
         {
             // also seriaized RI 
-            _recipe.RecipeGUID = Convert.ToString(RecipeId); 
+            _recipe.RecipeGUID = Convert.ToString(RecipeId);
+            _recipe.RecipeIngredients = RIEditList; 
+
             var json = JsonSerializer.Serialize(_recipe);
             await SecureStorage.SetAsync("selected_recipe", json);
+            await SecureStorage.SetAsync("should_clone_or_edit", "edit"); 
 
             await Navigation.PushAsync(new CreateRecipe(_recipeService, _httpClientFactory)); 
         }
-    }
-
+    } 
     private async void DeleteButton_Clicked(object sender, EventArgs e)
     {
         var username = _recipe.UserName;

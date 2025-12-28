@@ -28,7 +28,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
             if (_notifCount != value)
             {
                 _notifCount = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NotifCount)));
+                OnPropertyChanged(nameof(NotifCount));
             }
         }
     }
@@ -41,17 +41,11 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
             if (_realName != value)
             {
                 _realName = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RealName)));
+                OnPropertyChanged(nameof(RealName));
             }
         }
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
 
     int page = 0;
     int pageSize = 3; 
@@ -62,7 +56,6 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 		InitializeComponent();
         LoadingSpinner.IsVisible = false;
 
-        BindingContext = this; 
 
         _authService = authService; 
         _recipeService = recipeService;
@@ -76,18 +69,30 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         });
 
         _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
+
+        BindingContext = this;
     }
 
 
     protected override async void OnAppearing()
     {
-        base.OnAppearing();  
+        base.OnAppearing();
 
-        _ = OnAppearingAsync();
+        try
+        {
+            await OnAppearingAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("REAL ERROR:");
+            System.Diagnostics.Debug.WriteLine(ex.ToString());
+        }
+
+        // _ = OnAppearingAsync();
     }
 
     private async Task OnAppearingAsync()
-    {
+    { 
         page = 0;
         Recipes.Clear();
         RecipesList.ItemsSource = null;
@@ -118,8 +123,6 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         var notifs = await _notificationsService.GetNotifications(false, chefGuid);
         NotifCount = notifs.Count;
 
-        //await RecipeDB.CreateAsync(); 
-
         // Show spinner
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -133,6 +136,11 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
             if (PageHelpers.HasInternet())
             {
                 var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
+
+                var clonedRecipes = await APIClient.GetClonedRecipes(_httpClientFactory);
+
+                allRecipes.AddRange(clonedRecipes); 
+
                 await _recipeService.ResetRecipes(allRecipes); 
 
                 await LoadNextPage(); 
@@ -175,7 +183,8 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
                 CookTime = recipe.CookTime,
                 Stars = recipe.Stars,
                 Serves = recipe.Serves,
-                Prep = recipe.Prep
+                Prep = recipe.Prep, 
+                Favorite = recipe.Favorite, 
             }); 
         }
 

@@ -88,7 +88,7 @@ namespace RecipePOC.Services.Recipes
 
                 await _connection.InsertAsync(modelUser);
             }
-        }
+        } 
 
         public async Task ResetRecipes(List<RecipeDto> recipeDtos)
         {
@@ -107,7 +107,8 @@ namespace RecipePOC.Services.Recipes
                 Serves = dto.Serves,
                 CookTime = dto.CookTime,
                 Stars = dto.Stars,
-                Prep = dto.Prep
+                Prep = dto.Prep, 
+                IsCloned = dto.IsCloned
                
             }).ToList();
 
@@ -196,17 +197,19 @@ namespace RecipePOC.Services.Recipes
             {
                 if (yours)
                 {
-                    query = query.Where(r => r.ChefEmail == username).Skip(page * size).Take(size); 
+                    query = query.Where(r => r.ChefEmail == username).Where(r => r.IsCloned == false).Skip(page * size).Take(size); 
                     return await query.ToListAsync(); 
                 }
 
                 if (recent)
                 {
+                    query = query.Where(r => r.ChefEmail == username).Where(r => r.IsCloned == true).Skip(page * size).Take(size);
+                    return await query.ToListAsync();
                 } 
 
                 if (favs)
                 {
-                    return await query.Where(r => r.ChefEmail == username).Where(r => r.Favorite == "Yes").Skip(page * size).Take(size).ToListAsync(); 
+                    return await query.Where(r => r.ChefEmail == username).Where(r => r.IsCloned == false).Where(r => r.Favorite == "Yes").Skip(page * size).Take(size).ToListAsync(); 
                 }
             }
 
@@ -330,6 +333,7 @@ namespace RecipePOC.Services.Recipes
             await _connection.InsertAsync(ingredient); 
         }
 
+        // we dont need this -- sql refresh will handle it
         public async Task AddRecipe(List<IngredientItem> ingredientDtos, RecipeDto recipeDto)
         {  
             // Insert Ingredient

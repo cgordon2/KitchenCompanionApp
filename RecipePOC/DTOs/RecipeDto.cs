@@ -29,6 +29,8 @@ namespace RecipePOC.DTOs
         public int CookTime { get; set; } 
         public int Stars { get; set; } 
         public int Serves { get; set; } 
-        public int Prep { get; set; } 
+        public int Prep { get; set; }
+        [JsonPropertyName("isClone")]
+        public bool IsCloned { get; set; } 
     }
 }

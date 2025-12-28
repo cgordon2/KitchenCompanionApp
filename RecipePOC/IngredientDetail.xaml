@@ -4,46 +4,115 @@
              x:Class="RecipePOC.IngredientDetail"
              Shell.BackgroundColor="#F9EDEC"
              BackgroundColor="WhiteSmoke"
-                          Shell.ForegroundColor="#2d2d2d" 
-
-             Title="Kitchen Companion">
-    <Shell.TitleView>
-        <Grid ColumnDefinitions="*,Auto,Auto"
+             Shell.ForegroundColor="#2d2d2d" 
+             Title="Kitchen Companion"> 
+    <!--<Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto"
           Padding="12,0"
           HeightRequest="56">
-
-            <!-- Page title -->
+ 
             <Label Grid.Column="0"
                Text="Kitchen Companion"
                FontSize="25"
                TextColor="#E57373"
                FontAttributes="Bold"
+               VerticalOptions="Center" />
+ 
+            <Label Grid.Column="1"
+               Text="Fav"
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="#E57373"
                VerticalOptions="Center"
-               HorizontalOptions="Start" />
-
-            <!-- Edit button -->
-            <Button Grid.Column="1"
+               IsVisible="False">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                             Binding="{Binding IsOwner}"
+                             Value="True">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+ 
+            <Label Grid.Column="1"
+               Text="Tag"
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="Gray"
+               VerticalOptions="Center"
+               IsVisible="False">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                             Binding="{Binding IsOwner}"
+                             Value="False">
+                        <Setter Property="IsVisible" Value="True"/>
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+ 
+            <Button Grid.Column="2"
                 Text="Edit"
                 FontSize="20"
                 TextColor="#E57373"
-                BackgroundColor="Transparent" 
-                VerticalOptions="Center"
-                Padding="0"
+                BackgroundColor="Transparent"
                 Clicked="Button_Clicked" />
-
-            <!-- Delete button -->
-            <Button Grid.Column="2"
+ 
+            <Button Grid.Column="3"
                 Text="Delete"
                 FontSize="20"
                 TextColor="Red"
-                BackgroundColor="Transparent" 
-                VerticalOptions="Center" 
-        Padding="0"
-        Margin="12,0,0,0"
+                BackgroundColor="Transparent"
+                Margin="12,0,0,0"
                 Clicked="DeleteButton_Clicked" />
 
         </Grid>
+    </Shell.TitleView>-->
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto"
+              Padding="12,0"
+              HeightRequest="56">
+
+            <!-- Title -->
+            <Label Grid.Column="0"
+                   Text="Kitchen Companion"
+                   FontSize="25"
+                   FontAttributes="Bold"
+                   TextColor="#E57373"
+                   VerticalOptions="Center" />
+
+            <!-- Favorite / Tag -->
+            <Label Grid.Column="1"
+                   Text="{Binding FavoriteText}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="#E57373"
+                   VerticalOptions="Center"
+                   IsVisible="{Binding ShowFavorite}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding FavoriteCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Edit -->
+            <Button Grid.Column="2"
+                    Text="Edit"
+                    IsVisible="{Binding IsOwner}"
+                    FontSize="18"
+                    Clicked="Button_Clicked"
+                    TextColor="#E57373" 
+                    BackgroundColor="Transparent" />
+
+            <!-- Delete -->
+            <Button Grid.Column="3"
+                    Text="Delete"
+                    FontSize="18"
+                    IsVisible="{Binding IsOwner}"
+                    TextColor="Red"
+                    BackgroundColor="Transparent"
+                    Margin="12,0,0,0" />
+        </Grid>
     </Shell.TitleView>
+
 
     <VerticalStackLayout>
         <Grid RowDefinitions="260,Auto,*">

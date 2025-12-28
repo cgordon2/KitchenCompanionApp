@@ -103,12 +103,12 @@ private async void UpdateProfile(object sender, EventArgs e)
 
             if (bio2 != null)
             {
-                shortBio += "," + shortBio;
+                shortBio += "," + bio2;
             }
 
             if (bio3 != null)
             {
-                shortBio += "," + shortBio; 
+                shortBio += "," + bio3; 
             }
 
             var userDto = new UserDTO();

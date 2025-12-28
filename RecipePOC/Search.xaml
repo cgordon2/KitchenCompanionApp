@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RecipePOC.Search" 
-             Title="Search"
+             Title=""
                           Shell.BackgroundColor="#F9EDEC"    
             BackgroundColor="WhiteSmoke"
              xmlns:local="clr-namespace:RecipePOC">
@@ -11,47 +11,24 @@
         <Grid  ColumnDefinitions="*,Auto,Auto,Auto,Auto"
       Padding="12,0"
       HeightRequest="56">
-
-            <!-- App Title -->
             <Label Text="Kitchen Companion"
                FontSize="25"
                FontFamily="OpenSansRegular"
                TextColor="#E57373"
                FontAttributes="Bold"
                VerticalOptions="Center" />
-
-            <!-- 🔔 Notification Bell with Small Badge -->
             <Grid Grid.Column="1"
               HorizontalOptions="End"
               VerticalOptions="Center"
               Margin="0,0,8,6">
-                <!-- Bell Icon -->
-                <Label Text="🔔"
+                <Label Text="🔄"
                    FontSize="22"
                    VerticalOptions="Center"
                    HorizontalOptions="Center">
-                    <Label.GestureRecognizers> 
+                    <Label.GestureRecognizers>
                     </Label.GestureRecognizers>
                 </Label>
-
-                <!-- Notification Badge (smaller and offset) -->
-                <Border
-                BackgroundColor="#E57373"
-                WidthRequest="12"
-                HeightRequest="12"
-                StrokeThickness="0" 
-                HorizontalOptions="End"
-                VerticalOptions="Start"
-                Margin="0,-2,-2,0" >
-                    <Label  
-                       FontSize="8"
-                        Text="{Binding NotifCount}"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"
-                       TextColor="Black"
-                       FontAttributes="Bold" />
-                </Border>
-            </Grid> 
+            </Grid>
             <Border Grid.Column="2"
                 WidthRequest="40"
                 HeightRequest="40"
@@ -59,11 +36,14 @@
                 HorizontalOptions="End"
                 Margin="0,0,0,6"
                 VerticalOptions="Center">
-                <Label Text="👤"
+                <Label Text="➕"
                    FontSize="22"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
-            </Border>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="ImageButton_Clicked" />
+                </Border.GestureRecognizers>
+            </Border> 
             <Border Grid.Column="3"
                 WidthRequest="40"
                 HeightRequest="40"
@@ -71,27 +51,12 @@
                 HorizontalOptions="End"
                 Margin="0,0,0,6"
                 VerticalOptions="Center">
+
                 <Border.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="ImageButton_Clicked" />
+                    <TapGestureRecognizer Tapped="OnSearchTapped" />
                 </Border.GestureRecognizers>
-                <Label Text="➕"
-                   FontSize="22"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Center" /> 
-            </Border>
-            <Border Grid.Column="4"
-                WidthRequest="40"
-                HeightRequest="40"
-                StrokeThickness="0"
-                HorizontalOptions="End"
-                Margin="0,0,0,6"
-                VerticalOptions="Center">
 
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnSearchTapped" />
-                        </Border.GestureRecognizers>
-
-                        <Label Text="🔍"
+                <Label Text="🔍"
                    FontSize="22"
                    HorizontalOptions="Center"
                    VerticalOptions="Center" />
@@ -154,10 +119,10 @@
                             </Border.GestureRecognizers>
                             <HorizontalStackLayout Spacing="5">
                                 <Label Text="❌" FontSize="14" />
-                                <Label Text="Tagged Recipes" FontSize="14" TextColor="Black"/>
+                                <Label Text="Cloned Recipes" FontSize="14" TextColor="Black"/>
                             </HorizontalStackLayout>
                         </Border>
-                        <Border x:Name="UserFilter"
+                        <!--<Border x:Name="UserFilter"
                     StrokeShape="RoundRectangle 20"
                     BackgroundColor="#F9EDEC"
                     Padding="10,5">
@@ -168,7 +133,7 @@
                                 <Label Text="❌" FontSize="14" />
                                 <Label Text="Users" FontSize="14" TextColor="Black"/>
                             </HorizontalStackLayout>
-                        </Border>
+                        </Border>-->
                     </HorizontalStackLayout>
 
                     <!-- List (STAR ROW gives it a real viewport so it scrolls) -->
@@ -299,7 +264,7 @@ ItemSizingStrategy="MeasureFirstItem"
                         </Grid.Resources>
 
                         <Button Grid.Column="0" Text="🏠" Clicked="Button_Clicked"/>
-                        <Button Grid.Column="1" Text="📖" FontSize="34" Margin="0,-2,0,0" Clicked="Button_Clicked_1"/>
+                        <Button Grid.Column="1" Text="📖" FontSize="34" Margin="0,-2,0,0"/>
                         <Button Grid.Column="3" Text="💬" Clicked="Button_Clicked_3"/>
                         <Button Grid.Column="4" Text="👤" Clicked="Button_Clicked_4"/>
                     </Grid>

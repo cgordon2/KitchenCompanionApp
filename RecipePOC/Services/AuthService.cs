@@ -69,7 +69,8 @@ namespace RecipePOC.Services
                 user.Language = language;
                 user.DisplayNotifications = displayNotifs;
                 user.Email = email;
-                user.IsSetup = true;
+                user.is_setup = true;
+                user.IsSetup = true; 
                 user.real_name = realName;
                 user.Location = location; 
 

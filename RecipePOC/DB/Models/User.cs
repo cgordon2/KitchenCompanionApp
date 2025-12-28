@@ -41,6 +41,9 @@ namespace RecipePOC.DB.Models
         public string real_name { get; set; } = string.Empty;
 
         [Column("is_setup")]
-        public bool IsSetup { get; set; }  // is_setup
+        public bool is_setup { get; set; }  // is_setup
+
+        [Column("IsSetup")]
+        public bool IsSetup { get; set; } 
     }
 }

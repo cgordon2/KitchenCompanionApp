@@ -328,8 +328,7 @@
 
                 <!-- 🏠 Home -->
                 <Button Grid.Column="0"
-                Text="🏠"
-                Clicked="HomePage_Navigate" />
+                Text="🏠" />
 
                 <!-- 🔍 Search -->
                 <Button Grid.Column="1"

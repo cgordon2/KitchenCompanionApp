@@ -53,6 +53,21 @@ namespace RecipePOC.Services
             return content; 
         }
 
+        public static async Task<List<RecipeDto>> GetClonedRecipes(IHttpClientFactory _httpClientFactory)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/recipes/listclones");
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<RecipeDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<RecipeDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<RecipeDto>();
+        }
+
         public static async Task<List<RecipeDto>> GetAllRecipes(IHttpClientFactory _httpClientFactory)
         {
             var content = await GetRoute(_httpClientFactory, "api/recipes/list");
@@ -119,6 +134,13 @@ namespace RecipePOC.Services
             var didDelete = await PostRoute<List<NotificationDTO>>(_httpClientFactory, "api/notification/markread", notifDtos); 
 
             return didDelete; 
+        }
+
+        public static async Task<string?> EditRecipe(IHttpClientFactory _httpClientFactory, RecipeDto dto)
+        {
+            var test = await PostRoute<RecipeDto>(_httpClientFactory, "api/recipes/editrecipe", dto);
+
+            return test;
         }
 
         public static async Task<string?> CreateRecipe(IHttpClientFactory _httpClientFactory, RecipeDto dto)

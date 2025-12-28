@@ -31,5 +31,7 @@ namespace RecipePOC.DB.Models
 
         public int Serves { get; set; } 
         public int Prep { get; set; } 
+
+        public bool IsCloned { get; set; } 
     }
 }

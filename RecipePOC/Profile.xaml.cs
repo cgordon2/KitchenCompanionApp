@@ -321,6 +321,7 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         SecureStorage.Default.Remove("real_name");
         SecureStorage.Default.Remove("selected_ingredients"); // 
         SecureStorage.Default.Remove("selected_recipe");
+        SecureStorage.Default.Remove("should_clone_or_edit"); 
 
         await Navigation.PushAsync(new MainPage(_authService, _recipeService, _theFactory, _connection));  
     }
