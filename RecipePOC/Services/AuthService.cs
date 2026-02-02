@@ -1,8 +1,10 @@
 ﻿using RecipePOC.DB;
+using RecipePOC.DB.Models;
 using RecipePOC.DTOs;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -21,6 +23,11 @@ namespace RecipePOC.Services
         {
             _httpClientFactory = httpClientFactory;
         } 
+
+        public async Task<bool> InsertUsers(List<User> usersToInsert)
+        {
+            return true;
+        }
 
         public async Task<string> RegisterUser(SQLiteAsyncConnection _connection, LoginRequestDto userDTO)
         {
@@ -59,9 +66,31 @@ namespace RecipePOC.Services
             return "Update failure"; 
         }
 
-        public async Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs, string realName)
+        public async Task<string?> UpdateAvatarUrl(string username, string avatarUrl,  SQLiteAsyncConnection _connection)
         {
             var user = await _connection.Table<DB.Models.User>().Where(r => r.UserName == username).FirstOrDefaultAsync();
+
+            if (avatarUrl == null)
+                avatarUrl = "user_ico.png"; 
+
+            if (avatarUrl != null)
+            {
+                user.AvatarUrl = avatarUrl;
+
+                await _connection.UpdateAsync(user);
+
+                return "Update succcess"; 
+            }
+
+            return "update failure"; 
+        }
+
+        public async Task<string> UpdateUserProfile(SQLiteAsyncConnection _connection, string email,  string username, string bio, string language, string location, bool displayNotifs, string realName, string? avatarUrl)
+        {
+            var user = await _connection.Table<DB.Models.User>().Where(r => r.UserName == username).FirstOrDefaultAsync();
+
+            if (avatarUrl == null)
+                avatarUrl = "user_ico.png"; 
 
             if (user != null)
             {
@@ -72,6 +101,7 @@ namespace RecipePOC.Services
                 user.is_setup = true;
                 user.IsSetup = true; 
                 user.real_name = realName;
+                user.AvatarUrl = avatarUrl; 
                 user.Location = location; 
 
                 await _connection.UpdateAsync(user);

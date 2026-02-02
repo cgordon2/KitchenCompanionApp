@@ -3,8 +3,7 @@ using RecipePOC.DTOs;
 using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using SQLite;
-using System.Threading.Tasks;
-using Windows.Networking.XboxLive;
+using System.Threading.Tasks; 
 using System.Security.Cryptography;
 using System.Numerics;
 namespace RecipePOC
@@ -79,6 +78,12 @@ namespace RecipePOC
 
                             userDto.UserId = Random.Shared.Next();
                             userDto.UserName = foundUser.UserName;
+                            userDto.Email = foundUser.Email; 
+                            userDto.RealName = foundUser.RealName;
+                            userDto.AvatarUrl = foundUser.AvatarUrl;
+
+                            userDto.ShortBio = foundUser.ShortBio;
+
 
                             await _recipeService.InsertUser(userDto);
 

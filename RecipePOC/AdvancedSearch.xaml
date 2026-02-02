@@ -2,11 +2,117 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RecipePOC.AdvancedSearch"
-             Title="AdvancedSearch">
+             Title="AdvancedSearch"
+                          Shell.BackgroundColor="#F9EDEC"    
+             Shell.TitleColor="#000000"
+             xmlns:local="clr-namespace:RecipePOC"
+             Shell.ForegroundColor="#000000"
+             BackgroundColor="WhiteSmoke">
+    <Shell.TitleView>
+        <Grid ColumnDefinitions="*,Auto"
+             Padding="12,0"
+             HeightRequest="56">
+
+            <Label Text="Search Recipes"
+                  FontSize="25"
+                  TextColor="#E57373"
+                  FontAttributes="Bold"
+                  VerticalOptions="Center" /> 
+        </Grid>
+    </Shell.TitleView>
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <Grid RowDefinitions="Auto,*,Auto">
+            <ScrollView Grid.Row="1">
+                <Grid Grid.Row="1" Padding="20">
+                    <VerticalStackLayout Spacing="15">
+
+                        <Label Text="All of these words" TextColor="Black"/>
+                        <Entry x:Name="AllOfWords" TextColor="Black" BackgroundColor="#E57373"/>
+
+                        <Label Text="This exact phrase" TextColor="Black"/>
+                        <Entry x:Name="ThisExactPhrase" TextColor="Black" BackgroundColor="#E57373"/> 
+
+                        <!-- 🔢 Prep / Cook / Serves -->
+                        <!--<Grid ColumnDefinitions="*,*,*" Padding="0,10">
+ 
+                            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                                <Label Text="Prep" FontSize="16" TextColor="Black" />
+                                <Entry x:Name="PrepEntry"
+                       Keyboard="Numeric"
+                       WidthRequest="80"
+                       BackgroundColor="#E57373"
+                       TextColor="White" />
+                            </VerticalStackLayout> 
+                            <BoxView Grid.Column="1"
+                     WidthRequest="1"
+                     BackgroundColor="#CCCCCC"
+                     Margin="0,8" /> 
+                            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                                <Label Text="Cook" FontSize="16" TextColor="Black" />
+                                <Entry x:Name="CookEntry"
+                       Keyboard="Numeric"
+                       WidthRequest="80"
+                       BackgroundColor="#E57373"
+                       TextColor="White" />
+                            </VerticalStackLayout> 
+                            <BoxView Grid.Column="2"
+                     WidthRequest="1"
+                     BackgroundColor="#CCCCCC"
+                     Margin="0,8" /> 
+                            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                                <Label Text="Serves" FontSize="16" TextColor="Black" />
+                                <Entry x:Name="ServesEntry"
+                       Keyboard="Numeric"
+                       WidthRequest="80"
+                       BackgroundColor="#E57373"
+                       TextColor="White" />
+                            </VerticalStackLayout>
+
+                        </Grid>-->
+                        <!-- ✅ GRID CLOSED HERE -->
+
+                        <!-- ⭐ Rating -->
+                        <Label Text="Rating" TextColor="Black"/>
+
+                        <HorizontalStackLayout Spacing="2">
+                            <Label x:Name="Star1" Text="★" FontSize="28" TextColor="#C0C0C0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="StarTapped" CommandParameter="1"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label x:Name="Star2" Text="★" FontSize="28" TextColor="#C0C0C0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="StarTapped" CommandParameter="2"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label x:Name="Star3" Text="★" FontSize="28" TextColor="#C0C0C0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="StarTapped" CommandParameter="3"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label x:Name="Star4" Text="★" FontSize="28" TextColor="#C0C0C0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="StarTapped" CommandParameter="4"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <Label x:Name="Star5" Text="★" FontSize="28" TextColor="#C0C0C0">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="StarTapped" CommandParameter="5"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+                        <Label Text="Your recipes only?" TextColor="Black"></Label>
+                        <Switch IsToggled="{Binding SearchOnlyUser}"/>
+                        <Button Text="Search" Clicked="AdvancedSearchRecipes"/>
+
+                    </VerticalStackLayout>
+                </Grid>
+
+            </ScrollView>
+        </Grid>
     </VerticalStackLayout>
 </ContentPage>

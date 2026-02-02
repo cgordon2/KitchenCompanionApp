@@ -16,7 +16,13 @@ public partial class IngredientsListView : ContentPage
     private string _username = string.Empty;
     private bool _displayCheckbox = false; 
     private bool _IsVisible { get; set; } 
-    public ObservableCollection<IngredientItem> Items { get; set; } 
+    public ObservableCollection<IngredientItem> Items { get; set; }
+
+    void OnCheckboxLoaded(object sender, EventArgs e)
+    {
+        if (sender is CheckBox cb)
+            cb.Color = Colors.Black; // or theme color
+    }
 
     public IngredientsListView(IRecipeService recipeService, string username, bool displayCheckbox, IHttpClientFactory httpClientFactory)
 	{
@@ -116,10 +122,10 @@ public partial class IngredientsListView : ContentPage
         RecipeListView.ItemsSource = null; 
         RecipeListView.ItemsSource = IngredientBuffer;
 
-        RecipeListView.Footer =
+        /*RecipeListView.Footer =
                     (IngredientBuffer.Count > 0 && hasMoreData)
                      ? CreateLoadMoreFooter()
-                     : null;
+                     : null;**/ 
     }
 
     private int currentPage = 0;

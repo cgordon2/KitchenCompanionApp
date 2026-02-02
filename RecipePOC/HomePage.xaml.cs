@@ -19,6 +19,41 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
     private int _notifCount; 
     private string _realName;
+    private bool _isLoading;
+    private string _avatarUrl; 
+
+
+    public ImageSource UserAvatar
+    {
+        get
+        {
+            const string ApiBaseUrl = "http://192.168.7.203:5285";
+
+            var file = string.IsNullOrWhiteSpace(AvatarUrl)
+                       || AvatarUrl == "user_ico.png"
+                       ? "user_ico.png"
+                       : AvatarUrl;
+
+            return ImageSource.FromUri(
+                new Uri($"{ApiBaseUrl}/uploads/{file}")
+            );
+        }
+    }
+
+    public string AvatarUrl
+    {
+        get => _avatarUrl; 
+        set
+        {
+            if (_avatarUrl != value)
+            {
+                _avatarUrl = value;
+                OnPropertyChanged(nameof(AvatarUrl));
+                OnPropertyChanged(nameof(UserAvatar)); 
+            }
+        }
+    }
+
 
     public int NotifCount
     {
@@ -48,7 +83,7 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
 
     int page = 0;
-    int pageSize = 3; 
+    int pageSize = 15; 
     ObservableCollection<Recipe> Recipes = new();
 
     public HomePage(IAuthService authService, IRecipeService recipeService, INotificationService notifService, IHttpClientFactory httpClientFactory)
@@ -70,36 +105,41 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
         _connection = new SQLiteAsyncConnection(DBConstants.DatabasePath, DBConstants.Flags);
 
+        RecipesList.ItemsSource = Recipes;
+
         BindingContext = this;
     }
 
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
-        base.OnAppearing();
-
-        try
-        {
-            await OnAppearingAsync();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine("REAL ERROR:");
-            System.Diagnostics.Debug.WriteLine(ex.ToString());
-        }
-
-        // _ = OnAppearingAsync();
+        base.OnAppearing(); 
+         _ = OnAppearingAsync();
     }
 
     private async Task OnAppearingAsync()
-    { 
+    {
+        await RecipeDB.CreateAsync(); 
+
         page = 0;
-        Recipes.Clear();
-        RecipesList.ItemsSource = null;
+        Recipes.Clear(); 
         SecureStorage.Default.Remove("selected_ingredients");
-         
+
+        SecureStorage.Default.Remove("should_clone_or_edit");
+        SecureStorage.Default.Remove("selected_recipe");
+        SecureStorage.Default.Remove("selected_ingredients");
+
         var userName = await SecureStorage.GetAsync("user_name");
         var chefGuid = await SecureStorage.GetAsync("chef_guid");
+
+        SecureStorage.Default.Remove("recipe_title");
+        SecureStorage.Default.Remove("recipe_description");
+        SecureStorage.Default.Remove("selected_category");
+
+        SecureStorage.Default.Remove("selected_recipe");
+        SecureStorage.Default.Remove("selected_ingredients");
+        SecureStorage.Default.Remove("should_clone_or_edit");
+        SecureStorage.Default.Remove("RecipePhotoName");
 
         RealName = "Hello, @"+userName+"!";  
 
@@ -119,7 +159,9 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
                 }
             }
         }
+        var user = await _authService.GetUser(_connection, userName);
 
+        AvatarUrl = user.AvatarUrl;
         var notifs = await _notificationsService.GetNotifications(false, chefGuid);
         NotifCount = notifs.Count;
 
@@ -167,38 +209,57 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
 
     private async Task LoadNextPage()
     {
+        if (_isLoading)
+            return;
+
+        _isLoading = true;
+
         var email = await SecureStorage.GetAsync("email"); 
         // Ask DB for only items for this page
         var newRecipes = await _recipeService.GetRecipes(false, false, false, true, email, page, pageSize);
 
-        foreach (var recipe in newRecipes)
+        //await Task.Delay(50);
+
+           try
         {
-            Recipes.Add(new Recipe
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                Title = recipe.RecipeName,
-                Description = recipe.Description,
-                UserName = recipe.ChefName,
-                RecipeGUID = recipe.RecipeGuid,
-                Photo = recipe.Photo,
-                CookTime = recipe.CookTime,
-                Stars = recipe.Stars,
-                Serves = recipe.Serves,
-                Prep = recipe.Prep, 
-                Favorite = recipe.Favorite, 
-            }); 
+                foreach (var recipe in newRecipes)
+                {
+                    Recipes.Add(new Recipe
+                    {
+                        Title = recipe.RecipeName,
+                        Description = recipe.Description,
+                        UserName = recipe.ChefName,
+                        RecipeGUID = recipe.RecipeGuid,
+                        Photo = recipe.Photo,
+                        CookTime = recipe.CookTime,
+                        Stars = recipe.Stars,
+                        Serves = recipe.Serves,
+                        Prep = recipe.Prep,
+                        Favorite = recipe.Favorite,
+                    }); 
+                }
+
+                for (int i = 0; i < Recipes.Count; i++)
+                    Recipes[i].Index = i % 2;
+
+                RecipesList.ItemsSource = Recipes;
+
+                // Show footer only if there are possibly more items
+                RecipesList.Footer = (newRecipes.Count == pageSize)
+                    ? CreateLoadMoreFooter()
+                    : null;
+
+                page++;
+            });
+
+        }
+        finally
+        {
+            _isLoading = false; 
         }
 
-        for (int i = 0; i < Recipes.Count; i++)
-            Recipes[i].Index = i % 2;
-
-        RecipesList.ItemsSource = Recipes;
-
-        // Show footer only if there are possibly more items
-        RecipesList.Footer = (newRecipes.Count == pageSize)
-            ? CreateLoadMoreFooter()
-            : null;
-
-        page++;
     }
 
     private View CreateLoadMoreFooter()

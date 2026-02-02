@@ -2,6 +2,7 @@ using RecipePOC.DTOs;
 using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace RecipePOC;
@@ -27,7 +28,33 @@ public partial class CreateIngredient : ContentPage
 
     protected override async void OnAppearing()
     {
-        base.OnAppearing(); 
+        base.OnAppearing();
+        _stars = new[] { Star1, Star2, Star3, Star4, Star5 };
+
+        SecureStorage.Default.Remove("IngredientPhotoName"); 
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        SecureStorage.Default.Remove("IngredientPhotoName");
+    }
+    int _rating = 0;
+    Label[] _stars;
+    private void StarTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter == null)
+            return;
+
+        _rating = Convert.ToInt32(e.Parameter);
+
+        for (int i = 0; i < _stars.Length; i++)
+        {
+            _stars[i].TextColor = i < _rating
+                ? Colors.Gold
+                : Colors.Silver;
+        }
     }
 
     private async void UploadImage_Clicked(object sender, EventArgs e)
@@ -36,20 +63,49 @@ public partial class CreateIngredient : ContentPage
         {
             var result = await FilePicker.PickAsync(new PickOptions
             {
-                PickerTitle = "Select a file"
+                PickerTitle = "Select an image",
+                FileTypes = FilePickerFileType.Images
             });
 
-            if (result != null)
+            if (result == null)
+                return;
+
+            using var stream = await result.OpenReadAsync();
+            using var content = new MultipartFormDataContent();
+
+            var streamContent = new StreamContent(stream);
+            streamContent.Headers.ContentType =
+                new MediaTypeHeaderValue("application/octet-stream");
+
+            content.Add(streamContent, "file", result.FileName);
+
+            using var httpClient = new HttpClient();
+
+            var response = await httpClient.PostAsync(
+                "http://192.168.7.203:5285/api/recipes/uploadimage",
+                content);
+
+            if (response.IsSuccessStatusCode)
             {
-                await DisplayAlert("File Selected", result.FileName, "OK");
-                // You can also access result.FullPath
-                // or process the stream:
-                // using var stream = await result.OpenReadAsync();
+                const string ApiBaseUrl = "http://192.168.7.203:5285"; // dev PC
+
+                var imageUrl = $"{ApiBaseUrl}/uploads/{result.FileName}";
+
+                IngredientImageBtn.Source =
+                    ImageSource.FromUri(new Uri(imageUrl));
+
+                await SecureStorage.Default.SetAsync("IngredientPhotoName", result.FileName);
+
+                await DisplayAlert("Success", "Image uploaded", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Error", response.StatusCode.ToString(), "OK");
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            await DisplayAlert("Error", "File picking failed.", "OK");
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     } 
 
@@ -57,22 +113,33 @@ public partial class CreateIngredient : ContentPage
 
     private async void AddIngredient(object sender, EventArgs e)
     {
+        var CategoryMap = new Dictionary<string, int>
+                        {
+                            { "Walmart", 1 },
+                            { "Target", 2 },
+                            { "Costco", 3 },
+                            { "Meijer", 4 },
+                            { "Kroger", 5 }, 
+                        };
         var title = TitleEntry.Text; 
-        var unitName = UnitNameEntry.Text;
-        var storeName = StoreNameEntry.Text;
-        var storeUrl = StoreUrlEntry.Text;
+        //var unitName = UnitNameEntry.Text;
+        //var storeName = StoreNameEntry.Text;
+        //var storeUrl = StoreUrlEntry.Text;
+        var selectedCategory = StorePicker.SelectedItem.ToString();
+        var photoName = await SecureStorage.Default.GetAsync("IngredientPhotoName");
+        SecureStorage.Default.Remove("IngredientPhotoName"); 
 
         var dto = new IngredientDto();
 
         dto.IngredientName = title;
         dto.Store_ID = 1;
         dto.Unit_ID = 1; 
-        dto.UnitName = unitName;  ;
-        dto.StoreName = storeName; 
-        dto.StoreUrl = storeUrl; 
-        dto.CreatedBy = _username; 
-        dto.Photo = "food.png";
-        dto.Stars = "5";
+        dto.UnitName = "Walmart";  ;
+        dto.StoreName = Convert.ToString(CategoryMap[selectedCategory]);
+        dto.StoreUrl = "testtelly"; 
+        dto.CreatedBy = _username;
+        dto.Photo = photoName; 
+        dto.Stars = Convert.ToString(_rating);
         dto.Preptime = "0";
         dto.CookTime = "0";
         dto.Serves = "0";
@@ -84,7 +151,15 @@ public partial class CreateIngredient : ContentPage
 
         var ingredientsFresh = await _recipeService.GetIngredientsFresh();
 
-        await _recipeService.ResetIngredients(ingredientsFresh); 
+        await _recipeService.ResetIngredients(ingredientsFresh);
+
+        await Shell.Current.GoToAsync("..");
+
+    }
+
+    private void CategoryPicker2_Loaded(object sender, EventArgs e)
+    {
+        StorePicker.SelectedIndex = 0;
     }
 
     private readonly Color Grey = Color.FromArgb("#C0C0C0");

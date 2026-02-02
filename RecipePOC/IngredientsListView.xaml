@@ -35,9 +35,9 @@
         </Grid>
     </Shell.TitleView>
 
-    <VerticalStackLayout>
+    <Grid RowDefinitions="Auto,*">
         <SearchBar x:Name="IngredientsSearchBar"
-                   Grid.Column="1"
+        Grid.Row="0"            
                    Placeholder="Search Ingredients..."
                    TextColor="White"
                    PlaceholderColor="White"
@@ -47,9 +47,12 @@
                    FontSize="16"
                    VerticalOptions="Center"
                    HeightRequest="36" />
+        
         <ListView x:Name="RecipeListView"
           ItemsSource="{Binding Items}"
           HasUnevenRows="True"
+                          Grid.Row="1"
+
                   BackgroundColor="White"
           SeparatorVisibility="None">
 
@@ -65,7 +68,10 @@
                                 <!-- checkbox -->
                                 <CheckBox Grid.Column="0"
                       VerticalOptions="Center"
-                      HorizontalOptions="Center"
+                      HorizontalOptions="Center" 
+                      Color="Transparent"
+                      Margin="10, 0, 0, 0"
+                      Loaded="OnCheckboxLoaded"
                       IsVisible="{Binding IsCheckboxVisible}"
                       IsChecked="{Binding IsSelected}" />
 
@@ -78,7 +84,7 @@
                    CornerRadius="6"
                    HasShadow="False"
                    VerticalOptions="Center">
-                                    <Image Source="{Binding Photo}"
+                                    <Image Source="{Binding RecipePhoto}"
                        Aspect="AspectFill"
                        Margin="10" />
                                 </Frame>
@@ -111,63 +117,10 @@
                             </Grid>
 
                         </StackLayout>
-                    </ViewCell>
-
-                    <!--<ViewCell>  
-                        <Grid  
-    ColumnDefinitions="35,80,*">
- 
-                            <CheckBox Grid.Column="0"
-              VerticalOptions="Center"
-                                      IsVisible="{Binding IsCheckboxVisible}"
-                                      IsChecked="{Binding IsSelected}"
-              HorizontalOptions="Center"/>
- 
-                            <Frame Grid.Column="1"
-           BackgroundColor="White"
-           WidthRequest="80"
-           HeightRequest="80"
-           Padding="0"
-           CornerRadius="6"
-           HasShadow="False"
-           Margin="0"
-           VerticalOptions="Center"
-           HorizontalOptions="Start">
-                                <Image Source="{Binding Photo}"
-               Aspect="AspectFill" Margin="10" />
-                            </Frame>
- 
-                            <StackLayout Grid.Column="2"
-                 Spacing="4"
-                 VerticalOptions="Center" Padding="10">
-
-                                <Label Text="{Binding Name}"
-               FontSize="18"
-               FontAttributes="Bold"
-               TextColor="Black"/>
-
-                                <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
-               FontSize="16"
-               TextColor="#f4c430"/>
-
-                                <Label Text="{Binding StoreName}"
-               FontSize="14"
-               FontAttributes="Bold"
-               TextColor="Black"/>
-
-                                <Label Text="{Binding CreatedBy}"
-               FontSize="14"
-               TextColor="Gray"/>
-
-                            </StackLayout>
-                        </Grid>
-
-
-
-                    </ViewCell>-->
+                    </ViewCell> 
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>

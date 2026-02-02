@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RecipePOC.Followers"
-            Shell.BackgroundColor="#F9EDEC"    
+             x:Class="RecipePOC.UserDirectory"
+                                       Shell.BackgroundColor="#F9EDEC"    
              Shell.ForegroundColor="Black"
             BackgroundColor="WhiteSmoke"
-             Title="Followers">
+             Title="UserDirectory">
     <Shell.TitleView
     Shell.BackButtonBehavior="{x:Static Shell.BackButtonBehavior.Default}">
 
@@ -14,7 +14,7 @@
           HeightRequest="56">
 
             <!-- Title -->
-            <Label Text="Followers"
+            <Label Text="User Directory"
                FontSize="25"
                TextColor="#E57373"
                FontAttributes="Bold"
@@ -22,20 +22,11 @@
                HorizontalOptions="Start" />
         </Grid>
     </Shell.TitleView>
-    <VerticalStackLayout>
-        <SearchBar x:Name="UserSearchBar"
-                   Grid.Column="1"
-                   Placeholder="Search Following..."
-                   TextColor="White"
-                   PlaceholderColor="White"
-                   Margin="10"
-                   BackgroundColor="#E57373"  
-                   FontSize="16"
-                   VerticalOptions="Center"
-                   HeightRequest="36" />
-        <ListView x:Name="FollowersListview"
+    <Grid RowDefinitions="*">
+        <ListView x:Name="UserListview"
           ItemsSource="{Binding Items}"
           HasUnevenRows="True"
+          ItemTapped="UserListview_ItemTapped"
                   BackgroundColor="White"
           SeparatorVisibility="None">
 
@@ -55,7 +46,7 @@
                    HasShadow="False"
                    VerticalOptions="Center">
 
-                                <Image Source="user_ico.png"
+                                <Image Source="{Binding UserAvatar}"
                        Aspect="AspectFill" />
                             </Frame>
 
@@ -83,5 +74,5 @@
             </ListView.ItemTemplate>
         </ListView>
 
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>

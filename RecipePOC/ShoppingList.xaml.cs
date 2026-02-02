@@ -2,6 +2,8 @@ using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using RecipePOC.Services.UIModels;
 using System.Collections.ObjectModel;
+using System.Text;
+using System.Text.Json;
 
 namespace RecipePOC;
 
@@ -24,6 +26,62 @@ public partial class ShoppingList : ContentPage
         public Color StripColor { get; set; } 
 
         public bool IsSelectedDone { get; set; } 
+    }
+
+    private async void OnUpdateClicked(object sender, EventArgs e)
+    {
+        // split by checkbox state
+        var doneItems = Items
+            .Where(i => i.IsSelectedDone)
+            .ToList();
+
+        var undoneItems = Items
+            .Where(i => !i.IsSelectedDone)
+            .ToList();
+
+        // extract GUIDs (or IDs)
+        var doneGuids = doneItems.Select(i => i.GUID).ToList();
+        var undoneGuids = undoneItems.Select(i => i.GUID).ToList();
+
+        Console.WriteLine($"Done: {doneGuids.Count}, Undone: {undoneGuids.Count}");
+
+        await UpdateShoppingItemsBatch(doneGuids, undoneGuids);
+    }
+
+    private async Task UpdateShoppingItemsBatch(
+    List<string> doneGuids,
+    List<string> undoneGuids)
+    {
+        var payload = new
+        {
+            markDone = doneGuids,
+            markUndone = undoneGuids
+        };
+
+        await APIClient.PostRoute(_theFactory, "api/recipes/UpdateShoppingList", payload); 
+    }
+
+    private async void OnAddItemTapped(object sender, EventArgs e)
+    {
+        var text = FoodEntry.Text?.Trim();
+
+        if (string.IsNullOrEmpty(text))
+            return;
+         
+        Items.Add(new ShoppingListItem
+        {
+            Description = text,
+            IsSelectedDone = false
+        });
+
+        // Clear input
+        FoodEntry.Text = string.Empty;
+
+        // Optional: hide keyboard
+        FoodEntry.Unfocus();
+
+        var username = await SecureStorage.GetAsync("user_name"); 
+        await APIClient.CreateShoppingListItem(_theFactory, text, username); 
     }
 
     public ShoppingList(IHttpClientFactory theFactory, IRecipeService recipeService)
@@ -61,8 +119,8 @@ public partial class ShoppingList : ContentPage
                 var item = new ShoppingListItem();
 
                 item.Description = test.Text;
-                item.IsSelectedDone = test.IsDone; 
-                
+                item.IsSelectedDone = test.IsDone;
+                item.GUID = test.ShoppingListGUID; 
 
                 Items.Add(item);
             }

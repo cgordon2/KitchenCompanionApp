@@ -22,6 +22,10 @@ namespace RecipePOC.DTOs
         public string? ShortBio { get; set; } 
         public string? Location { get; set; } 
 
-        public string? Language { get; set; } 
+        public string? Language { get; set; }
+        
+        public string? AvatarUrl { get; set; }
+
+        public bool? NavigateToProfile { get; set; } = false; 
     }
 }

@@ -1,4 +1,5 @@
 using RecipePOC.DTOs;
+using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,6 +13,7 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 { 
     private Recipe _recipe;
     private IRecipeService _recipeService;
+    private INotificationService _notifService; 
     private IHttpClientFactory _httpClientFactory; 
     public event PropertyChangedEventHandler PropertyChanged;
     public ICommand FavoriteCommand { get; }
@@ -56,10 +58,10 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         get
         {
             if (!IsOwner)
-                return "Clone";
+                return "\uD83D\uDCC4";
 
-            return IsFavorite ? "Unfavorite" : "Favorite";
-        }
+            return IsFavorite ? "\u2764\uFE0F" : "\uD83E\uDD0D";
+        } 
     }
 
     public bool ShowFavorite => true;
@@ -103,7 +105,21 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         public string PrepTime { get; set; } 
         public string CookTime { get; set; } 
         public string Serves { get; set; } 
-        public string Photo { get; set; } 
+        public string Photo { get; set; }
+        public ImageSource RecipePhoto
+        {
+            get
+            {
+                // fallback image from Resources/Images
+                if (string.IsNullOrWhiteSpace(Photo) || Photo == "food.jpg")
+                    return ImageSource.FromFile("food.jpg");
+
+                const string ApiBaseUrl = "http://192.168.7.203:5285";
+                var imageUrl = $"{ApiBaseUrl}/uploads/{Photo}";
+
+                return ImageSource.FromUri(new Uri(imageUrl));
+            }
+        }
     }
 
 	public IngredientDetail(RecipePOC.Recipe recipe, IRecipeService service, IHttpClientFactory theFactory)
@@ -115,9 +131,22 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 
         Favorite = recipe.Favorite; 
         RecipeName = recipe.Title; 
-        Description = recipe.Description; 
+        Description = recipe.Description;
 
-        Photo = recipe.Photo;
+        if (string.IsNullOrWhiteSpace(recipe.Photo) || recipe.Photo == "food.jpg")
+        {
+            Photo = "food.jpg"; 
+        } 
+        else
+        {
+
+            const string ApiBaseUrl = "http://192.168.7.203:5285"; // dev PC
+
+            var imageUrl = $"{ApiBaseUrl}/uploads/{recipe.Photo}";
+            Photo = imageUrl; 
+        }
+        _notifService = MauiProgram.Services.GetService<INotificationService>();
+
         CookTime = "Cook time " + recipe.CookTime + " mins"; 
         Serves = "Serves " + recipe.Serves;
         PrepTime = "Prep time "+recipe.Prep + " mins";
@@ -128,24 +157,33 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 
         Ingredients = new ObservableCollection<IngredientDetailObj>();
 
-        FavoriteCommand = new Command(OnFavoriteClicked);
+        //FavoriteCommand = new Command(OnFavoriteClicked);
+        FavoriteCommand = new Command(async () => await OnFavoriteClicked());
 
         BindingContext = this;
     }
 
-    private async void OnFavoriteClicked()
+    private async Task OnFavoriteClicked()
     {
         switch (FavoriteText)
         {
-            case "Favorite":
-                await DisplayAlert("Favorite", "FAV clicked", "Ok"); 
+            case "\uD83E\uDD0D":
+                var favRequest = new FavoriteRequest();
+                favRequest.RecipeId = RecipeId;
+                IsFavorite = true; 
+
+                await APIClient.FavRecipe(_httpClientFactory, favRequest); 
                 break;
 
-            case "Unfavorite":
-                await DisplayAlert("remove", "FAV clicked", "Ok");
+            case "\u2764\uFE0F":
+                var unfavRequest = new FavoriteRequest();
+                unfavRequest.RecipeId = RecipeId;
+                IsFavorite = false; 
+
+                await APIClient.UnfavRecipe(_httpClientFactory, unfavRequest);  
                 break;
 
-            case "Clone":
+            case "\uD83D\uDCC4":
                 // also seriaized RI 
                 _recipe.RecipeGUID = Convert.ToString(RecipeId);
                 _recipe.RecipeIngredients = RIEditList;
@@ -173,7 +211,8 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         var username = await SecureStorage.Default.GetAsync("user_name");
         IsFavorite = string.Equals(Favorite, "Yes", StringComparison.OrdinalIgnoreCase);
 
-        Ingredients.Clear(); 
+        Ingredients.Clear();
+        RIEditList.Clear(); 
 
         if (string.IsNullOrEmpty(username))
             return;
@@ -185,6 +224,7 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         IsFavorite = Favorite == "Yes";
 
         var result = await _recipeService.GetRecipeIngredients(RecipeId); 
+
 
         foreach (var item in result)
         {
@@ -209,6 +249,7 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
 
             RIEditList.Add(recipeRI);
 
+            
             ingredient.Name = name;
             ingredient.store = store;
             ingredient.storeUrl = storeUrl;
@@ -240,7 +281,7 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         {
             // also seriaized RI 
             _recipe.RecipeGUID = Convert.ToString(RecipeId);
-            _recipe.RecipeIngredients = RIEditList; 
+            _recipe.RecipeIngredients = RIEditList;
 
             var json = JsonSerializer.Serialize(_recipe);
             await SecureStorage.SetAsync("selected_recipe", json);
@@ -254,14 +295,25 @@ public partial class IngredientDetail : ContentPage, INotifyPropertyChanged
         var username = _recipe.UserName;
         var loggedInUser = await SecureStorage.GetAsync("user_name");
 
-        if (loggedInUser == username)
-        {
-            // can delete
-        }
-        else
-        {
-            await DisplayAlert("Can't Delete", "You didn't create this recipe", "Cancel"); 
-             // popup 
-        }
+        var recipeDto = new RecipeDto();
+
+        recipeDto.RecipeID = RecipeId;
+        recipeDto.CookTime = 1;
+        recipeDto.Stars = 1;
+        recipeDto.Serves = 1;
+        recipeDto.Prep = 1;
+        recipeDto.IsCloned = false;
+        recipeDto.Description = "awefawef"; 
+
+        await APIClient.DeleteRecipe(_httpClientFactory, recipeDto);
+
+        var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
+        var clonedRecipes = await APIClient.GetClonedRecipes(_httpClientFactory);
+
+        allRecipes.AddRange(clonedRecipes);
+
+        await _recipeService.ResetRecipes(allRecipes);
+
+        await Navigation.PushAsync(new Search(_recipeService, null, _httpClientFactory)); 
     }
 }

@@ -24,24 +24,14 @@
             <!-- Done -->
             <Button
             Grid.Column="1"
-            Text="✔ Done"
+            Text="✔ Update"
             FontSize="20"
             TextColor="#E57373"
+            Clicked="OnUpdateClicked"
             BackgroundColor="Transparent"
             FontAttributes="Bold"
             Padding="0"
-            VerticalOptions="Center" />
-
-            <!-- Delete -->
-            <Button
-            Grid.Column="2"
-            Text="🗑️ Delete"
-            FontSize="20"
-            TextColor="#E57373"
-            BackgroundColor="Transparent"
-            FontAttributes="Bold"
-            Padding="0"
-            VerticalOptions="Center" />
+            VerticalOptions="Center" /> 
 
         </Grid>
     </Shell.TitleView>
@@ -73,6 +63,7 @@
                 <Entry
             Placeholder="What type of food or drink?"
             FontSize="16"
+            x:Name="FoodEntry"
             TextColor="#2D2D2D"
             PlaceholderColor="#999"
             BackgroundColor="Transparent"
@@ -91,7 +82,9 @@
             CornerRadius="0"
         HorizontalOptions="Fill"
         VerticalOptions="Fill">
-
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnAddItemTapped" />
+                </Frame.GestureRecognizers>
                 <Label
             Text="+"
             FontSize="26"

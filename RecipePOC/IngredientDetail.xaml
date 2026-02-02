@@ -70,32 +70,52 @@
     <Shell.TitleView>
         <Grid ColumnDefinitions="*,Auto,Auto,Auto"
               Padding="12,0"
+               InputTransparent="False"
               HeightRequest="56">
 
             <!-- Title -->
             <Label Grid.Column="0"
-                   Text="Kitchen Companion"
+                   Text=""
                    FontSize="25"
                    FontAttributes="Bold"
                    TextColor="#E57373"
                    VerticalOptions="Center" />
 
             <!-- Favorite / Tag -->
-            <Label Grid.Column="1"
+            <!--<Label Grid.Column="1"
                    Text="{Binding FavoriteText}"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   TextColor="#E57373"
-                   VerticalOptions="Center"
-                   IsVisible="{Binding ShowFavorite}">
+    FontSize="18"
+    WidthRequest="40"
+    HeightRequest="40"
+    HorizontalTextAlignment="Center"
+    VerticalTextAlignment="Center" 
+
+    VerticalOptions="Center"
+    HorizontalOptions="Center"
+                   IsVisible="{Binding ShowFavorite}"> 
                 <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding FavoriteCommand}" />
+                    <TapGestureRecognizer
+            Command="{Binding BindingContext.FavoriteCommand,
+                              Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+            CommandParameter="{Binding .}" />
                 </Label.GestureRecognizers>
-            </Label>
+            </Label>-->
+            <Button
+    Grid.Column="1"
+    Text="{Binding FavoriteText}"
+    FontSize="18"
+    WidthRequest="40"
+    HeightRequest="40"
+    Padding="0"
+    BackgroundColor="Transparent"
+    BorderWidth="0"
+    Command="{Binding FavoriteCommand}"
+    HorizontalOptions="Center"
+    VerticalOptions="Center" />
 
             <!-- Edit -->
             <Button Grid.Column="2"
-                    Text="Edit"
+                    Text="✏️"
                     IsVisible="{Binding IsOwner}"
                     FontSize="18"
                     Clicked="Button_Clicked"
@@ -104,34 +124,29 @@
 
             <!-- Delete -->
             <Button Grid.Column="3"
-                    Text="Delete"
+                    Text="🗑️"
                     FontSize="18"
                     IsVisible="{Binding IsOwner}"
                     TextColor="Red"
+                    Clicked="DeleteButton_Clicked"
                     BackgroundColor="Transparent"
-                    Margin="12,0,0,0" />
+                    Margin="0,0,0,0" />
         </Grid>
     </Shell.TitleView>
 
 
-    <VerticalStackLayout>
-        <Grid RowDefinitions="260,Auto,*">
-
-            <!-- HEADER / HERO IMAGE -->
-            <Grid Grid.Row="0">
+    <!--<VerticalStackLayout>-->
+        <Grid RowDefinitions="*"> 
+            <!--<Grid Grid.Row="0">
 
                 <Image
             Source="{Binding Photo}"
             Aspect="AspectFill"
             HorizontalOptions="Fill"
-            VerticalOptions="Fill" />
-
-                <!-- Dark overlay -->
+            VerticalOptions="Fill" /> 
                 <BoxView VerticalOptions="End"
              HeightRequest="90"
-             BackgroundColor="#80000000" />
-
-                <!-- TEXT OVERLAY -->
+             BackgroundColor="#80000000" /> 
                 <VerticalStackLayout
         VerticalOptions="End"
         HorizontalOptions="Start"
@@ -152,50 +167,84 @@
 
                 </VerticalStackLayout>
             </Grid>
-            <VerticalStackLayout Grid.Row="1"
+        <VerticalStackLayout Grid.Row="1"
                      Padding="16"
                      Spacing="6">
-                <Label Text="Stats"
+            <Label Text="Stats"
            FontSize="18"
            TextColor="Red" />
-                <Label Text="{Binding Serves}"
+            <Label Text="{Binding Serves}"
            FontSize="15"
            TextColor="Gray" />
 
-                <Label Text="{Binding PrepTime}"
+            <Label Text="{Binding PrepTime}"
            FontSize="15"
            TextColor="Gray" />
 
-                <Label Text="{Binding CookTime}"
+            <Label Text="{Binding CookTime}"
            FontSize="15"
            TextColor="Gray" />
-                <Label Text="Directions"
+            <Label Text="Directions"
            FontSize="18"
            
            TextColor="Red" />
-                <Label Text="{Binding Description}"
+            <Label Text="{Binding Description}"
            FontSize="15"
            TextColor="Black" />
-                <Label Text="{Binding IngredientsCount}"
+            <Label Text="{Binding IngredientsCount}"
            FontSize="18"
            TextColor="Red" />
-            </VerticalStackLayout>
+        </VerticalStackLayout>-->
 
-            <!-- LIST VIEW -->
-            <ListView
-        Grid.Row="2"
+        <ListView 
         x:Name="IngredientList"
         ItemsSource="{Binding Ingredients}" 
         HasUnevenRows="True"
         BackgroundColor="White"
         SeparatorVisibility="Default">
+            <ListView.Header>
+                <Grid RowDefinitions="260,Auto">
 
-                <ListView.ItemTemplate>
+                    <!-- HERO -->
+                    <Grid Grid.Row="0" HeightRequest="260">
+                        <Image Source="{Binding Photo}" Aspect="AspectFill" />
+                        <BoxView VerticalOptions="End"
+                     HeightRequest="90"
+                     BackgroundColor="#80000000" />
+
+                        <VerticalStackLayout
+                VerticalOptions="End"
+                Margin="16,0,16,20">
+                            <Label Text="{Binding RecipeName}"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="White" />
+                            <Label Text="{Binding UserName}"
+                       TextColor="#DDDDDD" />
+                            <Label Text="{Binding Stars, Converter={StaticResource StarsToEmojiConverter}}"
+                       TextColor="#f4c430"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- STATS -->
+                    <VerticalStackLayout Grid.Row="1" Padding="16">
+                        <Label Text="Stats" FontSize="18" TextColor="Red" />
+                        <Label Text="{Binding Serves}" TextColor="Black"/>
+                        <Label Text="{Binding PrepTime}" TextColor="Black"/>
+                        <Label Text="{Binding CookTime}" TextColor="Black" />
+                        <Label Text="Directions" FontSize="18" TextColor="Red" />
+                        <Label Text="{Binding Description}" TextColor="Black"/>
+                        <Label Text="{Binding IngredientsCount}" FontSize="18" TextColor="Red" />
+                    </VerticalStackLayout>
+
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <HorizontalStackLayout Padding="10" Spacing="10">
 
-                                <Image Source="{Binding Photo}"
+                                <Image Source="{Binding RecipePhoto}"
                                        WidthRequest="56"
                                        HeightRequest="56"
                                        Aspect="AspectFill" />
@@ -206,10 +255,7 @@
                                    TextColor="Black"/>
                                     <Label Text="{Binding store}"
                                    FontSize="14"
-                                   TextColor="Gray"/>
-                                    <Label Text="{Binding storeUrl}"
-                                   FontSize="14"
-                                   TextColor="Gray"/>
+                                   TextColor="Gray"/> 
                                 </VerticalStackLayout>
                             </HorizontalStackLayout>
                         </ViewCell>
@@ -219,5 +265,5 @@
 
         </Grid>
 
-    </VerticalStackLayout>
+   <!-- </VerticalStackLayout>-->
 </ContentPage>

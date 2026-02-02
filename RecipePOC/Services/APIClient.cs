@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Windows.UI.Notifications;
+//using Windows.UI.Notifications;
 
 namespace RecipePOC.Services
 {
@@ -31,6 +31,46 @@ namespace RecipePOC.Services
                 }) ?? new List<ShoppingListDTO>();
         }
 
+        public static async Task<ShoppingListDTO> CreateShoppingListItem(IHttpClientFactory _theFactory, string text, string username)
+        {
+            var shoppingListDto = new ShoppingListDTO();
+
+            shoppingListDto.Text = text;
+            shoppingListDto.Category = "null";
+            shoppingListDto.UserName = username;
+            shoppingListDto.IsDone = false; 
+
+            var content = await PostRoute<ShoppingListDTO>(_theFactory, "api/recipes/CreateShoppingListItem", shoppingListDto);
+            if (string.IsNullOrWhiteSpace(content))
+                return new ShoppingListDTO(); // default empty list
+
+            return JsonSerializer.Deserialize<ShoppingListDTO>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new ShoppingListDTO();
+        }
+
+        /** 
+         * 
+         * Search recipes
+         * */ 
+        public static async Task<List<RecipeDto>> SearchAllRecipes(IHttpClientFactory _httpClientFactory, RecipeSearchDto dto)
+        {
+            var content = await PostRoute<RecipeSearchDto>(_httpClientFactory, "api/recipes/search", dto);
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<RecipeDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<RecipeDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<RecipeDto>();
+        }
+
         public static async Task<bool> MarkCompleteListItem(IHttpClientFactory _httpClientFactory, ShoppingListDTO dto)
         {
             await PostRoute<ShoppingListDTO>(_httpClientFactory, "api/recipes/MarkShoppingComplete", dto);
@@ -46,6 +86,32 @@ namespace RecipePOC.Services
         /**
          * Recipes
          * **/
+        public static async Task<string?> FavRecipe(IHttpClientFactory _httpClientFactory, FavoriteRequest recipeID)
+        {
+            var test = await PostRoute<FavoriteRequest>(_httpClientFactory, "api/recipes/favrecipe", recipeID);
+
+            return test;
+        }
+
+
+
+        public static async Task<string?> UnfavRecipe(IHttpClientFactory _httpClientFactory, FavoriteRequest recipeId)
+        {
+            var test = await PostRoute<FavoriteRequest>(_httpClientFactory, "api/recipes/unfavrecipe", recipeId);
+
+            return test;
+        }
+
+
+        public static async Task<string?> DeleteRecipe(IHttpClientFactory _httpClientFactory, RecipeDto recipe)
+        {
+            var test = await PostRoute<RecipeDto>(_httpClientFactory, "api/recipes/deleterecipe", recipe);
+
+            return test; 
+        }
+
+
+
         public static async Task<string?> GetRecipeFavoritesAsync(IHttpClientFactory _httpClientFactory)
         {
             var content = await GetRoute(_httpClientFactory, "api/recipes/favoritelist"); 
@@ -169,6 +235,65 @@ namespace RecipePOC.Services
             return test; 
         }
 
+        public static async Task<List<RecipeDto>> GetRecipesByUserId(IHttpClientFactory _httpClientFactory, int page, int userId)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/recipes/listbyuserid", Convert.ToString(page), "page", Convert.ToString(userId), "userid");
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<RecipeDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<RecipeDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<RecipeDto>();
+        }
+
+        public static async Task<List<UserDTO>> GetFollowers(IHttpClientFactory _httpClientFactory, int currentUserId)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/auth/listfollowers", Convert.ToString(currentUserId), "currentUserId");
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<UserDTO>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<UserDTO>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<UserDTO>();
+        }
+
+        public static async Task<List<UserDTO>> GetFollowing(IHttpClientFactory _httpClientFactory, int currentUserId)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/auth/listfollowing", Convert.ToString(currentUserId), "currentUserId");
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<UserDTO>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<UserDTO>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<UserDTO>();
+        }
+
+        public static async Task<List<UserDTO>> GetUsers(IHttpClientFactory _httpClientFactory, int page)
+        {
+            var content = await GetRoute(_httpClientFactory, "api/auth/listusers", Convert.ToString(page), "page");
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<UserDTO>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<UserDTO>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<UserDTO>();
+        }
+
         public static async Task<string?> UpdateFollowingOrFollowers(IHttpClientFactory _httpClientFactory, UserDTO userDto, bool isFollowers)
         {
             if (isFollowers)
@@ -229,7 +354,9 @@ namespace RecipePOC.Services
         /**
          * GetRoute
          * **/ 
-        public static async Task<string?> GetRoute(IHttpClientFactory _httpClientFactory, string apiRoute, string? parameter_one = null, string? param_key = null)
+        public static async Task<string?> GetRoute(IHttpClientFactory _httpClientFactory, string apiRoute, string? parameter_one = null, string? param_key = null,
+    string? parameter_two = null,
+    string? param_key_two = null)
         {
             var httpClient = _httpClientFactory.CreateClient(AppConstants.HttpClientName);
              
@@ -243,6 +370,9 @@ namespace RecipePOC.Services
                     query[param_key] = parameter_one;
                     //query[param_key] = param_key;
                 }
+
+                if (!string.IsNullOrEmpty(param_key_two) && !string.IsNullOrEmpty(parameter_two))
+                    query[param_key_two] = parameter_two;
 
                 uriBuilder.Query = query.ToString();
 

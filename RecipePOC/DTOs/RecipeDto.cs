@@ -12,7 +12,7 @@ namespace RecipePOC.DTOs
         [JsonPropertyName("recipeName")]
         public string? RecipeName { get; set; }
         [JsonPropertyName("description")]
-        public string Description { get; set; } 
+        public string? Description { get; set; } 
         public string? ChefName { get; set; }
         [JsonPropertyName("chefEmail")]
         public string? ChefEmail { get; set; } 
@@ -23,7 +23,7 @@ namespace RecipePOC.DTOs
         public int? RecipeID { get; set; }
         //
         [JsonPropertyName("ingredients")]
-        public List<RecipeAndRiDTO> RecipeIngredients { get; set; }
+        public List<RecipeAndRiDTO>? RecipeIngredients { get; set; }
         
         public string? Photo { get; set; } 
         public int CookTime { get; set; } 

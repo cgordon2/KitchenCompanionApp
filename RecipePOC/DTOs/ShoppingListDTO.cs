@@ -8,7 +8,7 @@ namespace RecipePOC.DTOs
 {
     public class ShoppingListDTO
     {
-        public string ShoppingListIdGuid { get; set; } // maps to int on post for MC and delete 
+        public int Id { get; set; } // maps to int on post for MC and delete 
         public string Text { get; set; } 
 
         public string Category { get; set; } 

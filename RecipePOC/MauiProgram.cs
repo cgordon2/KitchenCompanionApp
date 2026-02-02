@@ -2,6 +2,8 @@
 using RecipePOC.DB;
 using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
+using Microsoft.Maui.Platform;
+
 #if WINDOWS
 using Microsoft.Maui.Handlers;
 #endif
@@ -50,8 +52,7 @@ namespace RecipePOC
              builder.Services.AddSingleton<IngredientDetail>();
              builder.Services.AddSingleton<CreateRecipe>();
              builder.Services.AddSingleton<Notifications>();
-             builder.Services.AddSingleton<Search>(); **/
-
+             builder.Services.AddSingleton<Search>(); **/ 
 
 
 #if DEBUG
@@ -68,6 +69,7 @@ namespace RecipePOC
 #endif
 
             var app =  builder.Build();
+
             Services = app.Services;   // <-- initialize
 
             return app; 
@@ -85,7 +87,8 @@ namespace RecipePOC
             services.AddHttpClient(AppConstants.HttpClientName, httpClient =>
             {
                 // Use your local API during development
-                httpClient.BaseAddress = new Uri("https://localhost:7222");
+                httpClient.BaseAddress = new Uri("http://192.168.7.203:5285"); 
+                //httpClient.BaseAddress = new Uri("https://localhost:7222");
                 //httpClient.BaseAddress = new Uri("http://10.0.2.2:5285");
             })
             .ConfigurePrimaryHttpMessageHandler(() =>

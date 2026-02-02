@@ -77,5 +77,20 @@ namespace RecipePOC.Services.Models
                 OnPropertyChanged(nameof(IsSelected));
             }
         }
+
+        public ImageSource RecipePhoto
+        {
+            get
+            {
+                // fallback image from Resources/Images
+                if (string.IsNullOrWhiteSpace(Photo) || Photo == "food.jpg")
+                    return ImageSource.FromFile("food.jpg");
+
+                const string ApiBaseUrl = "http://192.168.7.203:5285";
+                var imageUrl = $"{ApiBaseUrl}/uploads/{Photo}";
+
+                return ImageSource.FromUri(new Uri(imageUrl));
+            }
+        }
     }
 }

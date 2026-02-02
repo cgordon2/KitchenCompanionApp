@@ -37,7 +37,7 @@ namespace RecipePOC.DB.Models
         public bool DisplayNotifications { get; set; }
 
         public string AvatarUrl { get; set; } = string.Empty;
-
+         
         public string real_name { get; set; } = string.Empty;
 
         [Column("is_setup")]

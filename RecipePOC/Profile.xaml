@@ -9,11 +9,11 @@
              Shell.ForegroundColor="#000000"
              BackgroundColor="WhiteSmoke">
     <Shell.TitleView>
-        <Grid ColumnDefinitions="*,Auto"
+        <Grid ColumnDefinitions="*,Auto,Auto"
               Padding="12,0"
               HeightRequest="56">
 
-            <Label Text="Kitchen Companion"
+            <Label Text=""
                    FontSize="25"
                    TextColor="#E57373"
                    FontAttributes="Bold"
@@ -26,6 +26,14 @@
                     BackgroundColor="Transparent"
                     FontAttributes="Bold"
                     Clicked="EditButton_Clicked"
+                    Padding="0" />
+            <Button Grid.Column="2"
+                    Text="🔄"
+                    FontSize="20"
+                    TextColor="#E57373"
+                    BackgroundColor="Transparent"
+                    FontAttributes="Bold"
+                    Clicked="RefreshButtonTapped"
                     Padding="0" />
         </Grid>
     </Shell.TitleView>
@@ -55,7 +63,7 @@
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 Padding="0">
-                            <Image Source="user_ico.png"
+                            <Image Source="{Binding UserAvatar}"
                                    Aspect="AspectFill"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
@@ -72,16 +80,16 @@
                                FontAttributes="Bold"
                                FontSize="22"
                                HorizontalOptions="Center"
-                               TextColor="#000" />
+                               TextColor="Black" />
 
                         <Label Text="{Binding ProfileName}"
                                FontSize="14"
                                HorizontalOptions="Center"
-                               TextColor="#555" />
+                               TextColor="DarkGray" />
 
                         <Label Text="{Binding combinedFacts}"
                                FontSize="14"
-                               TextColor="#333"
+                               TextColor="DarkGray"
                                LineBreakMode="WordWrap"
                                HorizontalTextAlignment="Center"
                                Margin="0,4,0,0" />
@@ -118,28 +126,23 @@
                             </VerticalStackLayout>
 
                             <!-- Divider -->
-                            <BoxView WidthRequest="1"
+                            <!--<BoxView WidthRequest="1"
              HeightRequest="20"
              BackgroundColor="#E0E0E0"
-             VerticalOptions="Center"/>
-
-                            <!-- Followers -->
-                            <VerticalStackLayout HorizontalOptions="Center"
+             VerticalOptions="Center"/>-->
+ 
+                            <!--<VerticalStackLayout HorizontalOptions="Center"
                          VerticalOptions="Center">
                                 <Label Text="{Binding followerCount}"
                FontAttributes="Bold"
                FontSize="14"
                TextColor="#000"
                HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
-
-                            <!-- Divider -->
+                            </VerticalStackLayout> 
                             <BoxView WidthRequest="1"
              HeightRequest="20"
              BackgroundColor="#E0E0E0"
-             VerticalOptions="Center"/>
-
-                            <!-- Following -->
+             VerticalOptions="Center"/> 
                             <VerticalStackLayout HorizontalOptions="Center"
                          VerticalOptions="Center">
                                 <Label Text="{Binding followingCount}"
@@ -147,7 +150,7 @@
                FontSize="14"
                TextColor="#000"
                HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
+                            </VerticalStackLayout>-->
                         </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </Border>
@@ -168,7 +171,7 @@
                     <Grid ColumnDefinitions="Auto,*"
                   HorizontalOptions="FillAndExpand">
                         <Grid.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnFollowersTapped" />
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
                         </Grid.GestureRecognizers>
                         <Label Text="👤"
                        FontSize="22"
@@ -181,7 +184,7 @@
                        FontAttributes="Bold"  />
                     </Grid>
                 </Border>
-                <Border BackgroundColor="#F9EDEC" 
+               <!-- <Border BackgroundColor="#F9EDEC" 
                 StrokeThickness="0"
                 Padding="20,15"
                 HorizontalOptions="FillAndExpand">
@@ -220,7 +223,7 @@
                        TextColor="Black"
                        FontAttributes="Bold" />
                     </Grid>
-                </Border> 
+                </Border>-->
                 <Border BackgroundColor="#F9EDEC" 
                 StrokeThickness="0"
                 Padding="20,15"

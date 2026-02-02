@@ -23,6 +23,13 @@ namespace RecipePOC.Services.Recipes
             _httpClientFactory = httpClientFactory;
         }
 
+        public async Task<List<DB.Models.Recipe>> GetRecipesCount(string username)
+        {
+            var recipes = await _connection.Table<DB.Models.Recipe>().Where(r => r.ChefEmail == username).ToListAsync(); 
+
+            return recipes; 
+        }
+
         public async Task<List<DB.Models.ShoppingList>> GetShoppingListFromDB(string username)
         {
             var favorites = await _connection.Table<DB.Models.ShoppingList>().Where(r => r.UserName == username).ToListAsync(); 
@@ -44,7 +51,7 @@ namespace RecipePOC.Services.Recipes
             var entities = dtos.Select(dto => new DB.Models.ShoppingList
             { 
                IsDone = dto.IsDone, 
-                ShoppingListGUID = dto.ShoppingListIdGuid, 
+                ShoppingListGUID = Convert.ToString(dto.Id), 
                 Text = dto.Text, 
                 UserName = dto.UserName
             }).ToList();
@@ -75,6 +82,9 @@ namespace RecipePOC.Services.Recipes
 
                 modelUser.UserId = user.UserId; 
                 modelUser.UserName = user.UserName;
+                modelUser.real_name = user.RealName;
+                modelUser.ShortBio = user.ShortBio;
+                modelUser.AvatarUrl = user.AvatarUrl; 
 
                 DateTime dt = DateTime.Now;
                 string result = dt.ToString("MMMM, yyyy");
@@ -170,7 +180,7 @@ namespace RecipePOC.Services.Recipes
         public async Task<List<DB.Models.Ingredient>> SearchIngredients(string query, int page, int size)
         { 
             return await _connection.Table<DB.Models.Ingredient>()
-                .Where(r => r.IngredientName.ToLower().Contains(query.ToLower())).Skip(page * size).Take(size)
+                .Where(r => r.IngredientName.ToLower().Contains(query.ToLower()))
                 .ToListAsync(); 
         }
 
@@ -258,11 +268,11 @@ namespace RecipePOC.Services.Recipes
             //await _connection.ExecuteAsync("ALTER TABLE Notification ADD COLUMN NotifGUID TEXT");
            // await _connection.ExecuteAsync("ALTER TABLE Ingredient ADD COLUMN CookTime TEXT");
           //  await _connection.ExecuteAsync("ALTER TABLE Ingredient ADD COLUMN Serves TEXT");
-            var ingredients = await _connection.Table<DB.Models.Ingredient>()
-                .Skip(page * size).Take(size).ToListAsync(); 
+            var ingredients = await _connection.Table<DB.Models.Ingredient>().ToListAsync(); 
 
             return ingredients;
-        }
+        } 
+
 
         public class RecipeIngredientFull
         {
@@ -292,7 +302,6 @@ namespace RecipePOC.Services.Recipes
          * **/
         public async Task<List<RecipeIngredientFull>> GetRecipeIngredients(int recipeId)
         {
-            string sql = "    ";
             var ingredients = await _connection.QueryAsync<RecipeIngredientFull>(@"SELECT 
                                                                                     ri.*,
                                                                                     i.IngredientName,
@@ -302,12 +311,14 @@ namespace RecipePOC.Services.Recipes
 	                                                                                i.Stars, 
 	                                                                                i.PrepTime, 
 	                                                                                i.CookTime, 
-	                                                                                i.Serves
+	                                                                                i.Serves, 
+                                                                                    i.StoreName, 
+                                                                                    i.StoreUrl
                                                                                 FROM RecipeIngredient ri    
                                                                                 INNER JOIN Ingredient i ON ri.IngredientId = i.IngredientGUID  
                                                                                 INNER JOIN Recipe r ON ri.RecipeId = r.RecipeGUID
-                                                                                WHERE ri.RecipeID = ?", recipeId); // working 2008
-            return ingredients;
+                                                                              WHERE ri.RecipeID = ?", recipeId);  
+            return ingredients; 
         }
 
         public async Task AddShoppingList(ShoppingListDTO dto)

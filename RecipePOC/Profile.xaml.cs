@@ -1,4 +1,5 @@
 ﻿using RecipePOC.DB;
+using RecipePOC.DTOs;
 using RecipePOC.Services;
 using RecipePOC.Services.Recipes;
 using SQLite;
@@ -25,6 +26,38 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
     private string _followingCount;
     private string _joinedDate;
     private string _location;
+    private string _avatarUrl;
+
+    public ImageSource UserAvatar
+    {
+        get
+        {
+            const string ApiBaseUrl = "http://192.168.7.203:5285";
+
+            var file = string.IsNullOrWhiteSpace(AvatarUrl)
+                       || AvatarUrl == "user_ico.png"
+                       ? "user_ico.png"
+                       : AvatarUrl;
+
+            return ImageSource.FromUri(
+                new Uri($"{ApiBaseUrl}/uploads/{file}")
+            );
+        }
+    }
+
+    public string AvatarUrl
+    {
+        get => _avatarUrl; 
+        set
+        {
+            if (_avatarUrl != value)
+            {
+                _avatarUrl = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AvatarUrl)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UserAvatar)));
+            }
+        }
+    }
 
     public string RealName
     {
@@ -200,51 +233,36 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
             RealName = user.real_name;
 
         ProfileName = "@"+user.UserName;
-
-        if (user.ShortBio != null)
+        
+        if (user.AvatarUrl == null)
         {
-            string[] facts = user.ShortBio.Split(",");
-
-            if (facts.Length == 3)
-            {
-                var fact1 = facts[0];
-                var fact2 = facts[1];
-                var fact3 = facts[2];
-
-                combinedFacts = fact1 + " | " + fact2 + " | " + fact3;
-            }
-            else if (facts.Length == 2)
-            {
-                var fact1 = facts[0];
-                var fact2 = facts[1];
-
-                combinedFacts = fact1 + " | " + fact2;
-            }
-            else if (facts.Length == 1)
-            {
-                var fact1 = facts[0];
-
-                combinedFacts = fact1;
-            }
-            else if (facts.Length == 4)
-            {
-                var fact1 = facts[0];
-                var fact2 = facts[1];
-                var fact3 = facts[2];
-                var fact4 = facts[3];
-
-                combinedFacts = fact1 + " | " + fact2 + " | " + fact3 + " | " + fact4; 
-            }
+            AvatarUrl = "user_ico.png"; 
+        }
+        else
+        {
+            AvatarUrl = user.AvatarUrl;
         }
 
-        followerCount = Convert.ToString(user.FollowersCount) + " Followers";
-        followingCount = Convert.ToString(user.FollowingCount) + " Following";
-        totalRecipes = Convert.ToString(user.TotalRecipes) + " Recipes";
+        combinedFacts = user.ShortBio; 
+
+        var email = await SecureStorage.GetAsync("email");
+        var chefId = await SecureStorage.GetAsync("chef_guid");
+
+        var followers = await APIClient.GetFollowers(_theFactory, Convert.ToInt16(chefId));
+        var following = await APIClient.GetFollowing(_theFactory, Convert.ToInt32(chefId));
+
+        followerCount = followers.Count + " Followers";
+        followingCount = following.Count + " Following"; 
+
+        var recipesCount = await _recipeService.GetRecipesCount(email);
+        int recipesCount2 = recipesCount.Count;  
+
+        totalRecipes = Convert.ToString(recipesCount2) + " Recipes";
 
         if (user.Created != null)
         {
             DateTime dt = DateTime.Parse(user.Created);
-            string formatted = $"Joined {dt:MMMM} {AddOrdinal(dt.Day)} {dt:yyyy}";
+            string formatted = $"Joined {dt:MMMM yyyy}";
 
             joinedDate = formatted;
         }
@@ -292,25 +310,45 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         // we are already here
     }
 
+    /**
+     *     public class UserDTO
+    {
+        public int UserId { get; set; } 
+        public string UserName { get; set; } = string.Empty; 
+        public string? Password { get; set; } 
+        public string? ConfirmPassword { get; set; } 
+        public string? Email { get; set; } 
+
+        public bool IsSetup { get; set; } 
+
+        public int? ChefId { get; set; } 
+
+        public string? RealName { get; set; }
+        public string? ShortBio { get; set; } 
+        public string? Location { get; set; } 
+
+        public string? Language { get; set; }
+        
+        public string? AvatarUrl { get; set; } 
+    }
+     * **/
+
     private async void EditButton_Clicked(object sender, EventArgs e)
-    { 
-
-    }
-
-    private async void OnFollowingTapped(object sender, TappedEventArgs e)
     {
-        var followingPage = new Following();
+        var chefGuid = await SecureStorage.GetAsync("chef_guid");
+        var userName = await SecureStorage.GetAsync("user_name");
+        var email = await SecureStorage.GetAsync("email");
 
-        await Navigation.PushAsync(followingPage);
+        var userDto = new UserDTO()
+        {
+            UserName = userName,
+            Email = email,
+            IsSetup = true,
+            NavigateToProfile = true
+        }; 
 
-    }
-
-    private async void OnFollowersTapped(object sender, TappedEventArgs e)
-    {
-        var followersPage = new Followers(); 
-
-        await Navigation.PushAsync(followersPage);
-    }
+        await Navigation.PushAsync(new SetupProfile(userDto, _theFactory)); 
+    } 
 
     private async void OnLogoutTapped(object sender, TappedEventArgs e)
     {
@@ -324,5 +362,22 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         SecureStorage.Default.Remove("should_clone_or_edit"); 
 
         await Navigation.PushAsync(new MainPage(_authService, _recipeService, _theFactory, _connection));  
+    }
+
+    private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new UserDirectory()); 
+    }
+
+    private async void RefreshButtonTapped(object sender, EventArgs e)
+    {
+        var username = await SecureStorage.GetAsync("user_name"); 
+        var user = await APIClient.GetUser(_theFactory, username);
+
+        await _authService.UpdateAvatarUrl(username, user.AvatarUrl, _connection);
+
+        AvatarUrl = user.AvatarUrl; 
+
+        Console.WriteLine(user); 
     }
 }

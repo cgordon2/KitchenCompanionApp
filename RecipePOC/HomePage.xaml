@@ -15,7 +15,7 @@
           HeightRequest="56">
 
             <!-- App Title -->
-            <Label Text="Kitchen Companion"
+            <Label Text=""
                FontSize="25"
                FontFamily="OpenSansRegular"
                TextColor="#E57373"
@@ -28,17 +28,17 @@
               VerticalOptions="Center"
               Margin="0,0,8,6">
                 <!-- Bell Icon -->
-                <Label Text="🔔"
+                <!--<Label Text="🔔"
                    FontSize="22"
                    VerticalOptions="Center"
                    HorizontalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnBellTapped" />
                     </Label.GestureRecognizers>
-                </Label>
+                </Label>-->
 
                 <!-- Notification Badge (smaller and offset) -->
-                <Border
+                <!--<Border
                 BackgroundColor="#E57373"
                 WidthRequest="12"
                 HeightRequest="12"
@@ -55,7 +55,7 @@
                        VerticalOptions="Center"
                        TextColor="Black"
                        FontAttributes="Bold" />
-                </Border>
+                </Border>-->
             </Grid>
 
             <!-- 👤 Profile Emoji -->
@@ -90,7 +90,7 @@
                     WidthRequest="30"
                     HorizontalOptions="Center"
                     VerticalOptions="Center">
-                        <Image Source="user_ico.png"
+                        <Image Source="{Binding UserAvatar}"
                        Aspect="AspectFit"
                        BackgroundColor="Transparent" />
                     </Border>
@@ -215,7 +215,7 @@
                                 <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
 
                                     <!-- 🖼️ Recipe image -->
-                                    <Image Source="{Binding Photo}"  
+                                    <Image Source="{Binding RecipePhoto}"  
                                             WidthRequest="60"
                                        HeightRequest="60"
                                        Aspect="AspectFill"
@@ -241,7 +241,7 @@
                                         <!-- 👤 Extra info -->
                                         <HorizontalStackLayout Spacing="4"
                                                            VerticalOptions="Center">
-                                            <Border StrokeShape="RoundRectangle 2"
+                                            <!--<Border StrokeShape="RoundRectangle 2"
                                                 HeightRequest="15"
                                                 WidthRequest="15"
                                                 BackgroundColor="Transparent"
@@ -251,7 +251,7 @@
                                                 <Image Source="user_ico.png"
                                                    Aspect="AspectFill"
                                                    BackgroundColor="Transparent"/>
-                                            </Border>
+                                            </Border>-->
                                             <Label Text="{Binding UserName}"
                                                FontSize="12"
                                                TextColor="#999"

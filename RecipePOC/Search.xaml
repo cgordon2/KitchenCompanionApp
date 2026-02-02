@@ -11,7 +11,7 @@
         <Grid  ColumnDefinitions="*,Auto,Auto,Auto,Auto"
       Padding="12,0"
       HeightRequest="56">
-            <Label Text="Kitchen Companion"
+            <Label Text=""
                FontSize="25"
                FontFamily="OpenSansRegular"
                TextColor="#E57373"
@@ -20,14 +20,15 @@
             <Grid Grid.Column="1"
               HorizontalOptions="End"
               VerticalOptions="Center"
-              Margin="0,0,8,6">
+              Margin="0,0,8,6"> 
                 <Label Text="🔄"
                    FontSize="22"
                    VerticalOptions="Center"
                    HorizontalOptions="Center">
                     <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRefreshTapped" />
                     </Label.GestureRecognizers>
-                </Label>
+                </Label> 
             </Grid>
             <Border Grid.Column="2"
                 WidthRequest="40"
@@ -135,30 +136,24 @@
                             </HorizontalStackLayout>
                         </Border>-->
                     </HorizontalStackLayout>
-
+                    <!-- -->
                     <!-- List (STAR ROW gives it a real viewport so it scrolls) -->
-                    <CollectionView x:Name="RecipesList"
+                    <!--<CollectionView x:Name="RecipesList"
                         Grid.Row="2"
-ItemSizingStrategy="MeasureFirstItem"
+ItemSizingStrategy="MeasureAllItems"
                         Margin="10" 
- SelectionChanged="SearchList_OnItemChanged" 
-                                    SelectionMode="Single"
+ ItemsSource="{Binding RecipeBuffer}"
+                                    SelectionChanged="SearchList_OnItemChanged"
+                                        RemainingItemsThresholdReached="OnLoadMore"
+    RemainingItemsThreshold="2"
 
+                                    SelectionMode="Single"
                         BackgroundColor="WhiteSmoke"
                         EmptyView="No Recipes"
                         VerticalOptions="FillAndExpand"
-                        HorizontalOptions="FillAndExpand">
-                        <!--<CollectionView.EmptyView>
-                            <Label Text="No Recipes Found"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center"
-                       TextColor="Black"
-                       FontSize="16"
-                       BackgroundColor="Transparent" />
-                        </CollectionView.EmptyView>-->
-
+                        HorizontalOptions="FillAndExpand"> 
                         <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" /> <!-- 6-->
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" /> 
                         </CollectionView.ItemsLayout>
 
                         <CollectionView.ItemTemplate>
@@ -169,12 +164,8 @@ ItemSizingStrategy="MeasureFirstItem"
         StrokeThickness="0"
         StrokeShape="RoundRectangle 5"
         Padding="0"
-        Margin="0">
-<!-- 120 -->
-                                    <Grid ColumnDefinitions="5,80,*"
-        >
-
-                                        <!-- LEFT COLOR STRIP -->
+        Margin="0"> 
+                                    <Grid ColumnDefinitions="5,80,*" 
                                         <BoxView
                                             x:Name="LeftBar"
                                             Grid.Column="0"
@@ -197,21 +188,17 @@ ItemSizingStrategy="MeasureFirstItem"
                                                 </DataTrigger>
 
                                             </BoxView.Triggers>
-                                        </BoxView>
-                                        <!-- IMAGE -->
+                                        </BoxView> 
                                         <Image
                 Grid.Column="1"
-                Source="{Binding Photo}"
+                Source="{Binding RecipePhoto}"
                 WidthRequest="80" 
                 HeightRequest="80"
-                Aspect="AspectFill" />
-                                        <!-- 120 -->
-                                        <!-- TEXT -->
+                Aspect="AspectFill" /> 
                                         <VerticalStackLayout
                 Grid.Column="2"
                 Padding="10"
-                Spacing="4">
-<!-- 18 -->
+                Spacing="4"> 
                                             <Label
                     Text="{Binding Title}"
                     FontSize="12" 
@@ -238,11 +225,99 @@ ItemSizingStrategy="MeasureFirstItem"
                             </DataTemplate>
 
                         </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    </CollectionView>-->
+                    <ListView
+    x:Name="RecipesList"
+    Grid.Row="2"
+    Margin="10"
+    ItemsSource="{Binding RecipeBuffer}"
+    HasUnevenRows="True"
+    SelectionMode="Single" 
+ItemSelected="SearchList_OnItemChanged"
+    SeparatorVisibility="None"  
+    BackgroundColor="WhiteSmoke"
+    VerticalOptions="FillAndExpand"
+    HorizontalOptions="FillAndExpand"> 
 
-                </Grid>
+                        <!-- Item template -->
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Border
+                    BackgroundColor="#FFF9F9"
+                    Stroke="Transparent"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 5"
+                    Padding="0"
+                    Margin="0">
 
-                <!-- BOTTOM NAV (pinned) -->
+                                        <Grid ColumnDefinitions="5,80,*">
+
+                                            <!-- LEFT COLOR STRIP -->
+                                            <BoxView
+                            Grid.Column="0"
+                            WidthRequest="5"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Fill">
+
+                                                <BoxView.Triggers>
+                                                    <DataTrigger
+                                    TargetType="BoxView"
+                                    Binding="{Binding Index}"
+                                    Value="0">
+                                                        <Setter Property="BackgroundColor" Value="#FF8DA1" />
+                                                    </DataTrigger>
+
+                                                    <DataTrigger
+                                    TargetType="BoxView"
+                                    Binding="{Binding Index}"
+                                    Value="1">
+                                                        <Setter Property="BackgroundColor" Value="#FFE9F0" />
+                                                    </DataTrigger>
+                                                </BoxView.Triggers>
+                                            </BoxView>
+
+                                            <!-- IMAGE -->
+                                            <Image
+                            Grid.Column="1"
+                            Source="{Binding RecipePhoto}"
+                            WidthRequest="80"
+                            HeightRequest="80"
+                            Aspect="AspectFill" />
+
+                                            <!-- TEXT -->
+                                            <VerticalStackLayout
+                            Grid.Column="2"
+                            Padding="10"
+                            Spacing="4">
+
+                                                <Label
+                                Text="{Binding Title}"
+                                FontSize="12"
+                                FontAttributes="Bold"
+                                TextColor="#222"
+                                LineBreakMode="TailTruncation"
+                                MaxLines="1" />
+
+                                                <Label
+                                Text="{Binding CreatedBy}"
+                                FontSize="12"
+                                TextColor="#888" />
+
+                                                <Label
+                                Text="{Binding CreatedOn}"
+                                FontSize="12"
+                                TextColor="#888" />
+                                            </VerticalStackLayout>
+
+                                        </Grid>
+                                    </Border>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                </Grid> 
                 <Border Grid.Row="2"
             BackgroundColor="#FFF9F9"
             Padding="0">
@@ -269,7 +344,15 @@ ItemSizingStrategy="MeasureFirstItem"
                         <Button Grid.Column="4" Text="👤" Clicked="Button_Clicked_4"/>
                     </Grid>
                 </Border>
-
+                <ActivityIndicator x:Name="LoadingSearchSpinner"
+                   IsRunning="True"
+                   IsVisible="True"
+                   Color="#E57373"
+                   WidthRequest="40"
+                   HeightRequest="40"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   ZIndex="100" />
             </Grid> 
         </Grid> 
     </AbsoluteLayout>
