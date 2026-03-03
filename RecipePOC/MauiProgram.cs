@@ -87,7 +87,10 @@ namespace RecipePOC
             services.AddHttpClient(AppConstants.HttpClientName, httpClient =>
             {
                 // Use your local API during development
-                httpClient.BaseAddress = new Uri("http://192.168.7.203:5285"); 
+                httpClient.BaseAddress = new Uri("https://api.recipetracker.xyz"); 
+
+
+                //httpClient.BaseAddress = new Uri("http://192.168.7.203:5285"); 
                 //httpClient.BaseAddress = new Uri("https://localhost:7222");
                 //httpClient.BaseAddress = new Uri("http://10.0.2.2:5285");
             })

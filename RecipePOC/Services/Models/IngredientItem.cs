@@ -15,7 +15,9 @@ namespace RecipePOC.Services.Models
         public string UnitName { get; set; } = string.Empty;
         public string StoreName { get; set; } = string.Empty;
         public string StoreURL { get; set; } = string.Empty;
+        public string Quantity { get; set; } = string.Empty; 
         public string CreatedBy { get; set; } = string.Empty;
+        public string Serves { get; set; } = string.Empty; 
         public int Stars { get; set; } = 0;
 
         private string _Serves;
@@ -41,18 +43,7 @@ namespace RecipePOC.Services.Models
                 _CookTime = value;
                 OnPropertyChanged(nameof(CookTime)); 
             }
-        }
-
-        public string Serves
-        {
-            get => _Serves;
-            set
-            {
-                _Serves = value;
-                OnPropertyChanged(nameof(Serves));
-            }
-        }
-
+        } 
         public bool IsCheckboxVisible
         {
             get => _isCheckboxVisible;

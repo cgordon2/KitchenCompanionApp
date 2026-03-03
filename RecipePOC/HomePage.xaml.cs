@@ -5,6 +5,7 @@ using RecipePOC.Services.Recipes;
 using SQLite;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IdentityModel.Tokens.Jwt;
 using static SQLite.SQLite3;
 
 namespace RecipePOC;
@@ -111,12 +112,28 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
     }
 
 
+    public static bool IsTokenExpired(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var exp = jwtToken.Payload.Exp;
+
+        if (exp == null)
+            return true;
+
+        var expiryDate = DateTimeOffset.FromUnixTimeSeconds((long)exp).UtcDateTime;
+
+        return expiryDate < DateTime.UtcNow;
+    }
+
+
     protected override void OnAppearing()
     {
         base.OnAppearing(); 
          _ = OnAppearingAsync();
     }
-
+    // https://www.jwt.io/
     private async Task OnAppearingAsync()
     {
         await RecipeDB.CreateAsync(); 
@@ -124,6 +141,17 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         page = 0;
         Recipes.Clear(); 
         SecureStorage.Default.Remove("selected_ingredients");
+
+        /**
+         *         SecureStorage.Default.Remove("auth_token");
+        SecureStorage.Default.Remove("user_name");
+        SecureStorage.Default.Remove("email");
+        SecureStorage.Default.Remove("chef_guid");
+        SecureStorage.Default.Remove("real_name");
+        SecureStorage.Default.Remove("selected_ingredients"); // 
+        SecureStorage.Default.Remove("selected_recipe");
+        SecureStorage.Default.Remove("should_clone_or_edit"); 
+         * **/
 
         SecureStorage.Default.Remove("should_clone_or_edit");
         SecureStorage.Default.Remove("selected_recipe");
@@ -149,6 +177,13 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         }
         else
         {
+            var token = await SecureStorage.GetAsync("auth_token"); 
+            if (IsTokenExpired(token))
+            {
+                await Navigation.PushAsync(new MainPage(_authService, _recipeService, _httpClientFactory, _connection));
+                return; 
+            }
+
             var foundUser = await APIClient.GetUser(_httpClientFactory, userName);
 
             if (foundUser != null)
@@ -161,49 +196,52 @@ public partial class HomePage : ContentPage, INotifyPropertyChanged
         }
         var user = await _authService.GetUser(_connection, userName);
 
-        AvatarUrl = user.AvatarUrl;
-        var notifs = await _notificationsService.GetNotifications(false, chefGuid);
-        NotifCount = notifs.Count;
-
-        // Show spinner
-        MainThread.BeginInvokeOnMainThread(() =>
+        if (user != null)
         {
-            LoadingSpinner.IsVisible = true;
-            LoadingSpinner.IsRunning = true;
-        });
-        try
-        {
-           // await Task.Delay(1500); // simulate real load
+            AvatarUrl = user.AvatarUrl;
+            var notifs = await _notificationsService.GetNotifications(false, chefGuid);
+            NotifCount = notifs.Count;
 
-            if (PageHelpers.HasInternet())
-            {
-                var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
-
-                var clonedRecipes = await APIClient.GetClonedRecipes(_httpClientFactory);
-
-                allRecipes.AddRange(clonedRecipes); 
-
-                await _recipeService.ResetRecipes(allRecipes); 
-
-                await LoadNextPage(); 
-            }
-            else
-            {
-                await LoadNextPage();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("ERROR in OnAppearingAsync: " + ex);
-        }
-        finally
-        {
-            // Hide spinner
+            // Show spinner
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                LoadingSpinner.IsRunning = false;
-                LoadingSpinner.IsVisible = false;
+                LoadingSpinner.IsVisible = true;
+                LoadingSpinner.IsRunning = true;
             });
+            try
+            {
+                // await Task.Delay(1500); // simulate real load
+
+                if (PageHelpers.HasInternet())
+                {
+                    var allRecipes = await APIClient.GetAllRecipes(_httpClientFactory);
+
+                    var clonedRecipes = await APIClient.GetClonedRecipes(_httpClientFactory);
+
+                    allRecipes.AddRange(clonedRecipes);
+
+                    await _recipeService.ResetRecipes(allRecipes);
+
+                    await LoadNextPage();
+                }
+                else
+                {
+                    await LoadNextPage();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR in OnAppearingAsync: " + ex);
+            }
+            finally
+            {
+                // Hide spinner
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    LoadingSpinner.IsRunning = false;
+                    LoadingSpinner.IsVisible = false;
+                });
+            }
         }
     }
 

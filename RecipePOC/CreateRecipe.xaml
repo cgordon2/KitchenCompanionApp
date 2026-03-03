@@ -72,8 +72,7 @@ Loaded="CategoryPicker2_Loaded"
                             <x:String>Brunch</x:String>
                             <x:String>Dessert</x:String>
                             <x:String>Main Dish</x:String>
-                            <x:String>Side Dish</x:String>
-                            <x:String>Snack</x:String>
+                            <x:String>Side Dish</x:String> 
                         </Picker.Items>
                     </Picker>
                     <!-- PREP / COOK / SERVES -->

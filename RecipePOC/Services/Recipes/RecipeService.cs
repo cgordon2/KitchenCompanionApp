@@ -164,7 +164,7 @@ namespace RecipePOC.Services.Recipes
                 Stars = dto.Stars, 
                 PrepTime = dto.Preptime, 
                 CookTime = dto.CookTime, 
-                Serves = dto.Serves, 
+                Serves = dto.Quantity.ToString(), 
                 UnitName = dto.UnitName, 
                 StoreName = dto.StoreName, 
                 Photo = dto.Photo
@@ -181,7 +181,10 @@ namespace RecipePOC.Services.Recipes
         { 
             return await _connection.Table<DB.Models.Ingredient>()
                 .Where(r => r.IngredientName.ToLower().Contains(query.ToLower()))
-                .ToListAsync(); 
+        .OrderBy(r => r.IngredientName)              
+        .Skip(page * size)                          
+        .Take(size)                                  
+        .ToListAsync();
         }
 
         public async Task<List<DB.Models.Recipe>> GetTaggedRecipes(string username)
@@ -268,7 +271,9 @@ namespace RecipePOC.Services.Recipes
             //await _connection.ExecuteAsync("ALTER TABLE Notification ADD COLUMN NotifGUID TEXT");
            // await _connection.ExecuteAsync("ALTER TABLE Ingredient ADD COLUMN CookTime TEXT");
           //  await _connection.ExecuteAsync("ALTER TABLE Ingredient ADD COLUMN Serves TEXT");
-            var ingredients = await _connection.Table<DB.Models.Ingredient>().ToListAsync(); 
+            var ingredients = await _connection.Table<DB.Models.Ingredient>().Skip(page * size)
+        .Take(size)
+        .ToListAsync();
 
             return ingredients;
         } 

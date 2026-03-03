@@ -82,7 +82,7 @@ public partial class CreateIngredient : ContentPage
             using var httpClient = new HttpClient();
 
             var response = await httpClient.PostAsync(
-                "http://192.168.7.203:5285/api/recipes/uploadimage",
+                "https://api.recipetracker.xyz/api/recipes/uploadimage",
                 content);
 
             if (response.IsSuccessStatusCode)
@@ -113,6 +113,20 @@ public partial class CreateIngredient : ContentPage
 
     private async void AddIngredient(object sender, EventArgs e)
     {
+        var UnitsMap = new Dictionary<string, int>
+        {
+            { "g", 1},
+            {"tsp", 2 },
+            {"tbsp", 3 },
+            {"kg", 7 },
+            {"lbs", 8 },
+            {"oz", 9 }, 
+            {"gal", 10 },
+            {"loaf", 11 },
+            {"cups", 13 },
+            {"pt", 15 }, 
+        }; 
+
         var CategoryMap = new Dictionary<string, int>
                         {
                             { "Walmart", 1 },
@@ -127,14 +141,17 @@ public partial class CreateIngredient : ContentPage
         //var storeUrl = StoreUrlEntry.Text;
         var selectedCategory = StorePicker.SelectedItem.ToString();
         var photoName = await SecureStorage.Default.GetAsync("IngredientPhotoName");
-        SecureStorage.Default.Remove("IngredientPhotoName"); 
+        SecureStorage.Default.Remove("IngredientPhotoName");
+
+        var selectedUnit = UnitsPicker.SelectedItem.ToString(); 
 
         var dto = new IngredientDto();
 
         dto.IngredientName = title;
-        dto.Store_ID = 1;
-        dto.Unit_ID = 1; 
-        dto.UnitName = "Walmart";  ;
+        dto.Quantity = Convert.ToInt32(QuantityEntry.Text);
+        dto.Store_ID = CategoryMap[selectedCategory]; 
+        dto.Unit_ID = UnitsMap[selectedUnit];
+        dto.UnitName = Convert.ToString(UnitsMap[selectedUnit]);  ;
         dto.StoreName = Convert.ToString(CategoryMap[selectedCategory]);
         dto.StoreUrl = "testtelly"; 
         dto.CreatedBy = _username;

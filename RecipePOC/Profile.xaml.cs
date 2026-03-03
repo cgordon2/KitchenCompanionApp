@@ -364,6 +364,11 @@ public partial class Profile : ContentPage, INotifyPropertyChanged
         await Navigation.PushAsync(new MainPage(_authService, _recipeService, _theFactory, _connection));  
     }
 
+    private async void TapGestureRecognizer_Pantry(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new Pantry());
+    }
+
     private async void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
     {
         await Navigation.PushAsync(new UserDirectory()); 

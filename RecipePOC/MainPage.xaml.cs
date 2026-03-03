@@ -6,6 +6,7 @@ using SQLite;
 using System.Threading.Tasks; 
 using System.Security.Cryptography;
 using System.Numerics;
+using System.Text.Json;
 namespace RecipePOC
 {
     public partial class MainPage : ContentPage
@@ -36,8 +37,7 @@ namespace RecipePOC
         private async void OnLoginClicked(object sender, EventArgs e)
         {
             var username = UsernameTxt.Text;
-            var password = PasswordEntry.Text;
-            // cameron Hieverybody17$
+            var password = PasswordEntry.Text; 
 
             /** cameron!!! for user**/
             if (username != null && password != null)
@@ -46,15 +46,16 @@ namespace RecipePOC
 
                 if (!string.IsNullOrEmpty(error))
                 {
+                    var doc = JsonDocument.Parse(error);
+                    string token = doc.RootElement.GetProperty("token").GetString(); 
+
                     if (PageHelpers.HasInternet())
                     {
                         var foundUser = await APIClient.GetUser(_httpClientFactory, username);
                         var chefID = foundUser.ChefId ?? 0;
                         var realName = string.Empty;
 
-
-
-                        await SecureStorage.Default.SetAsync("auth_token", "aewfawfwaefawef");
+                        await SecureStorage.Default.SetAsync("auth_token", token);
                         await SecureStorage.Default.SetAsync("user_name", foundUser.UserName);
 
                         if (foundUser.Email != null && foundUser.Email != string.Empty)

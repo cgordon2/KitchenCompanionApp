@@ -225,7 +225,34 @@ Loaded="CategoryPicker2_Loaded"
                     <x:String>Meijer</x:String>
                     <x:String>Kroger</x:String>
                 </Picker.Items>
-            </Picker> 
+            </Picker>
+            <Label Text="Unit Quantity" TextColor="Black" />
+            <Entry x:Name="QuantityEntry"
+           Text="1"
+           FontAttributes="Bold"
+           FontSize="20"
+               BackgroundColor="#E57373"
+                               TextColor="White"
+                               PlaceholderColor="White"    
+           HorizontalOptions="Start"
+           WidthRequest="200" />
+            <Picker Title="Select a Unit Type"
+        x:Name="UnitsPicker"
+        TitleColor="Black"  
+        BackgroundColor="#E57373">
+                <Picker.Items >
+                    <x:String>g</x:String>
+                    <x:String>tsp</x:String>
+                    <x:String>tbsp</x:String>
+                    <x:String>kg</x:String>
+                    <x:String>lbs</x:String>
+                    <x:String>oz</x:String>
+                    <x:String>gal</x:String>
+                    <x:String>loaf</x:String>
+                    <x:String>cups</x:String>
+                    <x:String>pt</x:String> 
+                </Picker.Items>
+            </Picker>
         </VerticalStackLayout> 
         <Button Text="Add Ingredient" BackgroundColor="#E57373" Margin="10" Clicked="AddIngredient"/>
     </VerticalStackLayout>

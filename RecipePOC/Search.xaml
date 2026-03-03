@@ -64,9 +64,7 @@
             </Border>
         </Grid>
     </Shell.TitleView>
-    <AbsoluteLayout>
-
-        <!-- Your normal page content -->
+    <AbsoluteLayout> 
         <Grid AbsoluteLayout.LayoutFlags="All"
           AbsoluteLayout.LayoutBounds="0,0,1,1">
             <Grid BackgroundColor="WhiteSmoke"
@@ -123,109 +121,7 @@
                                 <Label Text="Cloned Recipes" FontSize="14" TextColor="Black"/>
                             </HorizontalStackLayout>
                         </Border>
-                        <!--<Border x:Name="UserFilter"
-                    StrokeShape="RoundRectangle 20"
-                    BackgroundColor="#F9EDEC"
-                    Padding="10,5">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnFilterTapped" CommandParameter="Recently Used"/>
-                            </Border.GestureRecognizers>
-                            <HorizontalStackLayout Spacing="5">
-                                <Label Text="❌" FontSize="14" />
-                                <Label Text="Users" FontSize="14" TextColor="Black"/>
-                            </HorizontalStackLayout>
-                        </Border>-->
                     </HorizontalStackLayout>
-                    <!-- -->
-                    <!-- List (STAR ROW gives it a real viewport so it scrolls) -->
-                    <!--<CollectionView x:Name="RecipesList"
-                        Grid.Row="2"
-ItemSizingStrategy="MeasureAllItems"
-                        Margin="10" 
- ItemsSource="{Binding RecipeBuffer}"
-                                    SelectionChanged="SearchList_OnItemChanged"
-                                        RemainingItemsThresholdReached="OnLoadMore"
-    RemainingItemsThreshold="2"
-
-                                    SelectionMode="Single"
-                        BackgroundColor="WhiteSmoke"
-                        EmptyView="No Recipes"
-                        VerticalOptions="FillAndExpand"
-                        HorizontalOptions="FillAndExpand"> 
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="6" /> 
-                        </CollectionView.ItemsLayout>
-
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Border
-        BackgroundColor="#FFF9F9"
-        Stroke="Transparent"
-        StrokeThickness="0"
-        StrokeShape="RoundRectangle 5"
-        Padding="0"
-        Margin="0"> 
-                                    <Grid ColumnDefinitions="5,80,*" 
-                                        <BoxView
-                                            x:Name="LeftBar"
-                                            Grid.Column="0"
-                                            WidthRequest="5"
-                                            HorizontalOptions="Fill"
-                                            VerticalOptions="Fill">
-
-                                                                                    <BoxView.Triggers>
-
-                                                                                        <DataTrigger TargetType="BoxView"
-                                                             Binding="{Binding Index}"
-                                                             Value="0">
-                                                                                            <Setter Property="BackgroundColor" Value="#FF8DA1" />
-                                                                                        </DataTrigger>
-
-                                                                                        <DataTrigger TargetType="BoxView"
-                                                             Binding="{Binding Index}"
-                                                             Value="1">
-                                                    <Setter Property="BackgroundColor" Value="#FFE9F0" />
-                                                </DataTrigger>
-
-                                            </BoxView.Triggers>
-                                        </BoxView> 
-                                        <Image
-                Grid.Column="1"
-                Source="{Binding RecipePhoto}"
-                WidthRequest="80" 
-                HeightRequest="80"
-                Aspect="AspectFill" /> 
-                                        <VerticalStackLayout
-                Grid.Column="2"
-                Padding="10"
-                Spacing="4"> 
-                                            <Label
-                    Text="{Binding Title}"
-                    FontSize="12" 
-                    FontAttributes="Bold"
-                    TextColor="#222"
-                    LineBreakMode="TailTruncation"
-                    MaxLines="1" />
-
-                                            <Label
-                    Text="{Binding CreatedBy}"
-                    FontSize="12"
-                    TextColor="#888" />
-
-                                            <Label
-                    Text="{Binding CreatedOn}"
-                    FontSize="12"
-                    TextColor="#888" />
-                                        </VerticalStackLayout>
-
-                                    </Grid>
-                                    
-                                </Border>
-                                
-                            </DataTemplate>
-
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>-->
                     <ListView
     x:Name="RecipesList"
     Grid.Row="2"
@@ -237,9 +133,7 @@ ItemSelected="SearchList_OnItemChanged"
     SeparatorVisibility="None"  
     BackgroundColor="WhiteSmoke"
     VerticalOptions="FillAndExpand"
-    HorizontalOptions="FillAndExpand"> 
-
-                        <!-- Item template -->
+    HorizontalOptions="FillAndExpand">  
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>

@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using System.Threading.Tasks; 
 //using Windows.UI.Notifications;
 
 namespace RecipePOC.Services
@@ -50,6 +51,28 @@ namespace RecipePOC.Services
                 {
                     PropertyNameCaseInsensitive = true
                 }) ?? new ShoppingListDTO();
+        } 
+
+        public static async Task<List<PantryDto>> GetPantryItems(IHttpClientFactory _theFactory)
+        {
+            var content = await GetRoute(_theFactory, "api/recipes/getpantryitems");
+
+            if (string.IsNullOrWhiteSpace(content))
+                return new List<PantryDto>(); // default empty list
+
+            return JsonSerializer.Deserialize<List<PantryDto>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? new List<PantryDto>();
+        }
+
+        public static async Task<bool> UpdatePantryByUser(IHttpClientFactory _theFactory, PantryDto dto)
+        {
+            var content = await PostRoute<PantryDto>(_theFactory, "api/recipes/updatepantrybyuser", dto);
+
+            return true; 
         }
 
         /** 
@@ -325,6 +348,10 @@ namespace RecipePOC.Services
         public static async Task<string?> PostRoute<T>(IHttpClientFactory _httpClientFactory, string apiRoute, T model)
         {
             var client = _httpClientFactory.CreateClient(AppConstants.HttpClientName);
+            var token = await SecureStorage.Default.GetAsync("auth_token");
+
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
 
             // Serialize the model to JSON
             var json = JsonSerializer.Serialize(model);
@@ -359,7 +386,11 @@ namespace RecipePOC.Services
     string? param_key_two = null)
         {
             var httpClient = _httpClientFactory.CreateClient(AppConstants.HttpClientName);
-             
+            var token = await SecureStorage.Default.GetAsync("auth_token");
+
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
             if (!string.IsNullOrEmpty(parameter_one))
             {
                 var uriBuilder = new UriBuilder(new Uri(httpClient.BaseAddress!, apiRoute));

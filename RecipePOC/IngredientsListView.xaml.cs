@@ -15,8 +15,8 @@ public partial class IngredientsListView : ContentPage
     private IHttpClientFactory _httpClientFactory;
     private string _username = string.Empty;
     private bool _displayCheckbox = false; 
-    private bool _IsVisible { get; set; } 
-    public ObservableCollection<IngredientItem> Items { get; set; }
+    private bool _IsVisible { get; set; }
+    public ObservableCollection<IngredientItem> Items { get; set; } = new ObservableCollection<IngredientItem>(); 
 
     void OnCheckboxLoaded(object sender, EventArgs e)
     {
@@ -34,7 +34,7 @@ public partial class IngredientsListView : ContentPage
         _httpClientFactory = httpClientFactory;
 
         BindingContext = this; 
-    } 
+    }
 
     private View CreateLoadMoreFooter()
     {
@@ -101,7 +101,7 @@ public partial class IngredientsListView : ContentPage
             ingredientItem.IngredientGUID = ingredient.IngredientGUID;
             ingredientItem.PrepTime = "Prep: "+ingredient.PrepTime + "m"; 
             ingredientItem.CookTime = "Cook: " + ingredient.CookTime + "m";
-            ingredientItem.Serves = "Serves: " + ingredient.Serves + "m"; 
+            ingredientItem.Quantity = ingredient.Serves + " " + ingredient.UnitName; 
 
             if (_displayCheckbox)
             {
@@ -122,17 +122,26 @@ public partial class IngredientsListView : ContentPage
         RecipeListView.ItemsSource = null; 
         RecipeListView.ItemsSource = IngredientBuffer;
 
-        /*RecipeListView.Footer =
-                    (IngredientBuffer.Count > 0 && hasMoreData)
-                     ? CreateLoadMoreFooter()
-                     : null;**/ 
+        RecipeListView.Footer = hasMoreData ? CreateLoadMoreFooter() : null;
+
     }
 
     private int currentPage = 0;
     private int pageSize = 2;
     private bool isLoading = false;
     private bool hasMoreData = true;
-    private List<IngredientItem> IngredientBuffer = new(); 
+    private List<IngredientItem> IngredientBuffer = new();
+
+    private async void PopupList_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+    {
+        if (isLoading || !hasMoreData)
+            return;
+
+        if (e.Item == Items.Last())
+        {
+            await GetIngredients();
+        }
+    }
 
     private void ResetPaging()
     {
@@ -191,14 +200,16 @@ public partial class IngredientsListView : ContentPage
                 Photo = ingredient.Photo,
                 CreatedBy = ingredient.CreatedBy,
                 IsCheckboxVisible = _displayCheckbox,
-                IngredientGUID = ingredient.IngredientGUID, 
-            });  
+                IngredientGUID = ingredient.IngredientGUID,
+                Quantity = ingredient.Serves + " " + ingredient.UnitName
+            });   
         }
 
         IngredientBuffer.AddRange(tempList); 
 
         currentPage++;
-        hasMoreData = ingredients.Any();
+        hasMoreData = ingredients.Count == pageSize;
+        //hasMoreData = ingredients.Any();
 
         RecipeListView.ItemsSource = null; 
         RecipeListView.ItemsSource = IngredientBuffer;

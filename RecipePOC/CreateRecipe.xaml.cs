@@ -169,14 +169,13 @@ public partial class CreateRecipe : ContentPage, INotifyPropertyChanged
 
         var CategoryMap = new Dictionary<string, int>
                         {
-                            { "Appetizer", 1 },
-                            { "Beverage", 2 },
-                            { "Breakfast", 1002 },
-                            { "Brunch", 1003 },
-                            { "Dessert", 1004 },
-                            { "Main Dish", 1005 },
-                            { "Side Dish", 2002 },
-                            { "Snack", 2003 }
+                            { "Appetizer", 2 },
+                            { "Beverage", 3 },
+                            { "Breakfast", 4 },
+                            { "Brunch", 5 },
+                            { "Dessert", 6 },
+                            { "Main Dish", 7 },
+                            { "Side Dish", 8 },
                         };
 
 
@@ -443,14 +442,13 @@ public partial class CreateRecipe : ContentPage, INotifyPropertyChanged
 
         var CategoryMap = new Dictionary<string, int>
                         {
-                            { "Appetizer", 1 },
-                            { "Beverage", 2 },
-                            { "Breakfast", 1002 },
-                            { "Brunch", 1003 },
-                            { "Dessert", 1004 },
-                            { "Main Dish", 1005 },
-                            { "Side Dish", 2002 },
-                            { "Snack", 2003 }
+                            { "Appetizer", 2 },
+                            { "Beverage", 3 },
+                            { "Breakfast", 4 },
+                            { "Brunch", 5 },
+                            { "Dessert", 6 },
+                            { "Main Dish", 7 },
+                            { "Side Dish", 8 }, 
                         };
 
         if (category != null)

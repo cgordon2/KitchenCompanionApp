@@ -112,6 +112,10 @@
                                     <Label Text="{Binding CreatedBy}"
                        FontSize="14"
                        TextColor="Gray"/>
+
+                                    <Label Text="{Binding Quantity}"
+                       FontSize="14"
+                       TextColor="Gray"/>
                                 </StackLayout>
 
                             </Grid>
